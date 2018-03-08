@@ -40,7 +40,6 @@ def main():
 	#print(move_islegal(playerlist[0], tilelist[6], tilelist[15]))
 
 
-
 	''' game logic
 	while game hasnt ended:
 		for player in players
