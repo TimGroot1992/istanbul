@@ -1,5 +1,7 @@
 import sys
 import random
+import pygame
+from pygame.locals import *
 
 def main():
 	board = Board(int(sys.argv[1]), 16)
@@ -31,12 +33,12 @@ def main():
 	print("player 1 location is now", playerlist[0].location)
 	
 	#Teahouse action
-	#'''
+	'''
 	reward = tilelist[11].perform_action()
 	print("reward is", reward)
 	playerlist[0].update_resources("lira", reward)
 	print(playerlist[0].name, "now has", playerlist[0].resources.get("lira"), "lira!")
-	#'''
+	'''
 	#print(move_islegal(playerlist[0], tilelist[6], tilelist[15]))
 
 
@@ -56,6 +58,7 @@ def main():
 			do family members, get 3 lira or 1 bonus card
 			optionally: do governor, smuggler action	
 	'''
+	setup_gui()
 
 class Players:
 	def __init__(self, player, location):
@@ -139,6 +142,18 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 		return True
 	else:
 		return False
+
+
+def setup_gui():
+	pygame.init()
+	DISPLAYSURF = pygame.display.set_mode((800, 600))
+	pygame.display.set_caption('Istanbul')
+	while True: # main game loop
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				pygame.quit()
+				sys.exit()
+				pygame.display.update()
 
 
 if __name__ == '__main__':
