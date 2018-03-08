@@ -58,7 +58,7 @@ def main():
 			do family members, get 3 lira or 1 bonus card
 			optionally: do governor, smuggler action	
 	'''
-	setup_gui()
+	GUI()
 
 class Players:
 	def __init__(self, player, location):
@@ -144,16 +144,38 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 		return False
 
 
-def setup_gui():
+def GUI():
 	pygame.init()
-	DISPLAYSURF = pygame.display.set_mode((800, 600))
+	framewidth = 1500	
+	frameheight = 1000
+	frame = pygame.display.set_mode((framewidth, frameheight))
 	pygame.display.set_caption('Istanbul')
+
+	black = (0, 0, 0)
+	white = (255, 255, 255)
+	red = (255, 0, 0)
+	green = (0, 255, 0)
+	blue = (0, 0, 255)
+
+	#spamRect = pygame.Rect(10, 20, 200, 300)
+	spice_warehouse = pygame.image.load('images/spice_warehouse.jpg')
+	spicex = 100
+	spicey = 0
+	spice_warehouse = pygame.transform.smoothscale(spice_warehouse, (int(framewidth/5), int(frameheight/5)))
+
+	fabric_warehouse = pygame.image.load('images/fabric_warehouse.jpg')
+	fabricx = 100
+	fabricy = 100
+	#frame.fill(white)
+
 	while True: # main game loop
+		frame.blit(spice_warehouse, (spicex, spicey))
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				pygame.quit()
 				sys.exit()
-				pygame.display.update()
+
+		pygame.display.update()
 
 
 if __name__ == '__main__':
