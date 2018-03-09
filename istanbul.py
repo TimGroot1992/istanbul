@@ -32,6 +32,8 @@ def main():
 	playerlist[0].update_location(tilelist[3].location)
 	print("player 1 location is now", playerlist[0].location)
 	
+	setup_GUI(tilelist)
+
 	#Teahouse action
 	'''
 	reward = tilelist[11].perform_action()
@@ -58,7 +60,7 @@ def main():
 			do family members, get 3 lira or 1 bonus card
 			optionally: do governor, smuggler action	
 	'''
-	GUI()
+	
 
 class Players:
 	def __init__(self, player, location):
@@ -144,32 +146,52 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 		return False
 
 
-def GUI():
+def setup_GUI(tilelist):
 	pygame.init()
-	framewidth = 1500	
-	frameheight = 1000
+	framewidth = 1200	
+	frameheight = 800
 	frame = pygame.display.set_mode((framewidth, frameheight))
 	pygame.display.set_caption('Istanbul')
+
+	boardwidth = framewidth * (2/3)
+	boardheight = frameheight * (2/3)
+	boardx = framewidth / 12
+	boardy = frameheight / 12
+
+	tilewidth = boardwidth / 4
+	tileheight = boardheight / 4
 
 	black = (0, 0, 0)
 	white = (255, 255, 255)
 	red = (255, 0, 0)
 	green = (0, 255, 0)
 	blue = (0, 0, 255)
+	background = (0, 68, 102)
 
 	#spamRect = pygame.Rect(10, 20, 200, 300)
 	spice_warehouse = pygame.image.load('images/spice_warehouse.jpg')
-	spicex = 100
-	spicey = 0
-	spice_warehouse = pygame.transform.smoothscale(spice_warehouse, (int(framewidth/5), int(frameheight/5)))
+	spicex = boardx
+	spicey = boardy
+	spice_warehouse = pygame.transform.smoothscale(spice_warehouse, (int(tilewidth), int(tileheight)))
 
 	fabric_warehouse = pygame.image.load('images/fabric_warehouse.jpg')
-	fabricx = 100
-	fabricy = 100
-	#frame.fill(white)
+	fabricx = boardx + tilewidth
+	fabricy = boardy
+	fabric_warehouse = pygame.transform.smoothscale(fabric_warehouse, (int(tilewidth), int(tileheight)))
+	frame.fill(background)
+	# frame.blit(spice_warehouse, (spicex, spicey))
+	# frame.blit(fabric_warehouse, (fabricx, fabricy))
+
+	for tile in tilelist:
+		#print(tile.name, tile.location)
+		currenttile = pygame.image.load('images/spice_warehouse.jpg')
+		tilex = boardx + ((tile.location[0] - 1) * tilewidth)
+		tiley = boardy + ((tile.location[1] - 1) * tileheight)
+		currenttile = pygame.transform.smoothscale(spice_warehouse, (int(tilewidth), int(tileheight)))
+		frame.blit(currenttile, (tilex, tiley))
 
 	while True: # main game loop
-		frame.blit(spice_warehouse, (spicex, spicey))
+		
 		for event in pygame.event.get():
 			if event.type == QUIT:
 				pygame.quit()
