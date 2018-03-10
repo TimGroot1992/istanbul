@@ -150,45 +150,57 @@ def setup_GUI(tilelist):
 	pygame.init()
 	framewidth = 1200	
 	frameheight = 800
-	frame = pygame.display.set_mode((framewidth, frameheight))
+	frame = pygame.display.set_mode((framewidth, frameheight), RESIZABLE)
 	pygame.display.set_caption('Istanbul')
 
 	boardwidth = framewidth * (2/3)
 	boardheight = frameheight * (2/3)
-	boardx = framewidth / 12
-	boardy = frameheight / 12
+	tilegap = 10
+	boardx = (framewidth / 12) - (tilegap * 4)
+	boardy = (frameheight / 12)
 
-	tilewidth = boardwidth / 4
-	tileheight = boardheight / 4
+	tilewidth = (boardwidth / 4) - tilegap
+	tileheight = (boardheight / 4) - tilegap
 
 	black = (0, 0, 0)
 	white = (255, 255, 255)
 	red = (255, 0, 0)
 	green = (0, 255, 0)
 	blue = (0, 0, 255)
-	background = (0, 68, 102)
-
-	#spamRect = pygame.Rect(10, 20, 200, 300)
-	spice_warehouse = pygame.image.load('images/spice_warehouse.jpg')
-	spicex = boardx
-	spicey = boardy
-	spice_warehouse = pygame.transform.smoothscale(spice_warehouse, (int(tilewidth), int(tileheight)))
-
-	fabric_warehouse = pygame.image.load('images/fabric_warehouse.jpg')
-	fabricx = boardx + tilewidth
-	fabricy = boardy
-	fabric_warehouse = pygame.transform.smoothscale(fabric_warehouse, (int(tilewidth), int(tileheight)))
+	background = (49, 49, 49)
+	background2 = (0, 68, 102)
 	frame.fill(background)
-	# frame.blit(spice_warehouse, (spicex, spicey))
-	# frame.blit(fabric_warehouse, (fabricx, fabricy))
+
+	# wallpaper = pygame.image.load("images/wallpaper2.png")
+	# # guy = pygame.transform.smoothscale(box, (int(framewidth - boardx), int(frameheight - (boardy + (tileheight + tilegap) * 4 ))))
+	# frame.blit(wallpaper, (0, 0))
 
 	for tile in tilelist:
-		#print(tile.name, tile.location)
-		currenttile = pygame.image.load('images/spice_warehouse.jpg')
-		tilex = boardx + ((tile.location[0] - 1) * tilewidth)
-		tiley = boardy + ((tile.location[1] - 1) * tileheight)
-		currenttile = pygame.transform.smoothscale(spice_warehouse, (int(tilewidth), int(tileheight)))
+		try:
+			path = "images/" + tile.name + ".png"
+			currenttile = pygame.image.load(path)
+			#print("try ", tile.name)
+		except:
+			currenttile = pygame.image.load("images/spice_warehouse.png")
+			#print("except ", tile.name)
+		tilex = boardy + ((tile.location[1] - 1) * (tilewidth + tilegap))
+		tiley = boardx + ((tile.location[0] - 1) * (tileheight + tilegap))
+		#print("printing tile ", tile.name, "at x=", tilex, ", y=", tiley)
+		currenttile = pygame.transform.smoothscale(currenttile, (int(tilewidth), int(tileheight)))
 		frame.blit(currenttile, (tilex, tiley))
+
+	box = pygame.image.load("images/box.png")
+	box = pygame.transform.smoothscale(box, (int(tilewidth), int(tileheight)))
+	frame.blit(box, (boardx + ((tilewidth + tilegap / 2) * 4 + tilewidth / 2), boardy + (tileheight * 1.5 + (tilegap / 2))))
+
+	# pygame.draw.rect(frame, background2, (boardx + tilegap / 2, boardy + (tileheight + tilegap) * 4, 
+	# 	framewidth - boardx, frameheight - (boardy + (tileheight + tilegap) * 4 )))
+
+	guyonthebox = pygame.image.load("images/guyonthebox.png")
+	guy = pygame.transform.smoothscale(box, (int(framewidth - boardx), int(frameheight - (boardy + (tileheight + tilegap) * 4 ))))
+	frame.blit(guyonthebox, (boardx + tilegap / 2, boardy + (tileheight + tilegap) * 4))
+
+	
 
 	while True: # main game loop
 		
