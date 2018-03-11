@@ -196,11 +196,12 @@ def setup_GUI(tilelist):
 	# pygame.draw.rect(frame, background2, (boardx + tilegap / 2, boardy + (tileheight + tilegap) * 4, 
 	# 	framewidth - boardx, frameheight - (boardy + (tileheight + tilegap) * 4 )))
 
-	guyonthebox = pygame.image.load("images/guyonthebox.png")
-	guy = pygame.transform.smoothscale(box, (int(framewidth - boardx), int(frameheight - (boardy + (tileheight + tilegap) * 4 ))))
-	frame.blit(guyonthebox, (boardx + tilegap / 2, boardy + (tileheight + tilegap) * 4))
+	# guyonthebox = pygame.image.load("images/guyonthebox.png")
+	# guy = pygame.transform.smoothscale(box, (int(framewidth - boardx), int(frameheight - (boardy + (tileheight + tilegap) * 4 ))))
+	# frame.blit(guyonthebox, (boardx + tilegap / 2, boardy + (tileheight + tilegap) * 4))
 
-	
+	pygame.draw.rect(frame, background2, (boardx + tilegap / 2, boardy + (tileheight + tilegap) * 4, 
+		boardwidth - tilegap, frameheight - (boardy + (tileheight + tilegap) * 4)))	
 
 	while True: # main game loop
 		
