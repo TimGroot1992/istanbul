@@ -148,8 +148,8 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 
 def setup_GUI(tilelist):
 	pygame.init()
-	framewidth = 1200	
-	frameheight = 800
+	framewidth = 1600	
+	frameheight = 1000
 	frame = pygame.display.set_mode((framewidth, frameheight), RESIZABLE)
 	pygame.display.set_caption('Istanbul')
 
@@ -159,8 +159,10 @@ def setup_GUI(tilelist):
 	boardx = (framewidth / 12) - (tilegap * 4)
 	boardy = (frameheight / 12)
 
-	tilewidth = (boardwidth / 4) - tilegap
-	tileheight = (boardheight / 4) - tilegap
+	#tilewidth = (boardwidth / 4) - tilegap
+	#tileheight = (boardheight / 4) - tilegap
+	tilewidth= (boardwidth - 3 * tilegap) / 4
+	tileheight= (boardheight - 3 * tilegap) / 4
 
 	black = (0, 0, 0)
 	white = (255, 255, 255)
@@ -200,8 +202,22 @@ def setup_GUI(tilelist):
 	# guy = pygame.transform.smoothscale(box, (int(framewidth - boardx), int(frameheight - (boardy + (tileheight + tilegap) * 4 ))))
 	# frame.blit(guyonthebox, (boardx + tilegap / 2, boardy + (tileheight + tilegap) * 4))
 
-	pygame.draw.rect(frame, background2, (boardx + tilegap / 2, boardy + (tileheight + tilegap) * 4, 
-		boardwidth - tilegap, frameheight - (boardy + (tileheight + tilegap) * 4)))	
+	p1_windowx = boardx + (0.5 * tilewidth) - tilegap
+	p1_windowy = boardy + boardheight + (tilegap * 2)
+	p1_windowwidth = 1.5 * tilewidth + tilegap
+	p1_windowheight = boardy + tileheight
+	pygame.draw.rect(frame, background2, (p1_windowx, p1_windowy, p1_windowwidth, p1_windowheight)) #Player1 window
+
+	p2_windowx = boardx + (2 * tilewidth) + tilegap
+	p2_windowy = boardy + boardheight + (tilegap * 2) 
+	p2_windowwidth = p1_windowwidth
+	p2_windowheight = p1_windowheight
+	pygame.draw.rect(frame, red, (p2_windowx, p2_windowy, p2_windowwidth, p2_windowheight)) #Player1 window
+
+	# resource2 = pygame.image.load("images/resource2.png")
+	# resource2 = pygame.transform.smoothscale(resource2, (int(tilewidth), int(tileheight)))
+	# frame.blit(resource2, (boardx + (0.5 * tilewidth) - tilegap, boardy + boardheight + tilegap * 2, 1.5 * tilewidth, boardy + tileheight))
+
 
 	while True: # main game loop
 		
