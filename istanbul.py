@@ -4,6 +4,18 @@ import pygame
 from pygame.locals import *
 
 def main():
+
+	framewidth = 1920	
+	frameheight = 1080
+	boardx = 25
+	boardy = 25
+	tilegap = 5
+	boardwidth = framewidth * (2/3)
+	boardheight = frameheight * (10/12)
+	tilewidth = (boardwidth - 3 * tilegap) / 4
+	tileheight = (boardheight - 3 * tilegap) / 4
+
+
 	board = Board(int(sys.argv[1]), 16)
 	print("Playing Istanbul with", board.number_of_players, "players!")
 	print("")
@@ -12,10 +24,9 @@ def main():
 		"fruit_warehouse": [2, 1], "police station": [2, 2],"fountain": [2, 3], "spice_warehouse": [2, 4], 
 		"black_market": [3, 1], "caravansary": [3, 2], "small_market": [3, 3], "tea_house": [3, 4],
 		"sultans_palace": [4, 1], "large_market": [4, 2], "wainwright": [4, 3], "gemstone_dealer": [4, 4]}
-	tilelist = [Tiles(tile, tiles.get(tile)) for tile in tiles]
+	tilelist = [Tiles(tile, tiles.get(tile), boardx, boardy, tilewidth, tileheight, tilegap) for tile in tiles]
 	playerlist = [Players(i, tilelist[6].location) for i in range(0, board.number_of_players)]
 	
-
 	for player in playerlist:
 		print("Money for", player.name, "is", player.resources.get("lira"), "lira.")
 	
@@ -32,7 +43,7 @@ def main():
 	playerlist[0].update_location(tilelist[3].location)
 	print("player 1 location is now", playerlist[0].location)
 	
-	setup_GUI(tilelist)
+	setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
 
 	#Teahouse action
 	'''
@@ -85,10 +96,11 @@ class Players:
 
 
 class Tiles:
-	def __init__(self, name, location):
+	def __init__(self, name, location, boardx, boardy, tilewidth, tileheight, tilegap):
 		self.name = name
 		self.tilenumbers = []
 		self.location = location
+		self.coordinates = [(boardy + ((self.location[1] - 1) * (tilewidth + tilegap))), boardx + ((self.location[0] - 1) * (tileheight + tilegap))]
 		self.players_present = []
 		self.units_stack = []
 
@@ -146,23 +158,11 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 		return False
 
 
-def setup_GUI(tilelist):
+def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
 	pygame.init()
-	framewidth = 1600	
-	frameheight = 1000
+
 	frame = pygame.display.set_mode((framewidth, frameheight), RESIZABLE)
 	pygame.display.set_caption('Istanbul')
-
-	boardwidth = framewidth * (2/3)
-	boardheight = frameheight * (2/3)
-	tilegap = 10
-	boardx = (framewidth / 12) - (tilegap * 4)
-	boardy = (frameheight / 12)
-
-	#tilewidth = (boardwidth / 4) - tilegap
-	#tileheight = (boardheight / 4) - tilegap
-	tilewidth= (boardwidth - 3 * tilegap) / 4
-	tileheight= (boardheight - 3 * tilegap) / 4
 
 	black = (0, 0, 0)
 	white = (255, 255, 255)
@@ -185,15 +185,11 @@ def setup_GUI(tilelist):
 		except:
 			currenttile = pygame.image.load("images/spice_warehouse.png")
 			#print("except ", tile.name)
-		tilex = boardy + ((tile.location[1] - 1) * (tilewidth + tilegap))
-		tiley = boardx + ((tile.location[0] - 1) * (tileheight + tilegap))
+		tilex = tile.coordinates[0]
+		tiley = tile.coordinates[1]
 		#print("printing tile ", tile.name, "at x=", tilex, ", y=", tiley)
 		currenttile = pygame.transform.smoothscale(currenttile, (int(tilewidth), int(tileheight)))
 		frame.blit(currenttile, (tilex, tiley))
-
-	box = pygame.image.load("images/box.png")
-	box = pygame.transform.smoothscale(box, (int(tilewidth), int(tileheight)))
-	frame.blit(box, (boardx + ((tilewidth + tilegap / 2) * 4 + tilewidth / 2), boardy + (tileheight * 1.5 + (tilegap / 2))))
 
 	# pygame.draw.rect(frame, background2, (boardx + tilegap / 2, boardy + (tileheight + tilegap) * 4, 
 	# 	framewidth - boardx, frameheight - (boardy + (tileheight + tilegap) * 4 )))
@@ -202,22 +198,25 @@ def setup_GUI(tilelist):
 	# guy = pygame.transform.smoothscale(box, (int(framewidth - boardx), int(frameheight - (boardy + (tileheight + tilegap) * 4 ))))
 	# frame.blit(guyonthebox, (boardx + tilegap / 2, boardy + (tileheight + tilegap) * 4))
 
-	p1_windowx = boardx + (0.5 * tilewidth) - tilegap
-	p1_windowy = boardy + boardheight + (tilegap * 2)
-	p1_windowwidth = 1.5 * tilewidth + tilegap
+	p1_windowx = boardx + (4.2 * tilewidth) + (tilegap * 4)
+	p1_windowy = boardy + (0.5 * tileheight)
+	p1_windowwidth = 1.5 * tilewidth
 	p1_windowheight = boardy + tileheight
 	pygame.draw.rect(frame, background2, (p1_windowx, p1_windowy, p1_windowwidth, p1_windowheight)) #Player1 window
 
-	p2_windowx = boardx + (2 * tilewidth) + tilegap
-	p2_windowy = boardy + boardheight + (tilegap * 2) 
+	p2_windowx = p1_windowx
+	p2_windowy = boardy + (2.5 * tileheight)
 	p2_windowwidth = p1_windowwidth
 	p2_windowheight = p1_windowheight
-	pygame.draw.rect(frame, red, (p2_windowx, p2_windowy, p2_windowwidth, p2_windowheight)) #Player1 window
+	pygame.draw.rect(frame, red, (p2_windowx, p2_windowy, p2_windowwidth, p2_windowheight)) #Player2 window
+
+	box = pygame.image.load("images/box.png")
+	box = pygame.transform.smoothscale(box, (int(tilewidth), int(tileheight - 5*tilegap)))
+	frame.blit(box, (p1_windowx + ((p1_windowwidth - tilewidth)/2), p1_windowy + tileheight + 5 * tilegap))
 
 	# resource2 = pygame.image.load("images/resource2.png")
 	# resource2 = pygame.transform.smoothscale(resource2, (int(tilewidth), int(tileheight)))
 	# frame.blit(resource2, (boardx + (0.5 * tilewidth) - tilegap, boardy + boardheight + tilegap * 2, 1.5 * tilewidth, boardy + tileheight))
-
 
 	while True: # main game loop
 		
