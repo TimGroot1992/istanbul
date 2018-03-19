@@ -1,5 +1,7 @@
 import sys
-import random
+import time
+import math
+from random import randint
 import pygame
 from pygame.locals import *
 
@@ -43,7 +45,9 @@ def main():
 	playerlist[0].update_location(tilelist[3].location)
 	print("player 1 location is now", playerlist[0].location)
 	
-	setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
+	GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
+	
+	
 
 	#Teahouse action
 	'''
@@ -132,6 +136,20 @@ class Tiles:
 				print("Too bad, you receive only 2 lira")
 				return 2
 
+class Object:
+	def __init__(self, name, coordinates, image_path):
+		self.name = name
+		self.coordinates = coordinates
+		self.image_path = image_path
+
+	def update_name(self, newname):
+		self.name = newname
+
+	def update_coordinates(self, x, y):
+		self.coordinates = [x, y]
+
+	def update_image_path(self, image_path):
+		self.image_path = image_path
 
 
 class Board:
@@ -158,10 +176,10 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 		return False
 
 
-def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
+def GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
 	pygame.init()
 
-	frame = pygame.display.set_mode((framewidth, frameheight), RESIZABLE)
+	frame = pygame.display.set_mode((framewidth, frameheight), FULLSCREEN)
 	pygame.display.set_caption('Istanbul')
 
 	black = (0, 0, 0)
@@ -214,11 +232,25 @@ def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileh
 	box = pygame.transform.smoothscale(box, (int(tilewidth), int(tileheight - 5*tilegap)))
 	frame.blit(box, (p1_windowx + ((p1_windowwidth - tilewidth)/2), p1_windowy + tileheight + 5 * tilegap))
 
-	# resource2 = pygame.image.load("images/resource2.png")
-	# resource2 = pygame.transform.smoothscale(resource2, (int(tilewidth), int(tileheight)))
-	# frame.blit(resource2, (boardx + (0.5 * tilewidth) - tilegap, boardy + boardheight + tilegap * 2, 1.5 * tilewidth, boardy + tileheight))
+	
+	fps = 60
+	fpsClock = pygame.time.Clock()
+
+	dice1 = Object("dice1", [p1_windowx + ((p1_windowwidth - tilewidth)/2), p1_windowy + tileheight + 5 * tilegap], "images/die1.png")
+	
+	#for i in range(0, 1000):
+		#image_name = "images/dice", randint(1, 3), ".png"
+		
+	pause = 0.01
 
 	while True: # main game loop
+		pygame.time.wait(int(pause))
+		dice1.update_image_path("images/die" + str(randint(1, 3)) + ".png")
+		image = pygame.image.load(dice1.image_path)
+		image = pygame.transform.smoothscale(image, (int(tilewidth/5), int(tilewidth/5)))
+		frame.blit(image, (dice1.coordinates[0], dice1.coordinates[1]))
+		pause = pause * 2
+		print("new pause = ", pause)
 		
 		for event in pygame.event.get():
 			if event.type == QUIT:
@@ -226,7 +258,7 @@ def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileh
 				sys.exit()
 
 		pygame.display.update()
-
+		fpsClock.tick(fps)
 
 if __name__ == '__main__':
   main()
