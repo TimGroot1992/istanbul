@@ -5,19 +5,26 @@ from random import randint
 import pygame
 from pygame.locals import *
 
+framewidth = 1920	
+frameheight = 1080
+boardx = 25
+boardy = 25
+tilegap = 5
+boardwidth = framewidth * (2/3)
+boardheight = frameheight * (10/12)
+tilewidth = (boardwidth - 3 * tilegap) / 4
+tileheight = (boardheight - 3 * tilegap) / 4
+
+p1_windowx = boardx + (4.2 * tilewidth) + (tilegap * 4)
+p1_windowy = boardy + (0.5 * tileheight)
+p1_windowwidth = 1.5 * tilewidth
+p1_windowheight = boardy + tileheight
+p2_windowx = p1_windowx
+p2_windowy = boardy + (2.5 * tileheight)
+p2_windowwidth = p1_windowwidth
+p2_windowheight = p1_windowheight
+
 def main():
-
-	framewidth = 1920	
-	frameheight = 1080
-	boardx = 25
-	boardy = 25
-	tilegap = 5
-	boardwidth = framewidth * (2/3)
-	boardheight = frameheight * (10/12)
-	tilewidth = (boardwidth - 3 * tilegap) / 4
-	tileheight = (boardheight - 3 * tilegap) / 4
-
-
 	board = Board(int(sys.argv[1]), 16)
 	print("Playing Istanbul with", board.number_of_players, "players!")
 	print("")
@@ -26,7 +33,7 @@ def main():
 		"fruit_warehouse": [2, 1], "police station": [2, 2],"fountain": [2, 3], "spice_warehouse": [2, 4], 
 		"black_market": [3, 1], "caravansary": [3, 2], "small_market": [3, 3], "tea_house": [3, 4],
 		"sultans_palace": [4, 1], "large_market": [4, 2], "wainwright": [4, 3], "gemstone_dealer": [4, 4]}
-	tilelist = [Tiles(tile, tiles.get(tile), boardx, boardy, tilewidth, tileheight, tilegap) for tile in tiles]
+	tilelist = [Tiles(tile, tiles.get(tile)) for tile in tiles]
 	playerlist = [Players(i, tilelist[6].location) for i in range(0, board.number_of_players)]
 	
 	for player in playerlist:
@@ -45,8 +52,8 @@ def main():
 	playerlist[0].update_location(tilelist[3].location)
 	print("player 1 location is now", playerlist[0].location)
 	
-	GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
-	
+	frame = GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
+	#n1 = roll_dice(frame)
 	
 
 	#Teahouse action
@@ -100,7 +107,13 @@ class Players:
 
 
 class Tiles:
-	def __init__(self, name, location, boardx, boardy, tilewidth, tileheight, tilegap):
+	def __init__(self, name, location):
+		global boardx
+		global boardy
+		global tilewidth
+		global tileheight
+		global tilegap
+
 		self.name = name
 		self.tilenumbers = []
 		self.location = location
@@ -179,7 +192,7 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 def GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
 	pygame.init()
 
-	frame = pygame.display.set_mode((framewidth, frameheight), FULLSCREEN)
+	frame = pygame.display.set_mode((framewidth, frameheight), RESIZABLE)
 	pygame.display.set_caption('Istanbul')
 
 	black = (0, 0, 0)
@@ -209,56 +222,61 @@ def GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight,
 		currenttile = pygame.transform.smoothscale(currenttile, (int(tilewidth), int(tileheight)))
 		frame.blit(currenttile, (tilex, tiley))
 
-	# pygame.draw.rect(frame, background2, (boardx + tilegap / 2, boardy + (tileheight + tilegap) * 4, 
-	# 	framewidth - boardx, frameheight - (boardy + (tileheight + tilegap) * 4 )))
-
-	# guyonthebox = pygame.image.load("images/guyonthebox.png")
-	# guy = pygame.transform.smoothscale(box, (int(framewidth - boardx), int(frameheight - (boardy + (tileheight + tilegap) * 4 ))))
-	# frame.blit(guyonthebox, (boardx + tilegap / 2, boardy + (tileheight + tilegap) * 4))
-
-	p1_windowx = boardx + (4.2 * tilewidth) + (tilegap * 4)
-	p1_windowy = boardy + (0.5 * tileheight)
-	p1_windowwidth = 1.5 * tilewidth
-	p1_windowheight = boardy + tileheight
 	pygame.draw.rect(frame, background2, (p1_windowx, p1_windowy, p1_windowwidth, p1_windowheight)) #Player1 window
-
-	p2_windowx = p1_windowx
-	p2_windowy = boardy + (2.5 * tileheight)
-	p2_windowwidth = p1_windowwidth
-	p2_windowheight = p1_windowheight
 	pygame.draw.rect(frame, red, (p2_windowx, p2_windowy, p2_windowwidth, p2_windowheight)) #Player2 window
 
 	box = pygame.image.load("images/box.png")
 	box = pygame.transform.smoothscale(box, (int(tilewidth), int(tileheight - 5*tilegap)))
 	frame.blit(box, (p1_windowx + ((p1_windowwidth - tilewidth)/2), p1_windowy + tileheight + 5 * tilegap))
 
-	
 	fps = 60
 	fpsClock = pygame.time.Clock()
-
-	dice1 = Object("dice1", [p1_windowx + ((p1_windowwidth - tilewidth)/2), p1_windowy + tileheight + 5 * tilegap], "images/die1.png")
-	
-	#for i in range(0, 1000):
-		#image_name = "images/dice", randint(1, 3), ".png"
-		
-	pause = 0.01
-
+	#return frame
+	pygame.display.update()
 	while True: # main game loop
-		pygame.time.wait(int(pause))
-		dice1.update_image_path("images/die" + str(randint(1, 3)) + ".png")
-		image = pygame.image.load(dice1.image_path)
-		image = pygame.transform.smoothscale(image, (int(tilewidth/5), int(tilewidth/5)))
-		frame.blit(image, (dice1.coordinates[0], dice1.coordinates[1]))
-		pause = pause * 2
-		print("new pause = ", pause)
-		
 		for event in pygame.event.get():
+			pygame.event.wait()
+			print(event)
+			console_input = input("What would you like to do?")
+			if (console_input == "roll"):
+				roll_dice(frame)
+
 			if event.type == QUIT:
 				pygame.quit()
 				sys.exit()
-
 		pygame.display.update()
 		fpsClock.tick(fps)
+
+def roll_dice(frame):
+	global p1_windowx
+	global p1_windowwidth
+	global p1_windowy
+	global tileheight
+	global tilewidth
+	global tilegap
+
+	dice1_x = p1_windowx + ((p1_windowwidth - tilewidth)/2)
+	dice1_y = p1_windowy + tileheight + 5 * tilegap
+	dice1 = Object("dice1", [dice1_x + randint(40, 220), dice1_y + randint(25, 115)], "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
+	randomnumber = randint(1, 3)
+	dice1.update_image_path("images/die" + str(randomnumber) + ".png")
+	image = pygame.image.load(dice1.image_path)
+	image = pygame.transform.smoothscale(image, (int(tilewidth/5), int(tilewidth/5)))
+
+	dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2)
+	dice2_y = p1_windowy + tileheight + 5 * tilegap
+	dice2 = Object("dice1", [dice2_x + randint(40, 220), dice2_y + randint(25, 115)], "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
+	randomnumber2 = randint(1, 3)
+	dice2.update_image_path("images/die" + str(randomnumber2) + ".png")
+	image2 = pygame.image.load(dice2.image_path)
+	image2 = pygame.transform.smoothscale(image2, (int(tilewidth/5), int(tilewidth/5)))
+
+	frame.blit(image, (dice1.coordinates[0], dice1.coordinates[1]))
+	frame.blit(image, (dice2.coordinates[0], dice2.coordinates[1]))
+	
+	print("You have thrown", (randomnumber + randomnumber2))
+	pygame.display.update()
+	return randomnumber + randomnumber2
 
 if __name__ == '__main__':
   main()
