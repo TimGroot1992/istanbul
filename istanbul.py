@@ -24,6 +24,16 @@ p2_windowy = boardy + (2.5 * tileheight)
 p2_windowwidth = p1_windowwidth
 p2_windowheight = p1_windowheight
 
+black = (0, 0, 0)
+white = (255, 255, 255)
+red = (255, 0, 0)
+green = (0, 255, 0)
+blue = (0, 0, 255)
+background = (49, 49, 49)
+background2 = (0, 68, 102)
+# colors = {"black":black, "white": white, "red": red,"green":green, "blue": blue,"background": background, "background2":background2}
+
+
 def main():
 	board = Board(int(sys.argv[1]), 16)
 	print("Playing Istanbul with", board.number_of_players, "players!")
@@ -52,8 +62,10 @@ def main():
 	playerlist[0].update_location(tilelist[3].location)
 	print("player 1 location is now", playerlist[0].location)
 	
-	frame = GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
-	#n1 = roll_dice(frame)
+	frame = setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
+	draw_board(frame, tilelist)
+	draw_units(frame)
+	mainloop_GUI(frame)
 	
 
 	#Teahouse action
@@ -189,24 +201,20 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 		return False
 
 
-def GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
+def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
+	global background
 	pygame.init()
-
 	frame = pygame.display.set_mode((framewidth, frameheight), RESIZABLE)
 	pygame.display.set_caption('Istanbul')
-
-	black = (0, 0, 0)
-	white = (255, 255, 255)
-	red = (255, 0, 0)
-	green = (0, 255, 0)
-	blue = (0, 0, 255)
-	background = (49, 49, 49)
-	background2 = (0, 68, 102)
 	frame.fill(background)
+	return frame
+	
 
-	# wallpaper = pygame.image.load("images/wallpaper2.png")
-	# # guy = pygame.transform.smoothscale(box, (int(framewidth - boardx), int(frameheight - (boardy + (tileheight + tilegap) * 4 ))))
-	# frame.blit(wallpaper, (0, 0))
+	
+
+def draw_board(frame, tilelist):
+	global background2
+	global red
 
 	for tile in tilelist:
 		try:
@@ -229,6 +237,10 @@ def GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight,
 	box = pygame.transform.smoothscale(box, (int(tilewidth), int(tileheight - 5*tilegap)))
 	frame.blit(box, (p1_windowx + ((p1_windowwidth - tilewidth)/2), p1_windowy + tileheight + 5 * tilegap))
 
+def draw_units(frame):
+	print("drawing all units")
+
+def mainloop_GUI(frame):
 	fps = 60
 	fpsClock = pygame.time.Clock()
 	#return frame
@@ -246,6 +258,7 @@ def GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight,
 				sys.exit()
 		pygame.display.update()
 		fpsClock.tick(fps)
+
 
 def roll_dice(frame):
 	global p1_windowx
