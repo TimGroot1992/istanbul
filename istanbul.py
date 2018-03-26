@@ -39,8 +39,8 @@ def main():
 	print("Playing Istanbul with", board.number_of_players, "players!")
 	print("")
 
-	tiles = {"great_mosque": [1, 1], "post_office": [1, 2], "fabric_warehouse": [1, 3], "small_mosque": [1, 4], 
-		"fruit_warehouse": [2, 1], "police station": [2, 2],"fountain": [2, 3], "spice_warehouse": [2, 4], 
+	tiles = {"great_mosque": [1, 1], "postal_office": [1, 2], "fabric_warehouse": [1, 3], "small_mosque": [1, 4], 
+		"fruit_warehouse": [2, 1], "police_station": [2, 2],"fountain": [2, 3], "spice_warehouse": [2, 4], 
 		"black_market": [3, 1], "caravansary": [3, 2], "small_market": [3, 3], "tea_house": [3, 4],
 		"sultans_palace": [4, 1], "large_market": [4, 2], "wainwright": [4, 3], "gemstone_dealer": [4, 4]}
 	tilelist = [Tiles(tile, tiles.get(tile)) for tile in tiles]
@@ -65,7 +65,7 @@ def main():
 	frame = setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
 	draw_board(frame, tilelist)
 	draw_units(frame)
-	mainloop_GUI(frame)
+	mainloop_GUI(frame, tilelist)
 	
 
 	#Teahouse action
@@ -217,12 +217,13 @@ def draw_board(frame, tilelist):
 	global red
 
 	for tile in tilelist:
+		#print(tile.name)
 		try:
 			path = "images/" + tile.name + ".png"
-			currenttile = pygame.image.load(path)
+			currenttile = pygame.image.load(path).convert()
 			#print("try ", tile.name)
 		except:
-			currenttile = pygame.image.load("images/spice_warehouse.png")
+			currenttile = pygame.image.load("images/spice_warehouse.png").convert()
 			#print("except ", tile.name)
 		tilex = tile.coordinates[0]
 		tiley = tile.coordinates[1]
@@ -233,25 +234,34 @@ def draw_board(frame, tilelist):
 	pygame.draw.rect(frame, background2, (p1_windowx, p1_windowy, p1_windowwidth, p1_windowheight)) #Player1 window
 	pygame.draw.rect(frame, red, (p2_windowx, p2_windowy, p2_windowwidth, p2_windowheight)) #Player2 window
 
-	box = pygame.image.load("images/box.png")
+	box = pygame.image.load("images/box.png").convert()
 	box = pygame.transform.smoothscale(box, (int(tilewidth), int(tileheight - 5*tilegap)))
 	frame.blit(box, (p1_windowx + ((p1_windowwidth - tilewidth)/2), p1_windowy + tileheight + 5 * tilegap))
+
+	#pygame.display.update()
 
 def draw_units(frame):
 	print("drawing all units")
 
-def mainloop_GUI(frame):
-	fps = 60
+def mainloop_GUI(frame, tilelist):
+	fps = 5
 	fpsClock = pygame.time.Clock()
 	#return frame
-	pygame.display.update()
+	#pygame.display.update()
+	counter = 0
 	while True: # main game loop
 		for event in pygame.event.get():
-			pygame.event.wait()
+			#pygame.event.wait()
 			print(event)
-			console_input = input("What would you like to do?")
-			if (console_input == "roll"):
-				roll_dice(frame)
+
+			#Blit background
+			#Update location of all units within a list
+			#pygame.display.update(Unit list)
+
+			if event.type == pygame.MOUSEBUTTONUP:
+				mouseposition = pygame.mouse.get_pos()
+				print("Your fucking mouse is now at", mouseposition)
+				roll_dice(frame, tilelist)
 
 			if event.type == QUIT:
 				pygame.quit()
@@ -260,7 +270,7 @@ def mainloop_GUI(frame):
 		fpsClock.tick(fps)
 
 
-def roll_dice(frame):
+def roll_dice(frame, tilelist):
 	global p1_windowx
 	global p1_windowwidth
 	global p1_windowy
@@ -268,28 +278,52 @@ def roll_dice(frame):
 	global tilewidth
 	global tilegap
 
-	dice1_x = p1_windowx + ((p1_windowwidth - tilewidth)/2)
-	dice1_y = p1_windowy + tileheight + 5 * tilegap
-	dice1 = Object("dice1", [dice1_x + randint(40, 220), dice1_y + randint(25, 115)], "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
-	randomnumber = randint(1, 3)
-	dice1.update_image_path("images/die" + str(randomnumber) + ".png")
-	image = pygame.image.load(dice1.image_path)
-	image = pygame.transform.smoothscale(image, (int(tilewidth/5), int(tilewidth/5)))
+	dice1_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(40, 220)
+	dice1_y = p1_windowy + tileheight + (5 * tilegap) + randint(25, 115)
+	dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(40, 220)
+	dice2_y = p1_windowy + tileheight + (5 * tilegap) + randint(25, 115)
+	while (dice_offset(dice1_x, dice1_y, dice2_x, dice2_y)):
+		dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(40, 220)
+		dice2_y = p1_windowy + tileheight + (5 * tilegap) + randint(25, 115)
 
-	dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2)
-	dice2_y = p1_windowy + tileheight + 5 * tilegap
-	dice2 = Object("dice1", [dice2_x + randint(40, 220), dice2_y + randint(25, 115)], "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
-	randomnumber2 = randint(1, 3)
+	# x_distance = 0.01
+	# pause = 0.5
+	# while x_distance < 5:
+	dice1 = Object("dice1", [dice1_x, dice1_y], "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
+	randomnumber = randint(1, 6)
+	dice1.update_image_path("images/die" + str(randomnumber) + ".png")
+	image = pygame.image.load(dice1.image_path).convert()
+	image = pygame.transform.smoothscale(image, (int(tilewidth/5), int(tilewidth/5)))
+	
+	dice2 = Object("dice1", [dice2_x, dice2_y], "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
+	randomnumber2 = randint(1, 6)
 	dice2.update_image_path("images/die" + str(randomnumber2) + ".png")
-	image2 = pygame.image.load(dice2.image_path)
+	image2 = pygame.image.load(dice2.image_path).convert()
 	image2 = pygame.transform.smoothscale(image2, (int(tilewidth/5), int(tilewidth/5)))
 
+	#BEFORE blitting: draw background & all units, so the previous dice will be erased
+	draw_board(frame, tilelist)
+
 	frame.blit(image, (dice1.coordinates[0], dice1.coordinates[1]))
-	frame.blit(image, (dice2.coordinates[0], dice2.coordinates[1]))
-	
+	frame.blit(image2, (dice2.coordinates[0], dice2.coordinates[1]))
+		# pygame.time.wait(int(pause))
+		# pause = 0.5 + ((12.25 - math_velocity(x_distance)/ 12.25) * 1.5)
+		# x_distance = x_distance + pause
+
 	print("You have thrown", (randomnumber + randomnumber2))
-	pygame.display.update()
+	#pygame.display.update()
 	return randomnumber + randomnumber2
+
+def dice_offset(dice1_x, dice1_y, dice2_x, dice2_y):
+	global tilewidth
+	if (abs(dice1_x - dice2_x) < (tilewidth/5) and (abs(dice1_y - dice2_y) < (tilewidth/5))):
+		return True
+	else:
+		return False
+
+# def math_velocity(x):
+# 	y = math.sqrt(150 - (math.pow(x, 3)))
+# 	return y
 
 if __name__ == '__main__':
   main()
