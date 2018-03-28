@@ -33,7 +33,6 @@ background = (49, 49, 49)
 background2 = (0, 68, 102)
 # colors = {"black":black, "white": white, "red": red,"green":green, "blue": blue,"background": background, "background2":background2}
 
-
 def main():
 	board = Board(int(sys.argv[1]), 16)
 	print("Playing Istanbul with", board.number_of_players, "players!")
@@ -145,18 +144,12 @@ class Tiles:
 	def update_units_stack(self, player, unit):
 		self.units_stack.append(unit)
 
-	def perform_action(self):
+	def perform_action(self, bet, frame, tilelist):
 		if self.name == "tea_house":
-			print("Performing tea house action...")
-			number = 1
-			while not(2 < number < 13):
-				number = int(input("Fill in a number between 3-12: "))
-			print("You picked number", number, ", rolling the dices...")
-			dice_roll = random.randint(3,12)
-			print("You threw %s" %dice_roll)
-			if (dice_roll >= number):
-				print("Congrats, you receive", number, "lira!")
-				return number
+			dice_roll = roll_dice(frame, tilelist)
+			if (dice_roll >= bet):
+				print("Congrats, you receive", bet, "lira!")
+				return bet
 			else:
 				print("Too bad, you receive only 2 lira")
 				return 2
@@ -204,7 +197,7 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
 	global background
 	pygame.init()
-	frame = pygame.display.set_mode((framewidth, frameheight), RESIZABLE)
+	frame = pygame.display.set_mode((framewidth, frameheight), FULLSCREEN)
 	pygame.display.set_caption('Istanbul')
 	frame.fill(background)
 	return frame
@@ -244,6 +237,9 @@ def draw_units(frame):
 	print("drawing all units")
 
 def mainloop_GUI(frame, tilelist):
+	global tilewidth
+	global tileheight
+
 	fps = 5
 	fpsClock = pygame.time.Clock()
 	#return frame
@@ -260,10 +256,43 @@ def mainloop_GUI(frame, tilelist):
 
 			if event.type == pygame.MOUSEBUTTONUP:
 				mouseposition = pygame.mouse.get_pos()
-				print("Your fucking mouse is now at", mouseposition)
-				roll_dice(frame, tilelist)
+				pos_x = mouseposition[0]
+				pos_y = mouseposition[1]
+				for tile in tilelist:
+					if pos_x > tile.coordinates[0] and pos_x < (tile.coordinates[0] + tilewidth) and pos_y > tile.coordinates[1] and pos_y < (tile.coordinates[1] + tileheight):
+						print("you clicked on tile", tile.name)
+						tilename = tile.name
+						break
+				if tile.name == "tea_house":
+					print("Performing tea house action, type in a number between 3-12 followed by an enter")
+					numbers_entered = ""
+					enter_pressed = False
+					bet = 1
+					while not (2 < bet < 13):
+						while not enter_pressed:
+							pygame.event.wait()
+							pressed = pygame.key.get_pressed()
+							if pressed[pygame.K_0]:
+								numbers_entered = numbers_entered + "0"
+								print(numbers_entered)
+							elif pressed[pygame.K_1]:
+								numbers_entered = numbers_entered + "1"
+								print(numbers_entered)
+							elif pressed[pygame.K_2]:
+								numbers_entered = numbers_entered + "2"
+								print(numbers_entered)
+							elif pressed[pygame.K_RETURN]:
+								enter_pressed = True
+								print("You pressed enter")
+								bet = int(numbers_entered)
+								if not (2 < bet < 13):
+									print("Your bet must be between 3 and 12, please try again.")
+							#while not(2 < number < 13):
+					reward = tilelist[11].perform_action(bet, frame, tilelist)
+				
+				#roll_dice(frame, tilelist)
 
-			if event.type == QUIT:
+			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
 				pygame.quit()
 				sys.exit()
 		pygame.display.update()
@@ -282,7 +311,7 @@ def roll_dice(frame, tilelist):
 	dice1_y = p1_windowy + tileheight + (5 * tilegap) + randint(25, 115)
 	dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(40, 220)
 	dice2_y = p1_windowy + tileheight + (5 * tilegap) + randint(25, 115)
-	while (dice_offset(dice1_x, dice1_y, dice2_x, dice2_y)):
+	while (dice_offset(dice1_x, dice1_y, dice2_x, dice2_y)): #Replace the second die while they're overlapping
 		dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(40, 220)
 		dice2_y = p1_windowy + tileheight + (5 * tilegap) + randint(25, 115)
 
