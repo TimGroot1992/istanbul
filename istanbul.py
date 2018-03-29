@@ -5,7 +5,7 @@ from random import randint
 import pygame
 from pygame.locals import *
 
-framewidth = 1920	
+framewidth = 1920		
 frameheight = 1080
 boardx = 25
 boardy = 25
@@ -14,6 +14,8 @@ boardwidth = framewidth * (2/3)
 boardheight = frameheight * (10/12)
 tilewidth = (boardwidth - 3 * tilegap) / 4
 tileheight = (boardheight - 3 * tilegap) / 4
+#print("TILEDWIDTH =", tilewidth)
+#print("TILEHEIGHT =", tileheight)
 
 p1_windowx = boardx + (4.2 * tilewidth) + (tilegap * 4)
 p1_windowy = boardy + (0.5 * tileheight)
@@ -66,7 +68,6 @@ def main():
 	draw_units(frame)
 	mainloop_GUI(frame, tilelist)
 	
-
 	#Teahouse action
 	'''
 	reward = tilelist[11].perform_action()
@@ -145,6 +146,7 @@ class Tiles:
 		self.units_stack.append(unit)
 
 	def perform_action(self, bet, frame, tilelist):
+		print("Your bet is", bet, "... Rolling the dice...")
 		if self.name == "tea_house":
 			dice_roll = roll_dice(frame, tilelist)
 			if (dice_roll >= bet):
@@ -197,12 +199,10 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
 	global background
 	pygame.init()
-	frame = pygame.display.set_mode((framewidth, frameheight), FULLSCREEN)
+	frame = pygame.display.set_mode((framewidth, frameheight), RESIZABLE) #FULLSCREEN
 	pygame.display.set_caption('Istanbul')
 	frame.fill(background)
 	return frame
-	
-
 	
 
 def draw_board(frame, tilelist):
@@ -229,6 +229,8 @@ def draw_board(frame, tilelist):
 
 	box = pygame.image.load("images/box.png").convert()
 	box = pygame.transform.smoothscale(box, (int(tilewidth), int(tileheight - 5*tilegap)))
+	#print("BOXWIDTH = ", tilewidth)
+	#print("BOXHEIGHT = ", tileheight - 5*tilegap)
 	frame.blit(box, (p1_windowx + ((p1_windowwidth - tilewidth)/2), p1_windowy + tileheight + 5 * tilegap))
 
 	#pygame.display.update()
@@ -265,28 +267,11 @@ def mainloop_GUI(frame, tilelist):
 						break
 				if tile.name == "tea_house":
 					print("Performing tea house action, type in a number between 3-12 followed by an enter")
-					numbers_entered = ""
-					enter_pressed = False
 					bet = 1
 					while not (2 < bet < 13):
-						while not enter_pressed:
-							pygame.event.wait()
-							pressed = pygame.key.get_pressed()
-							if pressed[pygame.K_0]:
-								numbers_entered = numbers_entered + "0"
-								print(numbers_entered)
-							elif pressed[pygame.K_1]:
-								numbers_entered = numbers_entered + "1"
-								print(numbers_entered)
-							elif pressed[pygame.K_2]:
-								numbers_entered = numbers_entered + "2"
-								print(numbers_entered)
-							elif pressed[pygame.K_RETURN]:
-								enter_pressed = True
-								print("You pressed enter")
-								bet = int(numbers_entered)
-								if not (2 < bet < 13):
-									print("Your bet must be between 3 and 12, please try again.")
+						bet = get_keyboardinput(event)
+						if not (2 < bet < 13):
+							print("Your bet must be between 3 and 12, please try again.")
 							#while not(2 < number < 13):
 					reward = tilelist[11].perform_action(bet, frame, tilelist)
 				
@@ -298,6 +283,47 @@ def mainloop_GUI(frame, tilelist):
 		pygame.display.update()
 		fpsClock.tick(fps)
 
+def get_keyboardinput(event):
+	enter_pressed = False
+	numbers_entered = ""
+	while not enter_pressed:
+		pygame.event.wait()
+		pressed = pygame.key.get_pressed()
+		if pressed[pygame.K_0]:
+			numbers_entered = numbers_entered + "0"
+			print(numbers_entered)
+		elif pressed[pygame.K_1]:
+			numbers_entered = numbers_entered + "1"
+			print(numbers_entered)
+		elif pressed[pygame.K_2]:
+			numbers_entered = numbers_entered + "2"
+			print(numbers_entered)
+		elif pressed[pygame.K_3]:
+			numbers_entered = numbers_entered + "3"
+			print(numbers_entered)
+		elif pressed[pygame.K_4]:
+			numbers_entered = numbers_entered + "4"
+			print(numbers_entered)
+		elif pressed[pygame.K_5]:
+			numbers_entered = numbers_entered + "5"
+			print(numbers_entered)
+		elif pressed[pygame.K_6]:
+			numbers_entered = numbers_entered + "6"
+			print(numbers_entered)
+		elif pressed[pygame.K_7]:
+			numbers_entered = numbers_entered + "7"
+			print(numbers_entered)
+		elif pressed[pygame.K_8]:
+			numbers_entered = numbers_entered + "8"
+			print(numbers_entered)
+		elif pressed[pygame.K_9]:
+			numbers_entered = numbers_entered + "9"
+			print(numbers_entered)
+		elif pressed[pygame.K_RETURN]:
+			enter_pressed = True
+			#print("You pressed enter")
+			bet = int(numbers_entered)
+	return bet
 
 def roll_dice(frame, tilelist):
 	global p1_windowx
@@ -307,13 +333,13 @@ def roll_dice(frame, tilelist):
 	global tilewidth
 	global tilegap
 
-	dice1_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(40, 220)
-	dice1_y = p1_windowy + tileheight + (5 * tilegap) + randint(25, 115)
-	dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(40, 220)
-	dice2_y = p1_windowy + tileheight + (5 * tilegap) + randint(25, 115)
+	dice1_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(int(tilewidth / 8), int(tileheight)) #40, 220
+	dice1_y = p1_windowy + tileheight + (5 * tilegap) + randint(int(tileheight / 9), int(tileheight / 2)) #25, 115
+	dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(int(tilewidth / 8), int(tileheight))
+	dice2_y = p1_windowy + tileheight + (5 * tilegap) + randint(int(tileheight / 9), int(tileheight / 2))
 	while (dice_offset(dice1_x, dice1_y, dice2_x, dice2_y)): #Replace the second die while they're overlapping
-		dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(40, 220)
-		dice2_y = p1_windowy + tileheight + (5 * tilegap) + randint(25, 115)
+		dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(int(tilewidth / 8), int(tileheight))
+		dice2_y = p1_windowy + tileheight + (5 * tilegap) + randint(int(tileheight / 9), int(tileheight / 2))
 
 	# x_distance = 0.01
 	# pause = 0.5
