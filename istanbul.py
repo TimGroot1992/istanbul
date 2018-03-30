@@ -33,7 +33,6 @@ green = (0, 255, 0)
 blue = (0, 0, 255)
 background = (49, 49, 49)
 background2 = (0, 68, 102)
-# colors = {"black":black, "white": white, "red": red,"green":green, "blue": blue,"background": background, "background2":background2}
 
 def main():
 	board = Board(int(sys.argv[1]), 16)
@@ -66,7 +65,7 @@ def main():
 	frame = setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
 	draw_board(frame, tilelist)
 	draw_units(frame)
-	mainloop_GUI(frame, tilelist)
+	mainloop_GUI(board, frame, tilelist, playerlist)
 	
 	#Teahouse action
 	'''
@@ -145,16 +144,16 @@ class Tiles:
 	def update_units_stack(self, player, unit):
 		self.units_stack.append(unit)
 
-	def perform_action(self, bet, frame, tilelist):
-		print("Your bet is", bet, "... Rolling the dice...")
-		if self.name == "tea_house":
-			dice_roll = roll_dice(frame, tilelist)
-			if (dice_roll >= bet):
-				print("Congrats, you receive", bet, "lira!")
-				return bet
-			else:
-				print("Too bad, you receive only 2 lira")
-				return 2
+	# def perform_action(self, bet, frame, tilelist):
+	# 	print("Your bet is", bet, "... Rolling the dice...")
+	# 	if self.name == "tea_house":
+	# 		dice_roll = roll_dice(frame, tilelist)
+	# 		if (dice_roll >= bet):
+	# 			print("Congrats, you receive", bet, "lira!")
+	# 			return bet
+	# 		else:
+	# 			print("Too bad, you receive only 2 lira")
+	# 			return 2
 
 class Object:
 	def __init__(self, name, coordinates, image_path):
@@ -176,10 +175,14 @@ class Board:
 	def __init__(self, number_of_players, number_of_tiles):
 		self.number_of_players = number_of_players
 		self.number_of_tiles = number_of_tiles
-		#self.current_player_location = {}
-		#for i in range(0, number_of_players):
-		#	self.current_player_location["Player" + str(i + 1)] = []
-			#print("HERE:", self.current_player_location)
+		self.current_player = 0
+		
+	def set_nextplayer(self):
+		if not (self.current_player + 1) > self.number_of_players - 1:
+			self.current_player = self.current_player + 1
+		else:
+			self.current_player = 0
+
 
 def move_islegal(player, move_from, move_to): #Tile1, Tile2
 	print("move from is", move_from.location)
@@ -195,16 +198,14 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 	else:
 		return False
 
-
 def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
 	global background
 	pygame.init()
-	frame = pygame.display.set_mode((framewidth, frameheight), RESIZABLE) #FULLSCREEN
+	frame = pygame.display.set_mode((framewidth, frameheight), FULLSCREEN) #FULLSCREEN
 	pygame.display.set_caption('Istanbul')
 	frame.fill(background)
 	return frame
 	
-
 def draw_board(frame, tilelist):
 	global background2
 	global red
@@ -238,11 +239,11 @@ def draw_board(frame, tilelist):
 def draw_units(frame):
 	print("drawing all units")
 
-def mainloop_GUI(frame, tilelist):
+def mainloop_GUI(board, frame, tilelist, playerlist):
 	global tilewidth
 	global tileheight
 
-	fps = 5
+	fps = 10
 	fpsClock = pygame.time.Clock()
 	#return frame
 	#pygame.display.update()
@@ -265,18 +266,26 @@ def mainloop_GUI(frame, tilelist):
 						print("you clicked on tile", tile.name)
 						tilename = tile.name
 						break
-				if tile.name == "tea_house":
+				if tile.name == "tea_house": #Perform teahouse action
 					print("Performing tea house action, type in a number between 3-12 followed by an enter")
 					bet = 1
 					while not (2 < bet < 13):
 						bet = get_keyboardinput(event)
 						if not (2 < bet < 13):
 							print("Your bet must be between 3 and 12, please try again.")
-							#while not(2 < number < 13):
-					reward = tilelist[11].perform_action(bet, frame, tilelist)
+					print("Your bet is", bet, "... Rolling the dice...")
+					dice_roll = roll_dice(frame, tilelist)
+					if (dice_roll >= bet):
+						print("Congrats, you receive", bet, "lira!")
+						playerlist[board.current_player].update_resources("lira", bet)
+						print("player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
+					else:
+						print("Too bad, you receive only 2 lira")
+						playerlist[board.current_player].update_resources("lira", 2)
+						print("player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
+					board.set_nextplayer()
+					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
 				
-				#roll_dice(frame, tilelist)
-
 			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
 				pygame.quit()
 				sys.exit()
