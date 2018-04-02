@@ -27,7 +27,7 @@ p2_windowwidth = p1_windowwidth
 p2_windowheight = p1_windowheight
 
 black = (0, 0, 0)
-white = (255, 255, 255)
+white = (255, 255, 204)
 red = (255, 0, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
@@ -61,12 +61,21 @@ def main():
 	print("player 1 location is", playerlist[0].location)
 	playerlist[0].update_location(tilelist[3].location)
 	print("player 1 location is now", playerlist[0].location)
+
+	postalblock_1 = Object("postalblock_1", tilelist[1].x + tilewidth/8.49, tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
+	postalblock_2 = Object("postalblock_2", tilelist[1].x + (tilewidth/8.49)*2, tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
+	postalblock_3 = Object("postalblock_3", tilelist[1].x + (tilewidth/8.49)*3, tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
+	postalblock_4 = Object("postalblock_4", tilelist[1].x + (tilewidth/8.49)*4, tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
+	units = [postalblock_1, postalblock_2, postalblock_3, postalblock_4]
+
 	
 	frame = setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
 	draw_board(frame, tilelist)
-	draw_units(frame)
-	mainloop_GUI(board, frame, tilelist, playerlist)
+	draw_units(frame, units)
 	
+	mainloop_GUI(board, frame, tilelist, units, playerlist)
+	
+
 	#Teahouse action
 	'''
 	reward = tilelist[11].perform_action()
@@ -100,18 +109,24 @@ class Players:
 		additional_lira = player
 		name = player + 1
 		self.name = "Player" + str(name)
-		self.rubies = 0
-		self.diamonds = 0
-		self.fruit = 0
-		self.fabric = 0
-		self.spice = 0
-		self.max_res = 3
-		self.resources = {"lira": 2 + additional_lira, "rubies": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 3}
+		#self.rubies = 0
+		#self.diamonds = 0
+		#self.fruit = 0
+		#self.fabric = 0
+		#self.spice = 0
+		#self.max_res = 2
+		self.resources = {"lira": 2 + additional_lira, "rubies": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
 		self.units_stack = [self.name + "_merchant1", self.name + "_servant1", self.name + "_servant2", self.name + "_servant3", self.name + "_servant4"]
 		self.location = location
 
 	def update_resources(self, resource, amount): #self, string, integer
-		self.resources[resource] = self.resources.get(resource) + amount;
+		if resource == "diamonds" or resource == "fruit" or resource == "fabric" or resource == "spice":
+			if (self.resources.get(resource) + amount) >= self.resources.get("max_res"):
+				self.resources[resource] = self.resources.get("max_res");
+			else:
+				self.resources[resource] = self.resources.get(resource) + amount
+		else:
+			self.resources[resource] = self.resources.get(resource) + amount
 
 	def update_location(self, location):
 		self.location = location
@@ -128,12 +143,32 @@ class Tiles:
 		self.name = name
 		self.tilenumbers = []
 		self.location = location
-		self.coordinates = [(boardy + ((self.location[1] - 1) * (tilewidth + tilegap))), boardx + ((self.location[0] - 1) * (tileheight + tilegap))]
+		self.x = (boardy + ((self.location[1] - 1) * (tilewidth + tilegap)))
+		self.y = boardx + ((self.location[0] - 1) * (tileheight + tilegap))
 		self.players_present = []
 		self.units_stack = []
-
-	#def get_location(self, location):
-	#	return location
+		if self.name == "postal_office":
+			self.blocks = {"fabric": 0, "lira_2_1": 0, "diamonds": 0, "lira_2_2": 0, "spice": 1, "lira_1_1": 1, "fruit": 1, "lira_1_2": 1}
+			
+	def move_postalblocks(self, blocks):
+		if (blocks.get("spice") == blocks.get("lira_1_1") == blocks.get("fruit") == blocks.get("lira_1_2") == 0):
+			for value in blocks:
+				if value == 0:
+					value = 1
+				else:
+					value = 0
+		elif blocks.get("fruit") == 0:
+			blocks["lira_2_2"] = 1
+			blocks["lira_1_2"] = 0
+		elif blocks.get("lira_1_1") == 0:
+			blocks["diamonds"] = 1
+			blocks["fruit"] = 0
+		elif blocks.get("spice") == 0:
+			blocks["lira_2_1"] = 1
+			blocks["lira_1_1"] = 0
+		else:
+			blocks["fabric"] = 1
+			blocks["spice"] = 0
 
 	def update_players_present(self, player, action):
 		if (action == "addition"):
@@ -156,16 +191,28 @@ class Tiles:
 	# 			return 2
 
 class Object:
-	def __init__(self, name, coordinates, image_path):
+	def __init__(self, name, x, y, width, height, image_path):
 		self.name = name
-		self.coordinates = coordinates
+		self.x = x
+		self.y = y
+		self.width = width
+		self.height = height
 		self.image_path = image_path
 
 	def update_name(self, newname):
 		self.name = newname
 
-	def update_coordinates(self, x, y):
-		self.coordinates = [x, y]
+	def set_x(self, newx):
+		self.x = newx
+
+	def set_y(self, newy):
+		self.y = newy
+
+	def set_x_rel(self, x):
+		self.x = self.x + x
+
+	def set_y_rel(self, y):
+		self.y = self.y + y
 
 	def update_image_path(self, image_path):
 		self.image_path = image_path
@@ -219,11 +266,11 @@ def draw_board(frame, tilelist):
 		except:
 			currenttile = pygame.image.load("images/spice_warehouse.png").convert()
 			#print("except ", tile.name)
-		tilex = tile.coordinates[0]
-		tiley = tile.coordinates[1]
+		#tilex = tile.coordinates[0]
+		#tiley = tile.coordinates[1]
 		#print("printing tile ", tile.name, "at x=", tilex, ", y=", tiley)
 		currenttile = pygame.transform.smoothscale(currenttile, (int(tilewidth), int(tileheight)))
-		frame.blit(currenttile, (tilex, tiley))
+		frame.blit(currenttile, (tile.x, tile.y))
 
 	pygame.draw.rect(frame, background2, (p1_windowx, p1_windowy, p1_windowwidth, p1_windowheight)) #Player1 window
 	pygame.draw.rect(frame, red, (p2_windowx, p2_windowy, p2_windowwidth, p2_windowheight)) #Player2 window
@@ -236,10 +283,12 @@ def draw_board(frame, tilelist):
 
 	#pygame.display.update()
 
-def draw_units(frame):
-	print("drawing all units")
+def draw_units(frame, units):
+	for unit in units:
+		if unit.image_path == "":
+			pygame.draw.rect(frame, white, (unit.x, unit.y, unit.width, unit.height))
 
-def mainloop_GUI(board, frame, tilelist, playerlist):
+def mainloop_GUI(board, frame, tilelist, units, playerlist):
 	global tilewidth
 	global tileheight
 
@@ -262,7 +311,7 @@ def mainloop_GUI(board, frame, tilelist, playerlist):
 				pos_x = mouseposition[0]
 				pos_y = mouseposition[1]
 				for tile in tilelist:
-					if pos_x > tile.coordinates[0] and pos_x < (tile.coordinates[0] + tilewidth) and pos_y > tile.coordinates[1] and pos_y < (tile.coordinates[1] + tileheight):
+					if pos_x > tile.x and pos_x < (tile.x + tilewidth) and pos_y > tile.y and pos_y < (tile.y + tileheight):
 						print("you clicked on tile", tile.name)
 						tilename = tile.name
 						break
@@ -274,7 +323,7 @@ def mainloop_GUI(board, frame, tilelist, playerlist):
 						if not (2 < bet < 13):
 							print("Your bet must be between 3 and 12, please try again.")
 					print("Your bet is", bet, "... Rolling the dice...")
-					dice_roll = roll_dice(frame, tilelist)
+					dice_roll = roll_dice(frame, tilelist, units)
 					if (dice_roll >= bet):
 						print("Congrats, you receive", bet, "lira!")
 						playerlist[board.current_player].update_resources("lira", bet)
@@ -283,6 +332,60 @@ def mainloop_GUI(board, frame, tilelist, playerlist):
 						print("Too bad, you receive only 2 lira")
 						playerlist[board.current_player].update_resources("lira", 2)
 						print("player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
+					board.set_nextplayer()
+					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
+				elif tile.name == "postal_office": #Perform postal office action
+					print("Performing postal office action")
+					for key, value in tilelist[1].blocks.items():
+						if value == 1:
+							print("You receive", key)
+							if "lira" in key:
+								print("lira in key")
+								playerlist[board.current_player].update_resources("lira", int(key.split("_")[2]))
+							elif "fabric" in key:
+								playerlist[board.current_player].update_resources("fabric", 1)
+							elif "spice" in key:
+								playerlist[board.current_player].update_resources("spice", 1)
+							elif "diamonds" in key:
+								playerlist[board.current_player].update_resources("diamonds", 1)
+							elif "fruit" in key:
+								playerlist[board.current_player].update_resources("fruit", 1)
+					
+					print("Resources now: ", playerlist[board.current_player].resources)
+					print("Blocks now = ", tilelist[1].blocks)
+					tilelist[1].move_postalblocks(tilelist[1].blocks)
+
+					for unit in units:
+						if "postalblock" in unit.name:
+							#print("Unit position", unit.x, unit.y)
+							#unit.set_y_rel(tileheight/6)
+							#print("Unit position now", unit.x, unit.y)
+							#print("Unit position now", unit.x, unit.y)
+							if tilelist[1].blocks.get("fabric") == 1 and tilelist[1].blocks.get("lira_2_1") == 1 and tilelist[1].blocks.get("diamonds") == 1 and tilelist[1].blocks.get("lira_2_2") == 1 and "postalblock" in unit.name:
+								unit.set_y(tilelist[1].y + tileheight/1.7)
+							elif "postalblock_1" in unit.name:
+								if tilelist[1].blocks.get("fabric") == 1:
+									unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
+								else:
+									unit.set_y(tilelist[1].y + tileheight/1.7)
+							elif "postalblock_2" in unit.name:
+								if tilelist[1].blocks.get("lira_2_1") == 1:
+									unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
+								else:
+									unit.set_y(tilelist[1].y + tileheight/1.7)
+							elif "postalblock_3" in unit.name:
+								if tilelist[1].blocks.get("diamonds") == 1:
+									unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
+								else:
+									unit.set_y(tilelist[1].y + tileheight/1.7)
+							elif "postalblock_4" in unit.name:
+								if tilelist[1].blocks.get("lira_2_2") == 1:
+									unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
+								else:
+									unit.set_y(tilelist[1].y + tileheight/1.7)
+
+					draw_board(frame, tilelist)
+					draw_units(frame, units)
 					board.set_nextplayer()
 					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
 				
@@ -334,7 +437,7 @@ def get_keyboardinput(event):
 			bet = int(numbers_entered)
 	return bet
 
-def roll_dice(frame, tilelist):
+def roll_dice(frame, tilelist, units):
 	global p1_windowx
 	global p1_windowwidth
 	global p1_windowy
@@ -353,23 +456,24 @@ def roll_dice(frame, tilelist):
 	# x_distance = 0.01
 	# pause = 0.5
 	# while x_distance < 5:
-	dice1 = Object("dice1", [dice1_x, dice1_y], "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
+	dice1 = Object("dice1", dice1_x, dice1_y, tilewidth/5, tilewidth/5, "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
 	randomnumber = randint(1, 6)
 	dice1.update_image_path("images/die" + str(randomnumber) + ".png")
 	image = pygame.image.load(dice1.image_path).convert()
-	image = pygame.transform.smoothscale(image, (int(tilewidth/5), int(tilewidth/5)))
+	image = pygame.transform.smoothscale(image, (int(dice1.width), int(dice1.height)))
 	
-	dice2 = Object("dice1", [dice2_x, dice2_y], "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
+	dice2 = Object("dice1", dice2_x, dice2_y, tilewidth/5, tilewidth/5, "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
 	randomnumber2 = randint(1, 6)
 	dice2.update_image_path("images/die" + str(randomnumber2) + ".png")
 	image2 = pygame.image.load(dice2.image_path).convert()
-	image2 = pygame.transform.smoothscale(image2, (int(tilewidth/5), int(tilewidth/5)))
+	image2 = pygame.transform.smoothscale(image2, (int(dice2.width), int(dice2.height)))
 
 	#BEFORE blitting: draw background & all units, so the previous dice will be erased
 	draw_board(frame, tilelist)
+	draw_units(frame, units)
 
-	frame.blit(image, (dice1.coordinates[0], dice1.coordinates[1]))
-	frame.blit(image2, (dice2.coordinates[0], dice2.coordinates[1]))
+	frame.blit(image, (dice1.x, dice1.y))
+	frame.blit(image2, (dice2.x, dice2.y))
 		# pygame.time.wait(int(pause))
 		# pause = 0.5 + ((12.25 - math_velocity(x_distance)/ 12.25) * 1.5)
 		# x_distance = x_distance + pause
