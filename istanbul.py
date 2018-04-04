@@ -66,7 +66,8 @@ def main():
 	postalblock_2 = Object("postalblock_2", tilelist[1].x + (tilewidth/8.49)*2, tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	postalblock_3 = Object("postalblock_3", tilelist[1].x + (tilewidth/8.49)*3, tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	postalblock_4 = Object("postalblock_4", tilelist[1].x + (tilewidth/8.49)*4, tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
-	units = [postalblock_1, postalblock_2, postalblock_3, postalblock_4]
+	resource_p1 = Object("resource_p1", p1_windowx, p1_windowy, p1_windowwidth - p1_windowwidth/3, p1_windowheight - p1_windowheight/3, "images/resource2.png")
+	units = [postalblock_1, postalblock_2, postalblock_3, postalblock_4, resource_p1]
 
 	
 	frame = setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
@@ -75,16 +76,6 @@ def main():
 	
 	mainloop_GUI(board, frame, tilelist, units, playerlist)
 	
-
-	#Teahouse action
-	'''
-	reward = tilelist[11].perform_action()
-	print("reward is", reward)
-	playerlist[0].update_resources("lira", reward)
-	print(playerlist[0].name, "now has", playerlist[0].resources.get("lira"), "lira!")
-	'''
-	#print(move_islegal(playerlist[0], tilelist[6], tilelist[15]))
-
 
 	''' game logic
 	while game hasnt ended:
@@ -153,7 +144,6 @@ class Tiles:
 		self.players_present = []
 		self.units_stack = []
 		if self.name == "postal_office":
-			#self.blocks = {"fabric": 0, "lira_2_1": 0, "diamonds": 0, "lira_2_2": 0, "spice": 1, "lira_1_1": 1, "fruit": 1, "lira_1_2": 1}
 			self.blocks = [
 				{"fabric": 0, "lira_2_1": 0, "diamonds": 0, "lira_2_2": 0, "spice": 1, "lira_1_1": 1, "fruit": 1, "lira_1_2": 1}, 
 				{"fabric": 1, "lira_2_1": 0, "diamonds": 0, "lira_2_2": 0, "spice": 0, "lira_1_1": 1, "fruit": 1, "lira_1_2": 1}, 
@@ -174,16 +164,6 @@ class Tiles:
 	def update_units_stack(self, player, unit):
 		self.units_stack.append(unit)
 
-	# def perform_action(self, bet, frame, tilelist):
-	# 	print("Your bet is", bet, "... Rolling the dice...")
-	# 	if self.name == "tea_house":
-	# 		dice_roll = roll_dice(frame, tilelist)
-	# 		if (dice_roll >= bet):
-	# 			print("Congrats, you receive", bet, "lira!")
-	# 			return bet
-	# 		else:
-	# 			print("Too bad, you receive only 2 lira")
-	# 			return 2
 
 class Object:
 	def __init__(self, name, x, y, width, height, image_path):
@@ -243,7 +223,7 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
 	global background
 	pygame.init()
-	frame = pygame.display.set_mode((framewidth, frameheight), RESIZABLE) #FULLSCREEN
+	frame = pygame.display.set_mode((framewidth, frameheight), FULLSCREEN) #FULLSCREEN
 	pygame.display.set_caption('Istanbul')
 	frame.fill(background)
 	return frame
@@ -257,7 +237,6 @@ def draw_board(frame, tilelist):
 		try:
 			path = "images/" + tile.name + ".png"
 			currenttile = pygame.image.load(path).convert()
-			#print("try ", tile.name)
 		except:
 			currenttile = pygame.image.load("images/spice_warehouse.png").convert()
 			#print("except ", tile.name)
@@ -303,6 +282,15 @@ def draw_units(frame, units):
 	for unit in units:
 		if unit.image_path == "":
 			pygame.draw.rect(frame, white, (unit.x, unit.y, unit.width, unit.height))
+		else:
+			try:
+				currentunit = pygame.image.load(unit.image_path).convert()
+			except:
+				currentunit = pygame.image.load("images/spice_warehouse.png").convert()
+				print("Error retrieving tile image, using spice warehouse as a default.")
+			currentunit = pygame.transform.smoothscale(currentunit, (int(unit.width), int(unit.height)))
+			frame.blit(currentunit, (unit.x, unit.y))
+
 
 def mainloop_GUI(board, frame, tilelist, units, playerlist):
 	global tilewidth
@@ -459,7 +447,10 @@ def get_keyboardinput(event):
 		elif pressed[pygame.K_RETURN]:
 			enter_pressed = True
 			#print("You pressed enter")
-			bet = int(numbers_entered)
+			if numbers_entered != "":
+				bet = int(numbers_entered)
+			else:
+				bet = 3
 	return bet
 
 def roll_dice(frame, tilelist, units):
