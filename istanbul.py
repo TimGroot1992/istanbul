@@ -5,8 +5,8 @@ from random import randint
 import pygame
 from pygame.locals import *
 
-framewidth = 1500		
-frameheight = 1000
+framewidth = 1920		
+frameheight = 1080
 boardx = 25
 boardy = 25
 tilegap = 5
@@ -127,6 +127,11 @@ class Players:
 				self.resources[resource] = self.resources.get(resource) + amount
 		else:
 			self.resources[resource] = self.resources.get(resource) + amount
+		# elif resource == "max_res": #Cannot have more than 5 resources at a time
+		# 	if self.resources[resource] < 5:
+		# 		self.resources[resource] = self.resources.get(resource) + amount
+		# 	else:
+		# 		self.resources[resource] = 5;
 
 	def update_location(self, location):
 		self.location = location
@@ -158,24 +163,6 @@ class Tiles:
 				]
 			
 	def move_postalblocks(self, blocks):
-		# if (blocks.get("spice") == blocks.get("lira_1_1") == blocks.get("fruit") == blocks.get("lira_1_2") == 0):
-		# 	for value in blocks:
-		# 		if value == 0:
-		# 			value = 1
-		# 		else:
-		# 			value = 0
-		# elif blocks.get("fruit") == 0:
-		# 	blocks["lira_2_2"] = 1
-		# 	blocks["lira_1_2"] = 0
-		# elif blocks.get("lira_1_1") == 0:
-		# 	blocks["diamonds"] = 1
-		# 	blocks["fruit"] = 0
-		# elif blocks.get("spice") == 0:
-		# 	blocks["lira_2_1"] = 1
-		# 	blocks["lira_1_1"] = 0
-		# else:
-		# 	blocks["fabric"] = 1
-		# 	blocks["spice"] = 0
 		blocks.append(blocks.pop(0))
 
 	def update_players_present(self, player, action):
@@ -280,16 +267,9 @@ def draw_board(frame, tilelist):
 		currenttile = pygame.transform.smoothscale(currenttile, (int(tilewidth), int(tileheight)))
 		frame.blit(currenttile, (tile.x, tile.y))
 
-	pygame.draw.rect(frame, background2, (p1_windowx, p1_windowy, p1_windowwidth, p1_windowheight)) #Player1 window
-	pygame.draw.rect(frame, red, (p2_windowx, p2_windowy, p2_windowwidth, p2_windowheight)) #Player2 window
-
-	box = pygame.image.load("images/box.png").convert()
-	box = pygame.transform.smoothscale(box, (int(tilewidth), int(tileheight - 5*tilegap)))
-	#print("BOXWIDTH = ", tilewidth)
-	#print("BOXHEIGHT = ", tileheight - 5*tilegap)
-	frame.blit(box, (p1_windowx + ((p1_windowwidth - tilewidth)/2), p1_windowy + tileheight + 5 * tilegap))
-
-	#pygame.display.update()
+	draw_boxes(frame, "p1")
+	draw_boxes(frame, "p2")
+	draw_boxes(frame, "box")
 
 def draw_tile(frame, tile):
 	try:
@@ -301,6 +281,23 @@ def draw_tile(frame, tile):
 		print("Error retrieving tile image, using spice warehouse as a default.")
 	currenttile = pygame.transform.smoothscale(currenttile, (int(tilewidth), int(tileheight)))
 	frame.blit(currenttile, (tile.x, tile.y))
+
+def draw_boxes(frame, name):
+	global background2
+	global red
+
+	if name == "box":
+		try:
+			currenttile = pygame.image.load("images/box.png").convert()
+		except:
+			currenttile = pygame.image.load("images/spice_warehouse.png").convert()
+			print("Error retrieving tile image, using spice warehouse as a default.")
+		currenttile = pygame.transform.smoothscale(currenttile, (int(tilewidth), int(tileheight - 5 * tilegap)))
+		frame.blit(currenttile, (p1_windowx + ((p1_windowwidth - tilewidth)/2), p1_windowy + tileheight + 5 * tilegap))
+	elif name == "p1":
+		pygame.draw.rect(frame, background2, (p1_windowx, p1_windowy, p1_windowwidth, p1_windowheight)) #Player1 window
+	else:
+		pygame.draw.rect(frame, red, (p2_windowx, p2_windowy, p2_windowwidth, p2_windowheight)) #Player2 window
 
 def draw_units(frame, units):
 	for unit in units:
@@ -331,7 +328,7 @@ def mainloop_GUI(board, frame, tilelist, units, playerlist):
 				pos_y = mouseposition[1]
 				for tile in tilelist:
 					if pos_x > tile.x and pos_x < (tile.x + tilewidth) and pos_y > tile.y and pos_y < (tile.y + tileheight):
-						#print("you clicked on tile", tile.name)
+						print("you clicked on tile", tile.name)
 						tilename = tile.name
 						break
 				if tile.name == "tea_house": #Perform teahouse action
@@ -404,6 +401,18 @@ def mainloop_GUI(board, frame, tilelist, units, playerlist):
 					draw_units(frame, units)
 					board.set_nextplayer()
 					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
+
+				elif tile.name == "wainwright": #Perform wainwright action
+					print("Performing wainwright action")
+					print("Current player is Player", board.current_player + 1)
+					if playerlist[board.current_player].resources.get("lira") >= 7 and playerlist[board.current_player].resources.get("max_res") < 5:
+						playerlist[board.current_player].update_resources("lira", -7)
+						playerlist[board.current_player].update_resources("max_res", 1)
+						#update resource image for this player
+						print("You bought a cart extension")
+					else:
+						print("You do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
+					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 				
 			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
 				pygame.quit()
@@ -461,10 +470,10 @@ def roll_dice(frame, tilelist, units):
 	global tilewidth
 	global tilegap
 
-	dice1_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(int(tilewidth / 8), int(tileheight)) #40, 220
+	dice1_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(int(tilewidth / 8), int(tileheight - 5 * tilegap)) #40, 220
 	dice1_y = p1_windowy + tileheight + (5 * tilegap) + randint(int(tileheight / 9), int(tileheight / 2)) #25, 115
-	dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(int(tilewidth / 8), int(tileheight))
-	dice2_y = p1_windowy + tileheight + (5 * tilegap) + randint(int(tileheight / 9), int(tileheight / 2))
+	dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(int(tilewidth / 8), int(tileheight - 5 * tilegap)) #40, 220
+	dice2_y = p1_windowy + tileheight + (5 * tilegap) + randint(int(tileheight / 9), int(tileheight / 2)) #25, 115
 	while (dice_offset(dice1_x, dice1_y, dice2_x, dice2_y)): #Replace the second die while they're overlapping
 		dice2_x = p1_windowx + ((p1_windowwidth - tilewidth)/2) + randint(int(tilewidth / 8), int(tileheight))
 		dice2_y = p1_windowy + tileheight + (5 * tilegap) + randint(int(tileheight / 9), int(tileheight / 2))
@@ -485,7 +494,7 @@ def roll_dice(frame, tilelist, units):
 	image2 = pygame.transform.smoothscale(image2, (int(dice2.width), int(dice2.height)))
 
 	#BEFORE blitting: draw background & all units, so the previous dice will be erased
-	draw_board(frame, tilelist)
+	draw_boxes(frame, "box")
 	draw_units(frame, units)
 
 	frame.blit(image, (dice1.x, dice1.y))
