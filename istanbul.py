@@ -66,8 +66,13 @@ def main():
 	postalblock_2 = Object("postalblock_2", tilelist[1].x + (tilewidth/8.49)*2, tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	postalblock_3 = Object("postalblock_3", tilelist[1].x + (tilewidth/8.49)*3, tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	postalblock_4 = Object("postalblock_4", tilelist[1].x + (tilewidth/8.49)*4, tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
-	resource_p1 = Object("resource_p1", p1_windowx, p1_windowy, p1_windowwidth - p1_windowwidth/3, p1_windowheight - p1_windowheight/3, "images/resource2.png")
-	units = [postalblock_1, postalblock_2, postalblock_3, postalblock_4, resource_p1]
+	resource_p1 = Object("resource_p1", p1_windowx + 3*tilegap, p1_windowy + 3*tilegap, p1_windowwidth - p1_windowwidth/5 - 6*tilegap, p1_windowheight - 6*tilegap, "images/resource2.png")
+	resourceblock_1 = Object("resourceblock_1", resource_p1.x + resource_p1.width*(375/1604), resource_p1.y + resource_p1.height*(145/1074), resource_p1.width/15, resource_p1.width/15, "")
+	resourceblock_2 = Object("resourceblock_1", resource_p1.x + resource_p1.width*(375/1604), resource_p1.y + resource_p1.height*(288/1074), resource_p1.width/15, resource_p1.width/15, "")
+	resourceblock_3 = Object("resourceblock_1", resource_p1.x + resource_p1.width*(375/1604), resource_p1.y + resource_p1.height*(430/1074), resource_p1.width/15, resource_p1.width/15, "")
+	resourceblock_4 = Object("resourceblock_1", resource_p1.x + resource_p1.width*(375/1604), resource_p1.y + resource_p1.height*(570/1074), resource_p1.width/15, resource_p1.width/15, "")
+
+	units = [postalblock_1, postalblock_2, postalblock_3, postalblock_4, resource_p1, resourceblock_1, resourceblock_2, resourceblock_3, resourceblock_4]
 
 	
 	frame = setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
@@ -223,7 +228,7 @@ def move_islegal(player, move_from, move_to): #Tile1, Tile2
 def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
 	global background
 	pygame.init()
-	frame = pygame.display.set_mode((framewidth, frameheight), FULLSCREEN) #FULLSCREEN
+	frame = pygame.display.set_mode((framewidth, frameheight), FULLSCREEN)
 	pygame.display.set_caption('Istanbul')
 	frame.fill(background)
 	return frame
@@ -348,6 +353,10 @@ def mainloop_GUI(board, frame, tilelist, units, playerlist):
 								playerlist[board.current_player].update_resources("lira", int(key.split("_")[1]))
 							elif "fabric" in key:
 								playerlist[board.current_player].update_resources("fabric", 1)
+								if board.current_player == 0:
+									units[6].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units[4].width*(200/1604)))
+								else:
+									units[10].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units[4].width*(200/1604)))
 							elif "spice" in key:
 								playerlist[board.current_player].update_resources("spice", 1)
 							elif "diamonds" in key:
@@ -355,8 +364,12 @@ def mainloop_GUI(board, frame, tilelist, units, playerlist):
 							elif "fruit" in key:
 								playerlist[board.current_player].update_resources("fruit", 1)
 					
-					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit.")
-					#print("Blocks now = ", tilelist[1].blocks)
+					print(playerlist[board.current_player].name, "now has", 
+							playerlist[board.current_player].resources.get("lira"), "lira,", 
+							playerlist[board.current_player].resources.get("fabric"), "fabric,", 
+							playerlist[board.current_player].resources.get("spice"), "spice,", 
+							playerlist[board.current_player].resources.get("diamonds"), "diamonds and", 
+							playerlist[board.current_player].resources.get("fruit"), "fruit.")
 					tilelist[1].move_postalblocks(tilelist[1].blocks)
 
 					for unit in units:
