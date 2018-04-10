@@ -78,10 +78,10 @@ def main():
 	resourceblock_7 = Object("resourceblock_7", resource_p2.x + resource_p2.width*(375/1604), resource_p2.y + resource_p2.height*(430/1074), resource_p2.width/15, resource_p2.width/15, "")
 	resourceblock_8 = Object("resourceblock_8", resource_p2.x + resource_p2.width*(375/1604), resource_p2.y + resource_p2.height*(570/1074), resource_p2.width/15, resource_p2.width/15, "")
 
-	coin_p1 = Object("coin_p1", resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/15, resource_p1.width/15, "")
-	coin_p2 = Object("coin_p2", resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/15, resource_p2.width/15, "")
-	lira_1 = Object("lira_1", resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/15, resource_p1.width/15, "")
-	lira_2 = Object("lira_2", resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/15, resource_p2.width/15, "")
+	coin_p1 = Object("coin_p1", resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/6, resource_p1.width/6, "")
+	coin_p2 = Object("coin_p2", resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/6, resource_p2.width/6, "")
+	lira_1 = Object("lira_1", resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/6, resource_p1.width/6, "")
+	lira_2 = Object("lira_2", resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/6, resource_p2.width/6, "")
 
 	units = [postalblock_1, postalblock_2, postalblock_3, postalblock_4, resource_p1, resourceblock_1, resourceblock_2, resourceblock_3, resourceblock_4, 
 		resource_p2, resourceblock_5, resourceblock_6, resourceblock_7, resourceblock_8, coin_p1, coin_p2, lira_1, lira_2]
@@ -242,7 +242,7 @@ def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileh
 	global background
 	pygame.init()
 	pygame.font.init()
-	font = pygame.font.SysFont('Comic Sans MS', 22)
+	font = pygame.font.SysFont('Comic Sans MS', 25)
 	frame = pygame.display.set_mode((framewidth, frameheight), FULLSCREEN)
 	pygame.display.set_caption('Istanbul')
 	frame.fill(background)
@@ -303,10 +303,10 @@ def draw_units(frame, font, units, playerlist, board):
 		if "block" in unit.name:
 			pygame.draw.rect(frame, white, (unit.x, unit.y, unit.width, unit.height))
 		elif "coin" in unit.name:
-			pygame.draw.circle(frame, yellow, (int(unit.x), int(unit.y)), int(unit.width))
+			pygame.draw.circle(frame, yellow, (int(unit.x), int(unit.y)), int(unit.width/2))
 		elif "lira" in unit.name:
 			textsurface = font.render(str(playerlist[int(unit.name.split("_")[1]) - 1].resources.get('lira')), False, (0, 0, 0))
-			frame.blit(textsurface, (unit.x, unit.y))
+			frame.blit(textsurface, (unit.x - unit.width/2, unit.y - unit.height/2))
 		else:
 			try:
 				currentunit = pygame.image.load(unit.image_path).convert()
@@ -352,7 +352,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						if not (2 < bet < 13):
 							print("Your bet must be between 3 and 12, please try again.")
 					print("Your bet is", bet, "... Rolling the dice...")
-					dice_roll = roll_dice(frame, tilelist, units)
+					dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units)
 					if (dice_roll >= bet):
 						print("Congrats, you receive", bet, "lira!")
 						playerlist[board.current_player].update_resources("lira", bet)
@@ -361,6 +361,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						print("Too bad, you receive only 2 lira")
 						playerlist[board.current_player].update_resources("lira", 2)
 						print("player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
+					draw_tile(frame, tilelist[11])
+					draw_units(frame, font, units, playerlist, board)
 					board.set_nextplayer()
 					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
 				elif tile.name == "postal_office": #Perform postal office action
@@ -498,7 +500,7 @@ def get_keyboardinput(event):
 				bet = 3
 	return bet
 
-def roll_dice(frame, tilelist, units):
+def roll_dice(board, frame, font, playerlist, tilelist, units):
 	global p1_windowx
 	global p1_windowwidth
 	global p1_windowy
