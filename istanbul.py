@@ -4,6 +4,7 @@ import math
 from random import randint
 import pygame
 from pygame.locals import *
+from pygame import gfxdraw
 
 framewidth = 1920		
 frameheight = 1080
@@ -118,12 +119,6 @@ class Players:
 		additional_lira = player
 		name = player + 1
 		self.name = "Player" + str(name)
-		#self.rubies = 0
-		#self.diamonds = 0
-		#self.fruit = 0
-		#self.fabric = 0
-		#self.spice = 0
-		#self.max_res = 2
 		self.resources = {"lira": 2 + additional_lira, "rubies": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
 		self.units_stack = [self.name + "_merchant1", self.name + "_servant1", self.name + "_servant2", self.name + "_servant3", self.name + "_servant4"]
 		self.location = location
@@ -303,10 +298,15 @@ def draw_units(frame, font, units, playerlist, board):
 		if "block" in unit.name:
 			pygame.draw.rect(frame, white, (unit.x, unit.y, unit.width, unit.height))
 		elif "coin" in unit.name:
-			pygame.draw.circle(frame, yellow, (int(unit.x), int(unit.y)), int(unit.width/2))
+			#pygame.draw.circle(frame, yellow, (int(unit.x), int(unit.y)), int(unit.width/2))
+			pygame.gfxdraw.aacircle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
+			pygame.gfxdraw.filled_circle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
 		elif "lira" in unit.name:
 			textsurface = font.render(str(playerlist[int(unit.name.split("_")[1]) - 1].resources.get('lira')), False, (0, 0, 0))
-			frame.blit(textsurface, (unit.x - unit.width/2, unit.y - unit.height/2))
+			if playerlist[int(unit.name.split("_")[1]) - 1].resources.get('lira') < 10:
+				frame.blit(textsurface, (unit.x - unit.width/7, unit.y - unit.height/3))
+			else:
+				frame.blit(textsurface, (unit.x - unit.width/4, unit.y - unit.height/3))
 		else:
 			try:
 				currentunit = pygame.image.load(unit.image_path).convert()
