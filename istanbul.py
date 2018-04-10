@@ -68,8 +68,8 @@ def main():
 	postalblock_2 = Object("postalblock_2", tilelist[1].x + tilewidth*(388/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	postalblock_3 = Object("postalblock_3", tilelist[1].x + tilewidth*(584/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	postalblock_4 = Object("postalblock_4", tilelist[1].x + tilewidth*(780/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
-	resource_p1 = Object("resource_p1", p1_windowx + 3*tilegap, p1_windowy + 3*tilegap, p1_windowwidth - p1_windowwidth/5 - 6*tilegap, p1_windowheight - 6*tilegap, "images/resource2.png")
-	resource_p2 = Object("resource_p2", p2_windowx + 3*tilegap, p2_windowy + 3*tilegap, p2_windowwidth - p2_windowwidth/5 - 6*tilegap, p2_windowheight - 6*tilegap, "images/resource2.png")
+	resource_p1 = Object("resource_p1", p1_windowx + 3*tilegap, p1_windowy + 3*tilegap, p1_windowwidth - p1_windowwidth/5 - 6*tilegap, p1_windowheight - 6*tilegap, "images/resource2_1.png")
+	resource_p2 = Object("resource_p2", p2_windowx + 3*tilegap, p2_windowy + 3*tilegap, p2_windowwidth - p2_windowwidth/5 - 6*tilegap, p2_windowheight - 6*tilegap, "images/resource2_2.png")
 	resourceblock_1 = Object("resourceblock_1", resource_p1.x + resource_p1.width*(375/1604), resource_p1.y + resource_p1.height*(145/1074), resource_p1.width/15, resource_p1.width/15, "")
 	resourceblock_2 = Object("resourceblock_2", resource_p1.x + resource_p1.width*(375/1604), resource_p1.y + resource_p1.height*(288/1074), resource_p1.width/15, resource_p1.width/15, "")
 	resourceblock_3 = Object("resourceblock_3", resource_p1.x + resource_p1.width*(375/1604), resource_p1.y + resource_p1.height*(430/1074), resource_p1.width/15, resource_p1.width/15, "")
@@ -444,7 +444,18 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						playerlist[board.current_player].update_resources("lira", -7)
 						playerlist[board.current_player].update_resources("max_res", 1)
 						#update resource image for this player
-						print("You bought a cart extension")
+						print("unit 4 name", units[4].name)
+						print("current player is", playerlist[board.current_player].name)
+						if playerlist[board.current_player].name == "Player1": #Player 1
+							units[4].update_image_path("images/resource" + str(playerlist[board.current_player].resources.get("max_res")) + "_1.png")
+							print("Player 1 bought a cart extension")
+						else: #Player 2
+							units[9].update_image_path("images/resource" + str(playerlist[board.current_player].resources.get("max_res")) + "_2.png")
+							print("Player 2 bought a cart extension")
+
+						draw_tile(frame, tilelist[1])
+						draw_units(frame, font, units, playerlist, board)
+						board.set_nextplayer()
 					else:
 						print("You do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
