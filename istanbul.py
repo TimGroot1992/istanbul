@@ -70,14 +70,14 @@ def main():
 	postalblock_4 = Object("postalblock_4", tilelist[1].x + tilewidth*(780/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	resource_p1 = Object("resource_p1", p1_windowx + 3*tilegap, p1_windowy + 3*tilegap, p1_windowwidth - p1_windowwidth/5 - 6*tilegap, p1_windowheight - 6*tilegap, "images/resource2_1.png")
 	resource_p2 = Object("resource_p2", p2_windowx + 3*tilegap, p2_windowy + 3*tilegap, p2_windowwidth - p2_windowwidth/5 - 6*tilegap, p2_windowheight - 6*tilegap, "images/resource2_2.png")
-	resourceblock_1 = Object("resourceblock_1", resource_p1.x + resource_p1.width*(375/1604), resource_p1.y + resource_p1.height*(145/1074), resource_p1.width/15, resource_p1.width/15, "")
-	resourceblock_2 = Object("resourceblock_2", resource_p1.x + resource_p1.width*(375/1604), resource_p1.y + resource_p1.height*(288/1074), resource_p1.width/15, resource_p1.width/15, "")
-	resourceblock_3 = Object("resourceblock_3", resource_p1.x + resource_p1.width*(375/1604), resource_p1.y + resource_p1.height*(430/1074), resource_p1.width/15, resource_p1.width/15, "")
-	resourceblock_4 = Object("resourceblock_4", resource_p1.x + resource_p1.width*(375/1604), resource_p1.y + resource_p1.height*(570/1074), resource_p1.width/15, resource_p1.width/15, "")
-	resourceblock_5 = Object("resourceblock_5", resource_p2.x + resource_p2.width*(375/1604), resource_p2.y + resource_p2.height*(145/1074), resource_p2.width/15, resource_p2.width/15, "")
-	resourceblock_6 = Object("resourceblock_6", resource_p2.x + resource_p2.width*(375/1604), resource_p2.y + resource_p2.height*(288/1074), resource_p2.width/15, resource_p2.width/15, "")
-	resourceblock_7 = Object("resourceblock_7", resource_p2.x + resource_p2.width*(375/1604), resource_p2.y + resource_p2.height*(430/1074), resource_p2.width/15, resource_p2.width/15, "")
-	resourceblock_8 = Object("resourceblock_8", resource_p2.x + resource_p2.width*(375/1604), resource_p2.y + resource_p2.height*(570/1074), resource_p2.width/15, resource_p2.width/15, "")
+	resourceblock_1 = Object("resourceblock_1", resource_p1.x + resource_p1.width*(373/1604), resource_p1.y + resource_p1.height*(148/1074), resource_p1.width/15, resource_p1.width/15, "")
+	resourceblock_2 = Object("resourceblock_2", resource_p1.x + resource_p1.width*(373/1604), resource_p1.y + resource_p1.height*(291/1074), resource_p1.width/15, resource_p1.width/15, "")
+	resourceblock_3 = Object("resourceblock_3", resource_p1.x + resource_p1.width*(373/1604), resource_p1.y + resource_p1.height*(433/1074), resource_p1.width/15, resource_p1.width/15, "")
+	resourceblock_4 = Object("resourceblock_4", resource_p1.x + resource_p1.width*(373/1604), resource_p1.y + resource_p1.height*(573/1074), resource_p1.width/15, resource_p1.width/15, "")
+	resourceblock_5 = Object("resourceblock_5", resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(148/1074), resource_p2.width/15, resource_p2.width/15, "")
+	resourceblock_6 = Object("resourceblock_6", resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(291/1074), resource_p2.width/15, resource_p2.width/15, "")
+	resourceblock_7 = Object("resourceblock_7", resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(433/1074), resource_p2.width/15, resource_p2.width/15, "")
+	resourceblock_8 = Object("resourceblock_8", resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(573/1074), resource_p2.width/15, resource_p2.width/15, "")
 
 	coin_p1 = Object("coin_p1", resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/6, resource_p1.width/6, "")
 	coin_p2 = Object("coin_p2", resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/6, resource_p2.width/6, "")
@@ -238,7 +238,7 @@ def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileh
 	pygame.init()
 	pygame.font.init()
 	font = pygame.font.SysFont('Comic Sans MS', 25)
-	frame = pygame.display.set_mode((framewidth, frameheight), FULLSCREEN)
+	frame = pygame.display.set_mode((framewidth, frameheight), RESIZABLE)
 	pygame.display.set_caption('Istanbul')
 	frame.fill(background)
 	return frame, font
@@ -376,27 +376,27 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 							elif "diamonds" in key:
 								playerlist[board.current_player].update_resources("diamonds", 1)
 								if board.current_player == 0:
-									units[5].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units[4].width*(195/1604)))
+									units[5].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units[4].width*(185/1604)))
 								else:
-									units[10].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units[9].width*(195/1604)))
+									units[10].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units[9].width*(185/1604)))
 							elif "fabric" in key:
 								playerlist[board.current_player].update_resources("fabric", 1)
 								if board.current_player == 0:
-									units[6].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units[4].width*(195/1604)))
+									units[6].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units[4].width*(185/1604)))
 								else:
-									units[11].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units[9].width*(195/1604)))
+									units[11].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units[9].width*(185/1604)))
 							elif "spice" in key:
 								playerlist[board.current_player].update_resources("spice", 1)
 								if board.current_player == 0:
-									units[7].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units[4].width*(195/1604)))
+									units[7].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units[4].width*(185/1604)))
 								else:
-									units[12].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units[9].width*(195/1604)))
+									units[12].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units[9].width*(185/1604)))
 							elif "fruit" in key:
 								playerlist[board.current_player].update_resources("fruit", 1)
 								if board.current_player == 0:
-									units[8].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units[4].width*(195/1604)))
+									units[8].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units[4].width*(186/1604)))
 								else:
-									units[13].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units[9].width*(195/1604)))
+									units[13].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units[9].width*(186/1604)))
 					
 					print(playerlist[board.current_player].name, "now has", 
 							playerlist[board.current_player].resources.get("lira"), "lira,", 
@@ -456,6 +456,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						draw_tile(frame, tilelist[1])
 						draw_units(frame, font, units, playerlist, board)
 						board.set_nextplayer()
+					elif (not playerlist[board.current_player].resources.get("max_res") < 5):
+						print(playerlist[board.current_player].name, "already has a full wainwright!")
 					else:
 						print("You do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
