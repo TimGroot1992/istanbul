@@ -218,20 +218,21 @@ class Board:
 		else:
 			self.current_player = 0
 
+	def move_islegal(player, move_from, move_to): #Tile1, Tile2
+		print("move from is", move_from.location)
+		print("move to is", move_to.location)
+		#x1, y1 = move_from.location[0], move_from.location[1]
+		#x2, y2 = move_to.location[0], move_to.location[1]
+		#xdist = abs(move_to.location[0] - move_from.location[0])
+		#ydist = abs(move_to.location[1] - move_from.location[1])
+		if ((abs(move_to.location[0] - move_from.location[0]) == 0 and (abs(move_to.location[1] - move_from.location[1]) == 1 or abs(move_to.location[1] - move_from.location[1]) == 2)) or 
+			(abs(move_to.location[1] - move_from.location[1]) == 0 and (abs(move_to.location[0] - move_from.location[0]) == 1 or abs(move_to.location[0] - move_from.location[0]) == 2)) or 
+			(abs(move_to.location[0] - move_from.location[0]) == abs(move_to.location[1] - move_from.location[1]) == 1)):
+			return True
+		else:
+			return False
 
-def move_islegal(player, move_from, move_to): #Tile1, Tile2
-	print("move from is", move_from.location)
-	print("move to is", move_to.location)
-	#x1, y1 = move_from.location[0], move_from.location[1]
-	#x2, y2 = move_to.location[0], move_to.location[1]
-	#xdist = abs(move_to.location[0] - move_from.location[0])
-	#ydist = abs(move_to.location[1] - move_from.location[1])
-	if ((abs(move_to.location[0] - move_from.location[0]) == 0 and (abs(move_to.location[1] - move_from.location[1]) == 1 or abs(move_to.location[1] - move_from.location[1]) == 2)) or 
-		(abs(move_to.location[1] - move_from.location[1]) == 0 and (abs(move_to.location[0] - move_from.location[0]) == 1 or abs(move_to.location[0] - move_from.location[0]) == 2)) or 
-		(abs(move_to.location[0] - move_from.location[0]) == abs(move_to.location[1] - move_from.location[1]) == 1)):
-		return True
-	else:
-		return False
+
 
 def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
 	global background
@@ -298,7 +299,6 @@ def draw_units(frame, font, units, playerlist, board):
 		if "block" in unit.name:
 			pygame.draw.rect(frame, white, (unit.x, unit.y, unit.width, unit.height))
 		elif "coin" in unit.name:
-			#pygame.draw.circle(frame, yellow, (int(unit.x), int(unit.y)), int(unit.width/2))
 			pygame.gfxdraw.aacircle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
 			pygame.gfxdraw.filled_circle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
 		elif "lira" in unit.name:
@@ -315,7 +315,6 @@ def draw_units(frame, font, units, playerlist, board):
 				print("Error retrieving tile image, using spice warehouse as a default.")
 			currentunit = pygame.transform.smoothscale(currentunit, (int(unit.width), int(unit.height)))
 			frame.blit(currentunit, (unit.x, unit.y))
-
 
 def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 	global tilewidth
@@ -373,31 +372,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 							#print("You receive", key)
 							if "lira" in key:
 								playerlist[board.current_player].update_resources("lira", int(key.split("_")[1]))
-							elif "diamonds" in key:
-								playerlist[board.current_player].update_resources("diamonds", 1)
-								if board.current_player == 0:
-									units[5].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units[4].width*(185/1604)))
-								else:
-									units[10].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units[9].width*(185/1604)))
-							elif "fabric" in key:
-								playerlist[board.current_player].update_resources("fabric", 1)
-								if board.current_player == 0:
-									units[6].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units[4].width*(185/1604)))
-								else:
-									units[11].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units[9].width*(185/1604)))
-							elif "spice" in key:
-								playerlist[board.current_player].update_resources("spice", 1)
-								if board.current_player == 0:
-									units[7].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units[4].width*(185/1604)))
-								else:
-									units[12].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units[9].width*(185/1604)))
-							elif "fruit" in key:
-								playerlist[board.current_player].update_resources("fruit", 1)
-								if board.current_player == 0:
-									units[8].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units[4].width*(186/1604)))
-								else:
-									units[13].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units[9].width*(186/1604)))
-					
+							update_resource_blocks(board, playerlist, units, key)
+
 					print(playerlist[board.current_player].name, "now has", 
 							playerlist[board.current_player].resources.get("lira"), "lira,", 
 							playerlist[board.current_player].resources.get("fabric"), "fabric,", 
@@ -462,11 +438,73 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						print("You do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 				
+				elif tile.name == "fabric_warehouse": #Perform fabric warehouse action
+					print("Performing fabric warehouse action")
+					print("Current player is Player", board.current_player + 1)
+					
+					playerlist[board.current_player].update_resources("fabric", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fabric")))
+					
+					draw_tile(frame, tilelist[2])
+					update_resource_blocks(board, playerlist, units, "fabric")
+					draw_units(frame, font, units, playerlist, board)
+					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
+					board.set_nextplayer()
+
+				elif tile.name == "spice_warehouse": #Perform fabric warehouse action
+					print("Performing spice warehouse action")
+					print("Current player is Player", board.current_player + 1)
+					
+					playerlist[board.current_player].update_resources("spice", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("spice")))
+					
+					draw_tile(frame, tilelist[7])
+					update_resource_blocks(board, playerlist, units, "spice")
+					draw_units(frame, font, units, playerlist, board)
+					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
+					board.set_nextplayer()
+
+				elif tile.name == "fruit_warehouse": #Perform fabric warehouse action
+					print("Performing fruit warehouse action")
+					print("Current player is Player", board.current_player + 1)
+					
+					playerlist[board.current_player].update_resources("fruit", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fruit")))
+					
+					draw_tile(frame, tilelist[4])
+					update_resource_blocks(board, playerlist, units, "fruit")
+					draw_units(frame, font, units, playerlist, board)
+					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
+					board.set_nextplayer()
+
 			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
 				pygame.quit()
 				sys.exit()
 		pygame.display.update()
 		fpsClock.tick(fps)
+
+def update_resource_blocks(board, playerlist, units, name):
+	if "diamonds" in name:
+		playerlist[board.current_player].update_resources("diamonds", 1)
+		if board.current_player == 0:
+			units[5].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units[4].width*(185/1604)))
+		else:
+			units[10].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units[9].width*(185/1604)))
+	elif "fabric" in name:
+		playerlist[board.current_player].update_resources("fabric", 1)
+		if board.current_player == 0:
+			units[6].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units[4].width*(185/1604)))
+		else:
+			units[11].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units[9].width*(185/1604)))
+	elif "spice" in name:
+		playerlist[board.current_player].update_resources("spice", 1)
+		if board.current_player == 0:
+			units[7].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units[4].width*(185/1604)))
+		else:
+			units[12].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units[9].width*(185/1604)))
+	elif "fruit" in name:
+		playerlist[board.current_player].update_resources("fruit", 1)
+		if board.current_player == 0:
+			units[8].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units[4].width*(186/1604)))
+		else:
+			units[13].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units[9].width*(186/1604)))
 
 def get_keyboardinput(event):
 	enter_pressed = False
