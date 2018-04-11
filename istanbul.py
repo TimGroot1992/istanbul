@@ -343,28 +343,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						print("you clicked on tile", tile.name)
 						tilename = tile.name
 						break
-				if tile.name == "tea_house": #Perform teahouse action
-					print("Performing tea house action, type in a number between 3-12 followed by an enter")
-					bet = 1
-					while not (2 < bet < 13):
-						bet = get_keyboardinput(event)
-						if not (2 < bet < 13):
-							print("Your bet must be between 3 and 12, please try again.")
-					print("Your bet is", bet, "... Rolling the dice...")
-					dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units)
-					if (dice_roll >= bet):
-						print("Congrats, you receive", bet, "lira!")
-						playerlist[board.current_player].update_resources("lira", bet)
-						print("player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
-					else:
-						print("Too bad, you receive only 2 lira")
-						playerlist[board.current_player].update_resources("lira", 2)
-						print("player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
-					draw_tile(frame, tilelist[11])
-					draw_units(frame, font, units, playerlist, board)
-					board.set_nextplayer()
-					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
-				elif tile.name == "postal_office": #Perform postal office action
+
+				if tile.name == "postal_office": #Perform postal office action
 					print("Performing postal office action")
 					print("Current player is Player", board.current_player + 1)
 					for key, value in tilelist[1].blocks[0].items():
@@ -413,6 +393,111 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					board.set_nextplayer()
 					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
 
+				elif tile.name == "fabric_warehouse": #Perform fabric warehouse action
+					print("Performing fabric warehouse action")
+					print("Current player is Player", board.current_player + 1)
+					
+					playerlist[board.current_player].update_resources("fabric", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fabric")))
+					
+					draw_tile(frame, tilelist[2])
+					update_resource_blocks(board, playerlist, units, "fabric")
+					draw_units(frame, font, units, playerlist, board)
+					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
+					board.set_nextplayer()
+
+				elif tile.name == "fruit_warehouse": #Perform fabric warehouse action
+					print("Performing fruit warehouse action")
+					print("Current player is Player", board.current_player + 1)
+					
+					playerlist[board.current_player].update_resources("fruit", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fruit")))
+					
+					draw_tile(frame, tilelist[4])
+					update_resource_blocks(board, playerlist, units, "fruit")
+					draw_units(frame, font, units, playerlist, board)
+					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
+					board.set_nextplayer()
+
+				elif tile.name == "spice_warehouse": #Perform fabric warehouse action
+					print("Performing spice warehouse action")
+					print("Current player is Player", board.current_player + 1)
+					
+					playerlist[board.current_player].update_resources("spice", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("spice")))
+					
+					draw_tile(frame, tilelist[7])
+					update_resource_blocks(board, playerlist, units, "spice")
+					draw_units(frame, font, units, playerlist, board)
+					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
+					board.set_nextplayer()
+
+				elif tile.name == "black_market": #Perform fabric warehouse action
+					print("Performing black market action")
+					print("Current player is Player", board.current_player + 1)
+
+					option = 0
+					print("Please select an options: Press 1) fabric, 2) spice or 3) fruit")
+					while not (0 < option < 4):
+						option = get_keyboardinput(event)
+						if not (0 < option < 4):
+							print("Please select an options: Press 1) fabric, 2) spice or 3) fruit")
+					if option == 1:
+						draw_tile(frame, tilelist[8])
+						update_resource_blocks(board, playerlist, units, "fabric")
+						draw_units(frame, font, units, playerlist, board)
+					elif option == 2:
+						draw_tile(frame, tilelist[8])
+						update_resource_blocks(board, playerlist, units, "spice")
+						draw_units(frame, font, units, playerlist, board)
+					else:
+						draw_tile(frame, tilelist[8])
+						update_resource_blocks(board, playerlist, units, "fruit")
+						draw_units(frame, font, units, playerlist, board)
+					
+					print("Rolling the dice to see if you win any diamonds...")
+					dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units) 
+					if dice_roll > 10:
+						print("Congratulations, you have won 3 diamonds!")
+						playerlist[board.current_player].update_resources("diamonds", 2)
+						draw_tile(frame, tilelist[8])
+						draw_units(frame, font, units, playerlist, board) 
+					elif dice_roll > 8:
+						print("Congratulations, you have won 2 diamonds!")
+						playerlist[board.current_player].update_resources("diamonds", 1)
+						draw_tile(frame, tilelist[8])
+						update_resource_blocks(board, playerlist, units, "diamonds")
+						draw_units(frame, font, units, playerlist, board) 
+					elif dice_roll > 6:
+						print("Congratulations, you have won 1 diamond!")
+						draw_tile(frame, tilelist[8])
+						update_resource_blocks(board, playerlist, units, "diamonds")
+						draw_units(frame, font, units, playerlist, board) 
+					else:
+						print("Too bad, you receive no diamonds...")
+
+					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
+					board.set_nextplayer()
+
+				elif tile.name == "tea_house": #Perform teahouse action
+					print("Performing tea house action, type in a number between 3-12 followed by an enter")
+					bet = 1
+					while not (2 < bet < 13):
+						bet = get_keyboardinput(event)
+						if not (2 < bet < 13):
+							print("Your bet must be between 3 and 12, please try again.")
+					print("Your bet is", bet, "... Rolling the dice...")
+					dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units)
+					if (dice_roll >= bet):
+						print("Congrats, you receive", bet, "lira!")
+						playerlist[board.current_player].update_resources("lira", bet)
+						print("player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
+					else:
+						print("Too bad, you receive only 2 lira")
+						playerlist[board.current_player].update_resources("lira", 2)
+						print("player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
+					draw_tile(frame, tilelist[11])
+					draw_units(frame, font, units, playerlist, board)
+					board.set_nextplayer()
+					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
+				
 				elif tile.name == "wainwright": #Perform wainwright action
 					print("Performing wainwright action")
 					print("Current player is Player", board.current_player + 1)
@@ -437,43 +522,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					else:
 						print("You do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-				
-				elif tile.name == "fabric_warehouse": #Perform fabric warehouse action
-					print("Performing fabric warehouse action")
-					print("Current player is Player", board.current_player + 1)
-					
-					playerlist[board.current_player].update_resources("fabric", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fabric")))
-					
-					draw_tile(frame, tilelist[2])
-					update_resource_blocks(board, playerlist, units, "fabric")
-					draw_units(frame, font, units, playerlist, board)
-					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-					board.set_nextplayer()
-
-				elif tile.name == "spice_warehouse": #Perform fabric warehouse action
-					print("Performing spice warehouse action")
-					print("Current player is Player", board.current_player + 1)
-					
-					playerlist[board.current_player].update_resources("spice", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("spice")))
-					
-					draw_tile(frame, tilelist[7])
-					update_resource_blocks(board, playerlist, units, "spice")
-					draw_units(frame, font, units, playerlist, board)
-					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-					board.set_nextplayer()
-
-				elif tile.name == "fruit_warehouse": #Perform fabric warehouse action
-					print("Performing fruit warehouse action")
-					print("Current player is Player", board.current_player + 1)
-					
-					playerlist[board.current_player].update_resources("fruit", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fruit")))
-					
-					draw_tile(frame, tilelist[4])
-					update_resource_blocks(board, playerlist, units, "fruit")
-					draw_units(frame, font, units, playerlist, board)
-					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-					board.set_nextplayer()
-
+	
+	
 			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
 				pygame.quit()
 				sys.exit()
