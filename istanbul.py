@@ -15,8 +15,6 @@ boardwidth = framewidth * (2/3)
 boardheight = frameheight * (10/12)
 tilewidth = (boardwidth - 3 * tilegap) / 4
 tileheight = (boardheight - 3 * tilegap) / 4
-#print("TILEDWIDTH =", tilewidth)
-#print("TILEHEIGHT =", tileheight)
 
 p1_windowx = boardx + (4.2 * tilewidth) + (tilegap * 4)
 p1_windowy = boardy + (0.5 * tileheight)
