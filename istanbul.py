@@ -45,23 +45,7 @@ def main():
 		"black_market": [3, 1], "caravansary": [3, 2], "small_market": [3, 3], "tea_house": [3, 4],
 		"sultans_palace": [4, 1], "large_market": [4, 2], "wainwright": [4, 3], "gemstone_dealer": [4, 4]}
 	tilelist = [Tiles(tile, tiles.get(tile)) for tile in tiles]
-	playerlist = [Players(i, tilelist[6].location) for i in range(0, board.number_of_players)]
-	
-	for player in playerlist:
-		print("Money for", player.name, "is", player.resources.get("lira"), "lira.")
-	
-	#Initiate fountain for all players
-	currenttile = tilelist[6] #Fountain
-	for i in range(0, len(playerlist)):
-		currenttile.update_players_present(playerlist[i].name, "addition")
-		for unit in playerlist[i].units_stack:
-			currenttile.update_units_stack(playerlist[i].name, unit)
-	
-	print("Tile with name", currenttile.name, "has the following players present:", currenttile.players_present, ". The following units are present here:", currenttile.units_stack)
-	
-	print("player 1 location is", playerlist[0].location)
-	playerlist[0].update_location(tilelist[3].location)
-	print("player 1 location is now", playerlist[0].location)
+
 
 	postalblock_1 = Object(tilelist[1].x + tilewidth*(191/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	postalblock_2 = Object(tilelist[1].x + tilewidth*(388/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
@@ -83,18 +67,52 @@ def main():
 	lira_1 = Object(resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/6, resource_p1.width/6, "")
 	lira_2 = Object(resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/6, resource_p2.width/6, "")
 
-	gem_1 = Object(tilelist[3].x, tilelist[3].y, tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_2 = Object(tilelist[3].x + tilewidth/5, tilelist[3].y, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_small_mosque1 = Object(tilelist[3].x, tilelist[3].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_small_mosque2 = Object(tilelist[3].x + tilewidth/15, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_great_mosque1 = Object(tilelist[0].x, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_great_mosque2 = Object(tilelist[0].x + tilewidth/15, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
 
-	#units = [postalblock_1, postalblock_2, postalblock_3, postalblock_4, resource_p1, resourceblock_1, resourceblock_2, resourceblock_3, resourceblock_4, 
-	#	resource_p2, resourceblock_5, resourceblock_6, resourceblock_7, resourceblock_8, coin_p1, coin_p2, lira_1, lira_2]
+	gem_gemstone1 = Object(tilelist[15].x + tilewidth/3.4, tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_gemstone2 = Object(tilelist[15].x + tilewidth/2.5, tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_gemstone3 = Object(tilelist[15].x + tilewidth*(830/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_gemstone4 = Object(tilelist[15].x + tilewidth*(1000/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_gemstone5 = Object(tilelist[15].x + tilewidth*(1190/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_gemstone6 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_gemstone7 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(658/1077), tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_gemstone8 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(478/1077), tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_gemstone9 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(298/1077), tileheight/8, tileheight/8, "images/gemstone_2.png")
 
-	units = {"postalblock_1": postalblock_1, "postalblock_2": postalblock_2, "postalblock_3": postalblock_3, "postalblock_4": postalblock_4,
+	units = {
+		"postalblock_1": postalblock_1, "postalblock_2": postalblock_2, "postalblock_3": postalblock_3, "postalblock_4": postalblock_4,
 		"resource_p1": resource_p1, "resource_p2": resource_p2,	
 		"resourceblock_1": resourceblock_1, "resourceblock_2": resourceblock_2, "resourceblock_3": resourceblock_3, "resourceblock_4": resourceblock_4,
 		"resourceblock_5": resourceblock_5, "resourceblock_6": resourceblock_6, "resourceblock_7": resourceblock_7, "resourceblock_8": resourceblock_8,
 		"coin_p1": coin_p1, "coin_p2": coin_p2, "lira_1": lira_1, "lira_2": lira_2,
-		"gem_1": gem_1}
+		"gem_small_mosque1": gem_small_mosque1, "gem_small_mosque2": gem_small_mosque2, "gem_great_mosque1": gem_great_mosque1, "gem_great_mosque2": gem_great_mosque2,
+		"gem_gemstone1": gem_gemstone1, "gem_gemstone2": gem_gemstone2, "gem_gemstone3": gem_gemstone3, "gem_gemstone4": gem_gemstone4, 
+		"gem_gemstone5": gem_gemstone5, "gem_gemstone6": gem_gemstone6, "gem_gemstone7": gem_gemstone7, "gem_gemstone8": gem_gemstone8, "gem_gemstone9": gem_gemstone9
+		}
+
+
+	playerlist = [Players(i, tilelist, units) for i in range(0, board.number_of_players)]
+	
+	for player in playerlist:
+		print("Money for", player.name, "is", player.resources.get("lira"), "lira.")
+	
+	#Initiate fountain for all players
+	currenttile = tilelist[6] #Fountain
+	for i in range(0, len(playerlist)):
+		currenttile.update_players_present(playerlist[i].name, "addition")
+		for unit in playerlist[i].units_stack:
+			currenttile.update_units_stack(playerlist[i].name, unit)
+	
+	print("Tile with name", currenttile.name, "has the following players present:", currenttile.players_present, ". The following units are present here:", currenttile.units_stack)
+	
+	print("player 1 location is", playerlist[0].location)
+	playerlist[0].update_location(tilelist[3].location)
+	print("player 1 location is now", playerlist[0].location)
+
+	
 	
 	
 
@@ -122,13 +140,20 @@ def main():
 	
 
 class Players:
-	def __init__(self, player, location):
+	def __init__(self, player, tilelist, units):
 		additional_lira = player
-		name = player + 1
-		self.name = "Player" + str(name)
-		self.resources = {"lira": 2 + additional_lira, "rubies": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
+		self.name = "Player" + str(player + 1)
+		self.resources = {"lira": 2 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
+		self.gemstone_slots = [
+			[units.get("resource_p" + str(player + 1)).x + tilewidth*(355/1610), units.get("resource_p" + str(player + 1)).y + tileheight*(780/1072)], 
+			[units.get("resource_p" + str(player + 1)).x + tilewidth*(355/1610), units.get("resource_p" + str(player + 1)).y + tileheight*(780/1072)], 
+			[units.get("resource_p" + str(player + 1)).x + tilewidth*(355/1610), units.get("resource_p" + str(player + 1)).y + tileheight*(780/1072)], 
+			[units.get("resource_p" + str(player + 1)).x + tilewidth*(355/1610), units.get("resource_p" + str(player + 1)).y + tileheight*(780/1072)], 
+			[units.get("resource_p" + str(player + 1)).x + tilewidth*(355/1610), units.get("resource_p" + str(player + 1)).y + tileheight*(780/1072)], 
+			[units.get("resource_p" + str(player + 1)).x + tilewidth*(355/1610), units.get("resource_p" + str(player + 1)).y + tileheight*(780/1072)] 
+		]
 		self.units_stack = [self.name + "_merchant1", self.name + "_servant1", self.name + "_servant2", self.name + "_servant3", self.name + "_servant4"]
-		self.location = location
+		self.location = tilelist[6].location
 
 	def update_resources(self, resource, amount): #self, string, integer
 		if resource == "diamonds" or resource == "fruit" or resource == "fabric" or resource == "spice":
@@ -144,9 +169,11 @@ class Players:
 		# 	else:
 		# 		self.resources[resource] = 5;
 
+	def update_gemstone_slots(self):
+		self.gemstone_slots = self.gemstone_slots.pop(0)
+
 	def update_location(self, location):
 		self.location = location
-
 
 class Tiles:
 	def __init__(self, name, location):
@@ -171,10 +198,24 @@ class Tiles:
 				{"fabric": 1, "lira_2_1": 1, "diamonds": 1, "lira_2_2": 0, "spice": 0, "lira_1_1": 0, "fruit": 0, "lira_1_2": 1},
 				{"fabric": 1, "lira_2_1": 1, "diamonds": 1, "lira_2_2": 1, "spice": 0, "lira_1_1": 0, "fruit": 0, "lira_1_2": 0}
 				]
-			
+		if self.name == "gemstone_dealer":
+			self.gemstone_price = 15
+			self.gemstone_amount = 9
+
+	# 9 | 1  8 2 7 3 6 4 5 5 4 6 3 7 2 8 1 9
+
+	# Postal office functions
 	def move_postalblocks(self, blocks):
 		blocks.append(blocks.pop(0))
 
+	# Gemstone dealer functions
+	def increase_gemstone_price(self):
+		self.gemstone_price = self.gemstone_price + 1
+
+	def decrease_gemstone_amount(self):
+		self.gemstone_amount = self.gemstone_amount - 1
+
+	# General functions
 	def update_players_present(self, player, action):
 		if (action == "addition"):
 			self.players_present.append(player)
@@ -183,7 +224,6 @@ class Tiles:
 
 	def update_units_stack(self, player, unit):
 		self.units_stack.append(unit)
-
 
 class Object:
 	def __init__(self, x, y, width, height, image_path):
@@ -443,7 +483,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print("Current player is Player", board.current_player + 1)
 
 					option = 0
-					print("Please select an options: Press 1) fabric, 2) spice or 3) fruit")
+					print("Please select an options: Press 1) fabric, 2) spice, 3) fruit")
 					while not (0 < option < 4):
 						option = get_keyboardinput(event)
 						if not (0 < option < 4):
@@ -530,7 +570,29 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					else:
 						print("You do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-	
+		
+				elif tile.name == "gemstone_dealer": #Perform gemstone dealer action
+					print("Performing gemstone dealer action")
+					print("Current player is Player", board.current_player + 1)
+					if playerlist[board.current_player].resources.get("lira") >= tilelist[15].gemstone_price:
+						playerlist[board.current_player].update_resources("lira", -(tilelist[15].gemstone_price))
+						playerlist[board.current_player].update_resources("gemstones", 1)
+						print(playerlist[board.current_player].name, "bought a gemstone!")
+						#change gemstone location from board to player's resources
+						# TODO: GEMSTONE NUMBER depends on the amount of gems left: 91 82 73 64 55 46 37 28 19
+						units.get("gem_gemstone1").set_x(playerlist[board.current_player].gemstone_slots[0][0])
+						units.get("gem_gemstone1").set_y(playerlist[board.current_player].gemstone_slots[0][1])
+						playerlist[board.current_player].update_gemstone_slots()
+
+						tile.increase_gemstone_price()
+						tile.decrease_gemstone_amount()
+					else:
+						print("You do not have sufficient resources to purchase a gemstone!")
+						
+					draw_tile(frame, tilelist[1])
+					draw_units(frame, font, units, playerlist, board)
+					board.set_nextplayer()
+
 	
 			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
 				pygame.quit()
