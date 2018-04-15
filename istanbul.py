@@ -35,7 +35,8 @@ background = (49, 49, 49)
 background2 = (0, 68, 102)
 
 def main():
-	board = Board(int(sys.argv[1]), 16)
+	#board = Board(int(sys.argv[1]), 16)
+	board = Board(2, 16)
 	print("Playing Istanbul with", board.number_of_players, "players!")
 	print("")
 
@@ -62,25 +63,28 @@ def main():
 	playerlist[0].update_location(tilelist[3].location)
 	print("player 1 location is now", playerlist[0].location)
 
-	postalblock_1 = Object("postalblock_1", tilelist[1].x + tilewidth*(191/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
-	postalblock_2 = Object("postalblock_2", tilelist[1].x + tilewidth*(388/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
-	postalblock_3 = Object("postalblock_3", tilelist[1].x + tilewidth*(584/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
-	postalblock_4 = Object("postalblock_4", tilelist[1].x + tilewidth*(780/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
-	resource_p1 = Object("resource_p1", p1_windowx + 3*tilegap, p1_windowy + 3*tilegap, p1_windowwidth - p1_windowwidth/5 - 6*tilegap, p1_windowheight - 6*tilegap, "images/resource2_1.png")
-	resource_p2 = Object("resource_p2", p2_windowx + 3*tilegap, p2_windowy + 3*tilegap, p2_windowwidth - p2_windowwidth/5 - 6*tilegap, p2_windowheight - 6*tilegap, "images/resource2_2.png")
-	resourceblock_1 = Object("resourceblock_1", resource_p1.x + resource_p1.width*(373/1604), resource_p1.y + resource_p1.height*(148/1074), resource_p1.width/15, resource_p1.width/15, "")
-	resourceblock_2 = Object("resourceblock_2", resource_p1.x + resource_p1.width*(373/1604), resource_p1.y + resource_p1.height*(291/1074), resource_p1.width/15, resource_p1.width/15, "")
-	resourceblock_3 = Object("resourceblock_3", resource_p1.x + resource_p1.width*(373/1604), resource_p1.y + resource_p1.height*(433/1074), resource_p1.width/15, resource_p1.width/15, "")
-	resourceblock_4 = Object("resourceblock_4", resource_p1.x + resource_p1.width*(373/1604), resource_p1.y + resource_p1.height*(573/1074), resource_p1.width/15, resource_p1.width/15, "")
-	resourceblock_5 = Object("resourceblock_5", resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(148/1074), resource_p2.width/15, resource_p2.width/15, "")
-	resourceblock_6 = Object("resourceblock_6", resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(291/1074), resource_p2.width/15, resource_p2.width/15, "")
-	resourceblock_7 = Object("resourceblock_7", resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(433/1074), resource_p2.width/15, resource_p2.width/15, "")
-	resourceblock_8 = Object("resourceblock_8", resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(573/1074), resource_p2.width/15, resource_p2.width/15, "")
+	postalblock_1 = Object(tilelist[1].x + tilewidth*(191/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
+	postalblock_2 = Object(tilelist[1].x + tilewidth*(388/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
+	postalblock_3 = Object(tilelist[1].x + tilewidth*(584/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
+	postalblock_4 = Object(tilelist[1].x + tilewidth*(780/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
+	resource_p1 = Object(p1_windowx + 3*tilegap, p1_windowy + 3*tilegap, p1_windowwidth - p1_windowwidth/5 - 6*tilegap, p1_windowheight - 6*tilegap, "images/resource2_1.png")
+	resource_p2 = Object(p2_windowx + 3*tilegap, p2_windowy + 3*tilegap, p2_windowwidth - p2_windowwidth/5 - 6*tilegap, p2_windowheight - 6*tilegap, "images/resource2_2.png")
+	resourceblock_1 = Object(resource_p1.x + resource_p1.width*(373/1604), resource_p1.y + resource_p1.height*(148/1074), resource_p1.width/15, resource_p1.width/15, "")
+	resourceblock_2 = Object(resource_p1.x + resource_p1.width*(373/1604), resource_p1.y + resource_p1.height*(291/1074), resource_p1.width/15, resource_p1.width/15, "")
+	resourceblock_3 = Object(resource_p1.x + resource_p1.width*(373/1604), resource_p1.y + resource_p1.height*(433/1074), resource_p1.width/15, resource_p1.width/15, "")
+	resourceblock_4 = Object(resource_p1.x + resource_p1.width*(373/1604), resource_p1.y + resource_p1.height*(573/1074), resource_p1.width/15, resource_p1.width/15, "")
+	resourceblock_5 = Object(resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(148/1074), resource_p2.width/15, resource_p2.width/15, "")
+	resourceblock_6 = Object(resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(291/1074), resource_p2.width/15, resource_p2.width/15, "")
+	resourceblock_7 = Object(resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(433/1074), resource_p2.width/15, resource_p2.width/15, "")
+	resourceblock_8 = Object(resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(573/1074), resource_p2.width/15, resource_p2.width/15, "")
 
-	coin_p1 = Object("coin_p1", resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/6, resource_p1.width/6, "")
-	coin_p2 = Object("coin_p2", resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/6, resource_p2.width/6, "")
-	lira_1 = Object("lira_1", resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/6, resource_p1.width/6, "")
-	lira_2 = Object("lira_2", resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/6, resource_p2.width/6, "")
+	coin_p1 = Object(resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/6, resource_p1.width/6, "")
+	coin_p2 = Object(resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/6, resource_p2.width/6, "")
+	lira_1 = Object(resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/6, resource_p1.width/6, "")
+	lira_2 = Object(resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/6, resource_p2.width/6, "")
+
+	gem_1 = Object(tilelist[3].x, tilelist[3].y, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_2 = Object(tilelist[3].x + tilewidth/5, tilelist[3].y, tileheight/8, tileheight/8, "images/gemstone_2.png")
 
 	#units = [postalblock_1, postalblock_2, postalblock_3, postalblock_4, resource_p1, resourceblock_1, resourceblock_2, resourceblock_3, resourceblock_4, 
 	#	resource_p2, resourceblock_5, resourceblock_6, resourceblock_7, resourceblock_8, coin_p1, coin_p2, lira_1, lira_2]
@@ -89,7 +93,8 @@ def main():
 		"resource_p1": resource_p1, "resource_p2": resource_p2,	
 		"resourceblock_1": resourceblock_1, "resourceblock_2": resourceblock_2, "resourceblock_3": resourceblock_3, "resourceblock_4": resourceblock_4,
 		"resourceblock_5": resourceblock_5, "resourceblock_6": resourceblock_6, "resourceblock_7": resourceblock_7, "resourceblock_8": resourceblock_8,
-		"coin_p1": coin_p1, "coin_p2": coin_p2, "lira_1": lira_1, "lira_2": lira_2}
+		"coin_p1": coin_p1, "coin_p2": coin_p2, "lira_1": lira_1, "lira_2": lira_2,
+		"gem_1": gem_1}
 	
 	
 
@@ -98,7 +103,6 @@ def main():
 	draw_units(frame, font, units, playerlist, board)
 	mainloop_GUI(board, frame, font, tilelist, units, playerlist)
 	
-
 	''' game logic
 	while game hasnt ended:
 		for player in players
@@ -182,16 +186,16 @@ class Tiles:
 
 
 class Object:
-	def __init__(self, name, x, y, width, height, image_path):
-		self.name = name
+	def __init__(self, x, y, width, height, image_path):
+		#self.name = name
 		self.x = x
 		self.y = y
 		self.width = width
 		self.height = height
 		self.image_path = image_path
 
-	def update_name(self, newname):
-		self.name = newname
+	#def update_name(self, newname):
+	#	self.name = newname
 
 	def set_x(self, newx):
 		self.x = newx
@@ -298,7 +302,6 @@ def draw_boxes(frame, name):
 		pygame.draw.rect(frame, red, (p2_windowx, p2_windowy, p2_windowwidth, p2_windowheight)) #Player2 window
 
 def draw_units(frame, font, units, playerlist, board):
-	#for unit in units:
 	for name, unit in units.items():
 		if "block" in name:
 			pygame.draw.rect(frame, white, (unit.x, unit.y, unit.width, unit.height))
@@ -306,18 +309,19 @@ def draw_units(frame, font, units, playerlist, board):
 			pygame.gfxdraw.aacircle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
 			pygame.gfxdraw.filled_circle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
 		elif "lira" in name:
-			textsurface = font.render(str(playerlist[int(unit.name.split("_")[1]) - 1].resources.get('lira')), False, (0, 0, 0))
-			if playerlist[int(unit.name.split("_")[1]) - 1].resources.get('lira') < 10:
+			textsurface = font.render(str(playerlist[int(name.split("_")[1]) - 1].resources.get('lira')), False, (0, 0, 0))
+			if playerlist[int(name.split("_")[1]) - 1].resources.get('lira') < 10:
 				frame.blit(textsurface, (unit.x - unit.width/7, unit.y - unit.height/3))
 			else:
 				frame.blit(textsurface, (unit.x - unit.width/4, unit.y - unit.height/3))
-		else:
+		else: #Shape loaded by image
 			try:
-				currentunit = pygame.image.load(unit.image_path).convert()
+				currentunit = pygame.image.load(unit.image_path).convert_alpha()
 			except:
 				currentunit = pygame.image.load("images/spice_warehouse.png").convert()
 				print("Error retrieving tile image, using spice warehouse as a default.")
 			currentunit = pygame.transform.smoothscale(currentunit, (int(unit.width), int(unit.height)))
+			#currentunit.set_colorkey((255, 255, 255))
 			frame.blit(currentunit, (unit.x, unit.y))
 
 def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
@@ -372,22 +376,22 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 
 							if tilelist[1].blocks[0].get("fabric") == tilelist[1].blocks[0].get("lira_2_1") == tilelist[1].blocks[0].get("diamonds") == tilelist[1].blocks[0].get("lira_2_2") == 1:
 								unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
-							elif "postalblock_1" in unit.name:
+							elif "postalblock_1" in name:
 								if tilelist[1].blocks[0].get("fabric") == 1:
 									unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
 								else:
 									unit.set_y(tilelist[1].y + tileheight/1.7)
-							elif "postalblock_2" in unit.name:
+							elif "postalblock_2" in name:
 								if tilelist[1].blocks[0].get("lira_2_1") == 1:
 									unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
 								else:
 									unit.set_y(tilelist[1].y + tileheight/1.7)
-							elif "postalblock_3" in unit.name:
+							elif "postalblock_3" in name:
 								if tilelist[1].blocks[0].get("diamonds") == 1:
 									unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
 								else:
 									unit.set_y(tilelist[1].y + tileheight/1.7)
-							elif "postalblock_4" in unit.name:
+							elif "postalblock_4" in name:
 								if tilelist[1].blocks[0].get("lira_2_2") == 1:
 									unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
 								else:
@@ -624,13 +628,13 @@ def roll_dice(board, frame, font, playerlist, tilelist, units):
 	# x_distance = 0.01
 	# pause = 0.5
 	# while x_distance < 5:
-	dice1 = Object("dice1", dice1_x, dice1_y, tilewidth/5, tilewidth/5, "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
+	dice1 = Object(dice1_x, dice1_y, tilewidth/5, tilewidth/5, "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
 	randomnumber = randint(1, 6)
 	dice1.update_image_path("images/die" + str(randomnumber) + ".png")
 	image = pygame.image.load(dice1.image_path).convert()
 	image = pygame.transform.smoothscale(image, (int(dice1.width), int(dice1.height)))
 	
-	dice2 = Object("dice1", dice2_x, dice2_y, tilewidth/5, tilewidth/5, "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
+	dice2 = Object(dice2_x, dice2_y, tilewidth/5, tilewidth/5, "images/die1.png") # 40 <= x <= 220, 25 <= y <= 115
 	randomnumber2 = randint(1, 6)
 	dice2.update_image_path("images/die" + str(randomnumber2) + ".png")
 	image2 = pygame.image.load(dice2.image_path).convert()
