@@ -82,9 +82,14 @@ def main():
 	lira_1 = Object("lira_1", resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/6, resource_p1.width/6, "")
 	lira_2 = Object("lira_2", resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/6, resource_p2.width/6, "")
 
-	units = [postalblock_1, postalblock_2, postalblock_3, postalblock_4, resource_p1, resourceblock_1, resourceblock_2, resourceblock_3, resourceblock_4, 
-		resource_p2, resourceblock_5, resourceblock_6, resourceblock_7, resourceblock_8, coin_p1, coin_p2, lira_1, lira_2]
+	#units = [postalblock_1, postalblock_2, postalblock_3, postalblock_4, resource_p1, resourceblock_1, resourceblock_2, resourceblock_3, resourceblock_4, 
+	#	resource_p2, resourceblock_5, resourceblock_6, resourceblock_7, resourceblock_8, coin_p1, coin_p2, lira_1, lira_2]
 
+	units = {"postalblock_1": postalblock_1, "postalblock_2": postalblock_2, "postalblock_3": postalblock_3, "postalblock_4": postalblock_4,
+		"resource_p1": resource_p1, "resource_p2": resource_p2,	
+		"resourceblock_1": resourceblock_1, "resourceblock_2": resourceblock_2, "resourceblock_3": resourceblock_3, "resourceblock_4": resourceblock_4,
+		"resourceblock_5": resourceblock_5, "resourceblock_6": resourceblock_6, "resourceblock_7": resourceblock_7, "resourceblock_8": resourceblock_8,
+		"coin_p1": coin_p1, "coin_p2": coin_p2, "lira_1": lira_1, "lira_2": lira_2}
 	
 	
 
@@ -293,13 +298,14 @@ def draw_boxes(frame, name):
 		pygame.draw.rect(frame, red, (p2_windowx, p2_windowy, p2_windowwidth, p2_windowheight)) #Player2 window
 
 def draw_units(frame, font, units, playerlist, board):
-	for unit in units:
-		if "block" in unit.name:
+	#for unit in units:
+	for name, unit in units.items():
+		if "block" in name:
 			pygame.draw.rect(frame, white, (unit.x, unit.y, unit.width, unit.height))
-		elif "coin" in unit.name:
+		elif "coin" in name:
 			pygame.gfxdraw.aacircle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
 			pygame.gfxdraw.filled_circle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
-		elif "lira" in unit.name:
+		elif "lira" in name:
 			textsurface = font.render(str(playerlist[int(unit.name.split("_")[1]) - 1].resources.get('lira')), False, (0, 0, 0))
 			if playerlist[int(unit.name.split("_")[1]) - 1].resources.get('lira') < 10:
 				frame.blit(textsurface, (unit.x - unit.width/7, unit.y - unit.height/3))
@@ -360,10 +366,11 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 							playerlist[board.current_player].resources.get("fruit"), "fruit.")
 					tilelist[1].move_postalblocks(tilelist[1].blocks)
 
-					for unit in units:
-						if "postalblock" in unit.name:
+					#for unit in units:
+					for name, unit in units.items(): 
+						if "postalblock" in name:
 
-							if tilelist[1].blocks[0].get("fabric") == tilelist[1].blocks[0].get("lira_2_1") == tilelist[1].blocks[0].get("diamonds") == tilelist[1].blocks[0].get("lira_2_2") == 1 and "postalblock" in unit.name:
+							if tilelist[1].blocks[0].get("fabric") == tilelist[1].blocks[0].get("lira_2_1") == tilelist[1].blocks[0].get("diamonds") == tilelist[1].blocks[0].get("lira_2_2") == 1:
 								unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
 							elif "postalblock_1" in unit.name:
 								if tilelist[1].blocks[0].get("fabric") == 1:
@@ -503,13 +510,12 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						playerlist[board.current_player].update_resources("lira", -7)
 						playerlist[board.current_player].update_resources("max_res", 1)
 						#update resource image for this player
-						print("unit 4 name", units[4].name)
 						print("current player is", playerlist[board.current_player].name)
 						if playerlist[board.current_player].name == "Player1": #Player 1
-							units[4].update_image_path("images/resource" + str(playerlist[board.current_player].resources.get("max_res")) + "_1.png")
+							units.get("resource_p1").update_image_path("images/resource" + str(playerlist[board.current_player].resources.get("max_res")) + "_1.png")
 							print("Player 1 bought a cart extension")
 						else: #Player 2
-							units[9].update_image_path("images/resource" + str(playerlist[board.current_player].resources.get("max_res")) + "_2.png")
+							units.get("resource_p2").update_image_path("images/resource" + str(playerlist[board.current_player].resources.get("max_res")) + "_2.png")
 							print("Player 2 bought a cart extension")
 
 						draw_tile(frame, tilelist[1])
@@ -532,27 +538,27 @@ def update_resource_blocks(board, playerlist, units, name):
 	if "diamonds" in name:
 		playerlist[board.current_player].update_resources("diamonds", 1)
 		if board.current_player == 0:
-			units[5].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units[4].width*(185/1604)))
+			units.get("resourceblock_1").set_x(units.get("resource_p1").x + units.get("resource_p1").width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units.get("resource_p1").width*(185/1604)))
 		else:
-			units[10].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units[9].width*(185/1604)))
+			units.get("resourceblock_5").set_x(units.get("resource_p2").x + units.get("resource_p2").width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units.get("resource_p2").width*(185/1604)))
 	elif "fabric" in name:
 		playerlist[board.current_player].update_resources("fabric", 1)
 		if board.current_player == 0:
-			units[6].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units[4].width*(185/1604)))
+			units.get("resourceblock_2").set_x(units.get("resource_p1").x + units.get("resource_p1").width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units.get("resource_p1").width*(185/1604)))
 		else:
-			units[11].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units[9].width*(185/1604)))
+			units.get("resourceblock_6").set_x(units.get("resource_p2").x + units.get("resource_p2").width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units.get("resource_p2").width*(185/1604)))
 	elif "spice" in name:
 		playerlist[board.current_player].update_resources("spice", 1)
 		if board.current_player == 0:
-			units[7].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units[4].width*(185/1604)))
+			units.get("resourceblock_3").set_x(units.get("resource_p1").x + units.get("resource_p1").width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units.get("resource_p1").width*(185/1604)))
 		else:
-			units[12].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units[9].width*(185/1604)))
+			units.get("resourceblock_7").set_x(units.get("resource_p2").x + units.get("resource_p2").width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units.get("resource_p2").width*(185/1604)))
 	elif "fruit" in name:
 		playerlist[board.current_player].update_resources("fruit", 1)
 		if board.current_player == 0:
-			units[8].set_x(units[4].x + units[4].width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units[4].width*(186/1604)))
+			units.get("resourceblock_4").set_x(units.get("resource_p1").x + units.get("resource_p1").width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units.get("resource_p1").width*(186/1604)))
 		else:
-			units[13].set_x(units[9].x + units[9].width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units[9].width*(186/1604)))
+			units.get("resourceblock_8").set_x(units.get("resource_p2").x + units.get("resource_p2").width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units.get("resource_p2").width*(186/1604)))
 
 def get_keyboardinput(event):
 	enter_pressed = False
