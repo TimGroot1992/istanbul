@@ -1,9 +1,8 @@
-
 class Players:
 	def __init__(self, player, tilelist, tilewidth, tileheight, units):
 		additional_lira = player
 		self.name = "Player" + str(player + 1)
-		self.resources = {"lira": 2 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
+		self.resources = {"lira": 200 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
 		self.gemstone_slots = [
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(400/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(605/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
@@ -57,6 +56,10 @@ class Tiles:
 		if self.name == "gemstone_dealer":
 			self.gemstone_price = 15
 			self.gemstone_amount = 9
+		if self.name == "sultans_palace":
+			self.resources_price = ["diamonds", "fabric", "spice", "fruit"]
+			self.resources_queue = ["diamonds", "fabric", "spice", "fruit"]
+			self.gemstone_amount = 6
 
 	# Postal office functions
 	def move_postalblocks(self, blocks):
@@ -68,6 +71,26 @@ class Tiles:
 
 	def decrease_gemstone_amount(self):
 		self.gemstone_amount = self.gemstone_amount - 1
+
+	# Sultans Palace functions
+	def increase_resources_price(self):
+		#print("first element resource queue = ", self.resources_queue[0])
+		self.resources_price.append(self.resources_queue[0])
+		#print("resource price now = ", self.resources_price)
+		self.resources_queue.pop(0)
+		#print("resources queue is now ", self.resources_queue)
+
+	def has_sufficient_resources(self, current_player):
+		#print("resource price = ", self.resources_price)
+		result = False
+		ndiamonds = self.resources_price.count("diamonds")
+		nfabric = self.resources_price.count("fabric")
+		nspice = self.resources_price.count("spice")
+		nfruit = self.resources_price.count("fruit")
+		nchoice = self.resources_price.count("choice")
+		if (current_player.resources.get("diamonds") >= ndiamonds) and (current_player.resources.get("fabric") >= nfabric) and current_player.resources.get("spice") >= nspice and current_player.resources.get("fruit") >= nfruit:
+			result = True
+		return result
 
 	# General functions
 	def update_players_present(self, player, action):

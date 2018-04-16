@@ -48,7 +48,6 @@ def main():
 		"sultans_palace": [4, 1], "large_market": [4, 2], "wainwright": [4, 3], "gemstone_dealer": [4, 4]}
 	tilelist = [Tiles(tile, tiles.get(tile), boardx, boardy, tilewidth, tileheight, tilegap) for tile in tiles]
 
-
 	postalblock_1 = Object(tilelist[1].x + tilewidth*(191/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	postalblock_2 = Object(tilelist[1].x + tilewidth*(388/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	postalblock_3 = Object(tilelist[1].x + tilewidth*(584/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
@@ -74,6 +73,7 @@ def main():
 	gem_great_mosque1 = Object(tilelist[0].x, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_great_mosque2 = Object(tilelist[0].x + tilewidth/15, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
 
+	# Gemstone Dealer gems
 	gem_gemstone1 = Object(tilelist[15].x + tilewidth/3.4, tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_gemstone2 = Object(tilelist[15].x + tilewidth/2.5, tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_gemstone3 = Object(tilelist[15].x + tilewidth*(830/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
@@ -84,6 +84,15 @@ def main():
 	gem_gemstone8 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(478/1077), tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_gemstone9 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(298/1077), tileheight/8, tileheight/8, "images/gemstone_2.png")
 
+	# Sultans Palace gems
+	gem_sultan1 = Object(tilelist[12].x + tilewidth*(650/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_sultan2 = Object(tilelist[12].x + tilewidth*(830/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_sultan3 = Object(tilelist[12].x + tilewidth*(1010/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_sultan4 = Object(tilelist[12].x + tilewidth*(1190/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_sultan5 = Object(tilelist[12].x + tilewidth*(1370/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_sultan6 = Object(tilelist[12].x + tilewidth*(1370/1611), tilelist[12].y + tileheight*(670/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
+
+
 	units = {
 		"postalblock_1": postalblock_1, "postalblock_2": postalblock_2, "postalblock_3": postalblock_3, "postalblock_4": postalblock_4,
 		"resource_p1": resource_p1, "resource_p2": resource_p2,	
@@ -92,7 +101,9 @@ def main():
 		"coin_p1": coin_p1, "coin_p2": coin_p2, "lira_1": lira_1, "lira_2": lira_2,
 		"gem_small_mosque1": gem_small_mosque1, "gem_small_mosque2": gem_small_mosque2, "gem_great_mosque1": gem_great_mosque1, "gem_great_mosque2": gem_great_mosque2,
 		"gem_gemstone1": gem_gemstone1, "gem_gemstone2": gem_gemstone2, "gem_gemstone3": gem_gemstone3, "gem_gemstone4": gem_gemstone4, 
-		"gem_gemstone5": gem_gemstone5, "gem_gemstone6": gem_gemstone6, "gem_gemstone7": gem_gemstone7, "gem_gemstone8": gem_gemstone8, "gem_gemstone9": gem_gemstone9
+		"gem_gemstone5": gem_gemstone5, "gem_gemstone6": gem_gemstone6, "gem_gemstone7": gem_gemstone7, "gem_gemstone8": gem_gemstone8, "gem_gemstone9": gem_gemstone9,
+		"gem_sultan1": gem_sultan1, "gem_sultan2": gem_sultan2, "gem_sultan3": gem_sultan3,
+		"gem_sultan4": gem_sultan4, "gem_sultan5": gem_sultan5, "gem_sultan6": gem_sultan6
 		}
 
 
@@ -260,7 +271,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 							#print("You receive", key)
 							if "lira" in key:
 								playerlist[board.current_player].update_resources("lira", int(key.split("_")[1]))
-							update_resource_blocks(board, playerlist, units, key)
+							update_resource_blocks(board, playerlist, units, key, 1)
 
 					print(playerlist[board.current_player].name, "now has", 
 							playerlist[board.current_player].resources.get("lira"), "lira,", 
@@ -350,34 +361,35 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 							print("Please select an options: Press 1) fabric, 2) spice or 3) fruit")
 					if option == 1:
 						draw_tile(frame, tilelist[8])
-						update_resource_blocks(board, playerlist, units, "fabric")
+						update_resource_blocks(board, playerlist, units, "fabric", 1)
 						draw_units(frame, font, units, playerlist, board)
 					elif option == 2:
 						draw_tile(frame, tilelist[8])
-						update_resource_blocks(board, playerlist, units, "spice")
+						update_resource_blocks(board, playerlist, units, "spice", 1)
 						draw_units(frame, font, units, playerlist, board)
 					else:
 						draw_tile(frame, tilelist[8])
-						update_resource_blocks(board, playerlist, units, "fruit")
+						update_resource_blocks(board, playerlist, units, "fruit", 1)
 						draw_units(frame, font, units, playerlist, board)
 					
 					print("Rolling the dice to see if you win any diamonds...")
 					dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units) 
 					if dice_roll > 10:
 						print("Congratulations, you have won 3 diamonds!")
-						playerlist[board.current_player].update_resources("diamonds", 2)
+						#playerlist[board.current_player].update_resources("diamonds", 2)
 						draw_tile(frame, tilelist[8])
+						update_resource_blocks(board, playerlist, units, "diamonds", 3)
 						draw_units(frame, font, units, playerlist, board) 
 					elif dice_roll > 8:
 						print("Congratulations, you have won 2 diamonds!")
-						playerlist[board.current_player].update_resources("diamonds", 1)
+						#playerlist[board.current_player].update_resources("diamonds", 2)
 						draw_tile(frame, tilelist[8])
-						update_resource_blocks(board, playerlist, units, "diamonds")
+						update_resource_blocks(board, playerlist, units, "diamonds", 2)
 						draw_units(frame, font, units, playerlist, board) 
 					elif dice_roll > 6:
 						print("Congratulations, you have won 1 diamond!")
 						draw_tile(frame, tilelist[8])
-						update_resource_blocks(board, playerlist, units, "diamonds")
+						update_resource_blocks(board, playerlist, units, "diamonds", 1)
 						draw_units(frame, font, units, playerlist, board) 
 					else:
 						print("Too bad, you receive no diamonds...")
@@ -431,6 +443,32 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						print("You do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 		
+				elif tile.name == "sultans_palace": #Perform gemstone dealer action
+					print("Performing sultans palace's action")
+					print("Current player is Player", board.current_player + 1)
+					
+					if (tile.has_sufficient_resources(playerlist[board.current_player])) and (tile.gemstone_amount > 0):
+						for item in tile.resources_price:
+							update_resource_blocks(board, playerlist, units, item, -1)
+						playerlist[board.current_player].update_resources("gemstones", 1)
+						print(playerlist[board.current_player].name, "bought a gemstone!")
+						
+						units.get("gem_sultan" + str(7 - tile.gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
+						units.get("gem_sultan" + str(7 - tile.gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
+						playerlist[board.current_player].update_gemstone_slots()
+
+						tile.increase_resources_price()
+						tile.decrease_gemstone_amount()
+						board.set_nextplayer()
+					else:
+						if tile.gemstone_amount == 0:
+							print("The Sultan's palace ran out of gems, find another way to collect more gemstones!")
+						else:
+							print("You do not have sufficient resources to purchase a gemstone!")
+						
+					draw_tile(frame, tilelist[12])
+					draw_units(frame, font, units, playerlist, board)
+
 				elif tile.name == "gemstone_dealer": #Perform gemstone dealer action
 					print("Performing gemstone dealer action")
 					print("Current player is Player", board.current_player + 1)
@@ -453,6 +491,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						
 					draw_tile(frame, tilelist[15])
 					draw_units(frame, font, units, playerlist, board)
+
+
 					
 
 	
@@ -462,27 +502,27 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 		pygame.display.update()
 		fpsClock.tick(fps)
 
-def update_resource_blocks(board, playerlist, units, name):
+def update_resource_blocks(board, playerlist, units, name, amount):
 	if "diamonds" in name:
-		playerlist[board.current_player].update_resources("diamonds", 1)
+		playerlist[board.current_player].update_resources("diamonds", amount)
 		if board.current_player == 0:
 			units.get("resourceblock_1").set_x(units.get("resource_p1").x + units.get("resource_p1").width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units.get("resource_p1").width*(185/1604)))
 		else:
 			units.get("resourceblock_5").set_x(units.get("resource_p2").x + units.get("resource_p2").width*(375/1604) + (playerlist[board.current_player].resources.get("diamonds") * units.get("resource_p2").width*(185/1604)))
 	elif "fabric" in name:
-		playerlist[board.current_player].update_resources("fabric", 1)
+		playerlist[board.current_player].update_resources("fabric", amount)
 		if board.current_player == 0:
 			units.get("resourceblock_2").set_x(units.get("resource_p1").x + units.get("resource_p1").width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units.get("resource_p1").width*(185/1604)))
 		else:
 			units.get("resourceblock_6").set_x(units.get("resource_p2").x + units.get("resource_p2").width*(375/1604) + (playerlist[board.current_player].resources.get("fabric") * units.get("resource_p2").width*(185/1604)))
 	elif "spice" in name:
-		playerlist[board.current_player].update_resources("spice", 1)
+		playerlist[board.current_player].update_resources("spice", amount)
 		if board.current_player == 0:
 			units.get("resourceblock_3").set_x(units.get("resource_p1").x + units.get("resource_p1").width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units.get("resource_p1").width*(185/1604)))
 		else:
 			units.get("resourceblock_7").set_x(units.get("resource_p2").x + units.get("resource_p2").width*(375/1604) + (playerlist[board.current_player].resources.get("spice") * units.get("resource_p2").width*(185/1604)))
 	elif "fruit" in name:
-		playerlist[board.current_player].update_resources("fruit", 1)
+		playerlist[board.current_player].update_resources("fruit", amount)
 		if board.current_player == 0:
 			units.get("resourceblock_4").set_x(units.get("resource_p1").x + units.get("resource_p1").width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units.get("resource_p1").width*(186/1604)))
 		else:
