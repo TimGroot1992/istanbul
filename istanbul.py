@@ -137,20 +137,19 @@ def main():
 			do family members, get 3 lira or 1 bonus card
 			optionally: do governor, smuggler action	
 	'''
-	
 
 class Players:
 	def __init__(self, player, tilelist, units):
 		additional_lira = player
 		self.name = "Player" + str(player + 1)
-		self.resources = {"lira": 2 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
+		self.resources = {"lira": 200 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
 		self.gemstone_slots = [
-			[units.get("resource_p" + str(player + 1)).x + tilewidth*(355/1610), units.get("resource_p" + str(player + 1)).y + tileheight*(780/1072)], 
-			[units.get("resource_p" + str(player + 1)).x + tilewidth*(355/1610), units.get("resource_p" + str(player + 1)).y + tileheight*(780/1072)], 
-			[units.get("resource_p" + str(player + 1)).x + tilewidth*(355/1610), units.get("resource_p" + str(player + 1)).y + tileheight*(780/1072)], 
-			[units.get("resource_p" + str(player + 1)).x + tilewidth*(355/1610), units.get("resource_p" + str(player + 1)).y + tileheight*(780/1072)], 
-			[units.get("resource_p" + str(player + 1)).x + tilewidth*(355/1610), units.get("resource_p" + str(player + 1)).y + tileheight*(780/1072)], 
-			[units.get("resource_p" + str(player + 1)).x + tilewidth*(355/1610), units.get("resource_p" + str(player + 1)).y + tileheight*(780/1072)] 
+			[units.get("resource_p" + str(player + 1)).x + tilewidth*(400/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
+			[units.get("resource_p" + str(player + 1)).x + tilewidth*(605/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
+			[units.get("resource_p" + str(player + 1)).x + tilewidth*(810/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
+			[units.get("resource_p" + str(player + 1)).x + tilewidth*(1010/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
+			[units.get("resource_p" + str(player + 1)).x + tilewidth*(1215/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
+			[units.get("resource_p" + str(player + 1)).x + tilewidth*(1415/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)] 
 		]
 		self.units_stack = [self.name + "_merchant1", self.name + "_servant1", self.name + "_servant2", self.name + "_servant3", self.name + "_servant4"]
 		self.location = tilelist[6].location
@@ -170,7 +169,9 @@ class Players:
 		# 		self.resources[resource] = 5;
 
 	def update_gemstone_slots(self):
-		self.gemstone_slots = self.gemstone_slots.pop(0)
+		print("BEFORE ", self.gemstone_slots)
+		self.gemstone_slots.pop(0)
+		print("AFTER ", self.gemstone_slots)
 
 	def update_location(self, location):
 		self.location = location
@@ -201,8 +202,6 @@ class Tiles:
 		if self.name == "gemstone_dealer":
 			self.gemstone_price = 15
 			self.gemstone_amount = 9
-
-	# 9 | 1  8 2 7 3 6 4 5 5 4 6 3 7 2 8 1 9
 
 	# Postal office functions
 	def move_postalblocks(self, blocks):
@@ -574,24 +573,26 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 				elif tile.name == "gemstone_dealer": #Perform gemstone dealer action
 					print("Performing gemstone dealer action")
 					print("Current player is Player", board.current_player + 1)
-					if playerlist[board.current_player].resources.get("lira") >= tilelist[15].gemstone_price:
-						playerlist[board.current_player].update_resources("lira", -(tilelist[15].gemstone_price))
+					if playerlist[board.current_player].resources.get("lira") >= tile.gemstone_price and tile.gemstone_amount > 0:
+						playerlist[board.current_player].update_resources("lira", -(tile.gemstone_price))
 						playerlist[board.current_player].update_resources("gemstones", 1)
 						print(playerlist[board.current_player].name, "bought a gemstone!")
-						#change gemstone location from board to player's resources
-						# TODO: GEMSTONE NUMBER depends on the amount of gems left: 91 82 73 64 55 46 37 28 19
-						units.get("gem_gemstone1").set_x(playerlist[board.current_player].gemstone_slots[0][0])
-						units.get("gem_gemstone1").set_y(playerlist[board.current_player].gemstone_slots[0][1])
+						units.get("gem_gemstone" + str(10 - tile.gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
+						units.get("gem_gemstone" + str(10 - tile.gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
 						playerlist[board.current_player].update_gemstone_slots()
 
 						tile.increase_gemstone_price()
 						tile.decrease_gemstone_amount()
+						board.set_nextplayer()
 					else:
-						print("You do not have sufficient resources to purchase a gemstone!")
+						if tile.gemstone_amount == 0:
+							print("The gemstone dealer ran out of gems, find another way to collect more gemstones!")
+						else:
+							print("You do not have sufficient resources to purchase a gemstone!")
 						
-					draw_tile(frame, tilelist[1])
+					draw_tile(frame, tilelist[15])
 					draw_units(frame, font, units, playerlist, board)
-					board.set_nextplayer()
+					
 
 	
 			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
