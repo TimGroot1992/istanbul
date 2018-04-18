@@ -320,7 +320,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					playerlist[board.current_player].update_resources("fabric", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fabric")))
 					
 					draw_tile(frame, tilelist[2])
-					update_resource_blocks(board, playerlist, units, "fabric")
+					update_resource_blocks(board, playerlist, units, "fabric", 0)
 					draw_units(frame, font, units, playerlist, board)
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 					board.set_nextplayer()
@@ -332,7 +332,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					playerlist[board.current_player].update_resources("fruit", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fruit")))
 					
 					draw_tile(frame, tilelist[4])
-					update_resource_blocks(board, playerlist, units, "fruit")
+					update_resource_blocks(board, playerlist, units, "fruit", 0)
 					draw_units(frame, font, units, playerlist, board)
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 					board.set_nextplayer()
@@ -344,7 +344,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					playerlist[board.current_player].update_resources("spice", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("spice")))
 					
 					draw_tile(frame, tilelist[7])
-					update_resource_blocks(board, playerlist, units, "spice")
+					update_resource_blocks(board, playerlist, units, "spice", 0)
 					draw_units(frame, font, units, playerlist, board)
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 					board.set_nextplayer()
@@ -354,11 +354,12 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print("Current player is Player", board.current_player + 1)
 
 					option = 0
-					print("Please select an options: Press 1) fabric, 2) spice, 3) fruit")
-					while not (0 < option < 4):
+					display_message = "Please select an options: Press 1) fabric, 2) spice, 3) fruit"
+					print(display_message)
+					while not ((0 < option < 4) and (int(option))):
 						option = get_keyboardinput(event)
 						if not (0 < option < 4):
-							print("Please select an options: Press 1) fabric, 2) spice or 3) fruit")
+							print(display_message)
 					if option == 1:
 						draw_tile(frame, tilelist[8])
 						update_resource_blocks(board, playerlist, units, "fabric", 1)
@@ -400,7 +401,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 				elif tile.name == "tea_house": #Perform teahouse action
 					print("Performing tea house action, type in a number between 3-12 followed by an enter")
 					bet = 1
-					while not (2 < bet < 13):
+					while not ((2 < bet < 13) and (int(bet))):
 						bet = get_keyboardinput(event)
 						if not (2 < bet < 13):
 							print("Your bet must be between 3 and 12, please try again.")
@@ -443,13 +444,35 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						print("You do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 		
-				elif tile.name == "sultans_palace": #Perform gemstone dealer action
+				elif tile.name == "sultans_palace": #Perform Sultans Palace action
 					print("Performing sultans palace's action")
 					print("Current player is Player", board.current_player + 1)
 					
-					if (tile.has_sufficient_resources(playerlist[board.current_player])) and (tile.gemstone_amount > 0):
+					if (tile.has_sufficient_resources(playerlist[board.current_player])) and (tile.gemstone_amount > 0): #Player has sufficient resources to pay requirements
 						for item in tile.resources_price:
-							update_resource_blocks(board, playerlist, units, item, -1)
+							if item != "winnow":
+								update_resource_blocks(board, playerlist, units, item, -1)
+							else:
+								# Then pay the resource(s) of choice (the winnow)
+								sold = False
+								while not sold: #Player has to pick a resource possession to continue
+									display_message = "Now, please select your resource of choice to sell: Press 1) diamonds, 2) fabric, 3) spice, 4) fruit"
+									option = prompt_input(event, display_message, [0, 5])
+									if option == 1 and playerlist[board.current_player].resources.get("diamonds") > 0:
+										update_resource_blocks(board, playerlist, units, "diamonds", -1)
+										sold = True
+									elif option == 2 and playerlist[board.current_player].resources.get("fabric") > 0:
+										update_resource_blocks(board, playerlist, units, "fabric", -1)
+										sold = True
+									elif option == 3 and playerlist[board.current_player].resources.get("spice") > 0:
+										update_resource_blocks(board, playerlist, units, "spice", -1)
+										sold = True
+									elif option == 4 and playerlist[board.current_player].resources.get("fruit") > 0:
+										update_resource_blocks(board, playerlist, units, "fruit", -1)
+										sold = True
+									else:
+										print("You do not have sufficient resources to sell that, select another resource")
+							
 						playerlist[board.current_player].update_resources("gemstones", 1)
 						print(playerlist[board.current_player].name, "bought a gemstone!")
 						
@@ -572,6 +595,15 @@ def get_keyboardinput(event):
 			else:
 				bet = 3
 	return bet
+
+def prompt_input(event, display_message, range):
+	option = 0
+	print(display_message)
+	while not ((range[0] < option < range[1]) and (int(option))):
+		option = get_keyboardinput(event)
+		if not (range[0] < option < range[1]):
+			print(display_message)
+	return option
 
 def roll_dice(board, frame, font, playerlist, tilelist, units):
 	global p1_windowx

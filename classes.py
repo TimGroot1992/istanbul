@@ -2,7 +2,7 @@ class Players:
 	def __init__(self, player, tilelist, tilewidth, tileheight, units):
 		additional_lira = player
 		self.name = "Player" + str(player + 1)
-		self.resources = {"lira": 200 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
+		self.resources = {"lira": 2 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
 		self.gemstone_slots = [
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(400/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(605/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
@@ -29,9 +29,7 @@ class Players:
 		# 		self.resources[resource] = 5;
 
 	def update_gemstone_slots(self):
-		#print("BEFORE ", self.gemstone_slots)
 		self.gemstone_slots.pop(0)
-		#print("AFTER ", self.gemstone_slots)
 
 	def update_location(self, location):
 		self.location = location
@@ -57,8 +55,8 @@ class Tiles:
 			self.gemstone_price = 15
 			self.gemstone_amount = 9
 		if self.name == "sultans_palace":
-			self.resources_price = ["diamonds", "fabric", "spice", "fruit"]
-			self.resources_queue = ["diamonds", "fabric", "spice", "fruit"]
+			self.resources_price = ["diamonds", "fabric", "spice", "fruit", "winnow"]
+			self.resources_queue = ["diamonds", "fabric", "spice", "fruit", "winnow"]
 			self.gemstone_amount = 6
 
 	# Postal office functions
@@ -74,21 +72,29 @@ class Tiles:
 
 	# Sultans Palace functions
 	def increase_resources_price(self):
-		#print("first element resource queue = ", self.resources_queue[0])
 		self.resources_price.append(self.resources_queue[0])
-		#print("resource price now = ", self.resources_price)
+		self.resources_price.sort()
 		self.resources_queue.pop(0)
-		#print("resources queue is now ", self.resources_queue)
 
 	def has_sufficient_resources(self, current_player):
 		#print("resource price = ", self.resources_price)
 		result = False
-		ndiamonds = self.resources_price.count("diamonds")
-		nfabric = self.resources_price.count("fabric")
-		nspice = self.resources_price.count("spice")
-		nfruit = self.resources_price.count("fruit")
 		nchoice = self.resources_price.count("choice")
-		if (current_player.resources.get("diamonds") >= ndiamonds) and (current_player.resources.get("fabric") >= nfabric) and current_player.resources.get("spice") >= nspice and current_player.resources.get("fruit") >= nfruit:
+		if (current_player.resources.get("diamonds") >= self.resources_price.count("diamonds")) and \
+			(current_player.resources.get("fabric") >= self.resources_price.count("fabric")) and \
+			current_player.resources.get("spice") >= self.resources_price.count("spice") and \
+			current_player.resources.get("fruit") >= self.resources_price.count("fruit") and \
+			self.has_leftover_choice(current_player):
+			result = True
+		return result
+
+	def has_leftover_choice(self, current_player):
+		result = False
+		diamondsleft = current_player.resources.get("diamonds") - self.resources_price.count("diamonds")
+		fabricleft = current_player.resources.get("fabric") - self.resources_price.count("fabric")
+		spiceleft = current_player.resources.get("spice") - self.resources_price.count("spice")
+		fruitleft = current_player.resources.get("fruit") - self.resources_price.count("fruit")
+		if sum([diamondsleft, fabricleft, spiceleft, fruitleft]) >= self.resources_price.count("choice"):
 			result = True
 		return result
 
