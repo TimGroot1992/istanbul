@@ -92,6 +92,8 @@ def main():
 	gem_sultan5 = Object(tilelist[12].x + tilewidth*(1370/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_sultan6 = Object(tilelist[12].x + tilewidth*(1370/1611), tilelist[12].y + tileheight*(670/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
 
+	# Market tiles
+	market_tile = Object(tilelist[10].x + tilewidth*(650/1611), tilelist[10].y + tileheight*(840/1084), tilewidth/6, tileheight/10, "images/small_market_tile1.png")
 
 	units = {
 		"postalblock_1": postalblock_1, "postalblock_2": postalblock_2, "postalblock_3": postalblock_3, "postalblock_4": postalblock_4,
@@ -103,7 +105,8 @@ def main():
 		"gem_gemstone1": gem_gemstone1, "gem_gemstone2": gem_gemstone2, "gem_gemstone3": gem_gemstone3, "gem_gemstone4": gem_gemstone4, 
 		"gem_gemstone5": gem_gemstone5, "gem_gemstone6": gem_gemstone6, "gem_gemstone7": gem_gemstone7, "gem_gemstone8": gem_gemstone8, "gem_gemstone9": gem_gemstone9,
 		"gem_sultan1": gem_sultan1, "gem_sultan2": gem_sultan2, "gem_sultan3": gem_sultan3,
-		"gem_sultan4": gem_sultan4, "gem_sultan5": gem_sultan5, "gem_sultan6": gem_sultan6
+		"gem_sultan4": gem_sultan4, "gem_sultan5": gem_sultan5, "gem_sultan6": gem_sultan6,
+		"market_tile1": market_tile1 
 		}
 
 
@@ -124,10 +127,6 @@ def main():
 	print("player 1 location is", playerlist[0].location)
 	playerlist[0].update_location(tilelist[3].location)
 	print("player 1 location is now", playerlist[0].location)
-
-	
-	
-	
 
 	frame, font = setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
 	draw_board(frame, tilelist)

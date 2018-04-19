@@ -1,3 +1,5 @@
+from random import shuffle
+
 class Players:
 	def __init__(self, player, tilelist, tilewidth, tileheight, units):
 		additional_lira = player
@@ -58,6 +60,15 @@ class Tiles:
 			self.resources_price = ["diamonds", "fabric", "spice", "fruit", "winnow"]
 			self.resources_queue = ["diamonds", "fabric", "spice", "fruit", "winnow"]
 			self.gemstone_amount = 6
+
+		if self.name == "small_market":
+			self.merchandise = [
+				{"tilenumber": 1, "diamonds": 0, "fabric": 1, "spice": 3, "fruit": 1}, 
+				{"tilenumber": 2, "diamonds": 1, "fabric": 1, "spice": 2, "fruit": 1}
+				]
+			shuffle(self.merchandise)
+		#if self.name == "large_market":
+
 
 	# Postal office functions
 	def move_postalblocks(self, blocks):
