@@ -396,54 +396,58 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 				elif tile.name == "small_market": #Perform Small Market action
 					print("Performing small_market market action")
 					print("Current player is Player", board.current_player + 1)
-
-					option = -1
-					#sold_resources = 0
+					
 					sold_resources = {"diamonds": 0, "fabric": 0, "spice": 0, "fruit": 0}
 					display_message = "Please select an option: Press 1) diamonds, 2) fabric, 3) spice, 4) fruit, or enter 0 if you want to stop selling resources"
-					print(display_message)
-					while not ((-1 < option < 5) and (int(option))):
-						option = get_keyboardinput(event)
-						if not (-1 < option < 5):
+					
+					while True: # While the user wants to sell resources and hasn't entered "0"
+
+						while True: # While the user has not entered a valid number
+							option = -1
 							print(display_message)
-							
-					diamonds_vendable = sold_resources.get("diamonds") < tilelist[10].merchandise[0].get("diamonds")
-					fabric_vendable = sold_resources.get("diamonds") < tilelist[10].merchandise[0].get("diamonds")
-					spice_vendable = sold_resources.get("diamonds") < tilelist[10].merchandise[0].get("diamonds")
-					fruit_vendable = sold_resources.get("diamonds") < tilelist[10].merchandise[0].get("diamonds")
+							option = int(get_keyboardinput(event))
+							if (-1 < option < 5) and type(option) == int:
+								break
+								
+						diamonds_vendable = sold_resources.get("diamonds") < tilelist[10].merchandise[0].get("diamonds")
+						fabric_vendable = sold_resources.get("fabric") < tilelist[10].merchandise[0].get("fabric")
+						spice_vendable = sold_resources.get("spice") < tilelist[10].merchandise[0].get("spice")
+						fruit_vendable = sold_resources.get("fruit") < tilelist[10].merchandise[0].get("fruit")
 
-					if option == 1 and playerlist[board.current_player].resources.get("diamonds") > 0 and diamonds_vendable:
-						sold_resources["diamonds"] += 1
-						update_resource_blocks(board, playerlist, units, "diamonds", -1)
-						draw_units(frame, font, units, playerlist, board)
-					elif option == 2 and playerlist[board.current_player].resources.get("fabric") > 0 and fabric_vendable:
-						sold_resources["fabric"] += 1
-						update_resource_blocks(board, playerlist, units, "fabric", -1)
-						draw_units(frame, font, units, playerlist, board)
-					elif option == 3 and playerlist[board.current_player].resources.get("spice") > 0 and spice_vendable:
-						sold_resources["spice"] += 1
-						update_resource_blocks(board, playerlist, units, "spice", -1)
-						draw_units(frame, font, units, playerlist, board)
-					elif option == 4 and playerlist[board.current_player].resources.get("fruit") > 0 and fruit_vendable:
-						sold_resources["fruit"] += 1
-						update_resource_blocks(board, playerlist, units, "fruit", -1)
-						draw_units(frame, font, units, playerlist, board)
-					else:
-						if not (diamonds_vendable or fabric_vendable or spice_vendable or fruit_vendable):
-							print("The market doesn't allow this particular resource to be sold (anymore)")
-						else:
-							print("You do not have sufficient resources to sell that")
+						if option != 0:
+							if option == 1 and playerlist[board.current_player].resources.get("diamonds") > 0 and diamonds_vendable:
+								sold_resources["diamonds"] += 1
+								update_resource_blocks(board, playerlist, units, "diamonds", -1)
+							elif option == 2 and playerlist[board.current_player].resources.get("fabric") > 0 and fabric_vendable:
+								sold_resources["fabric"] += 1
+								update_resource_blocks(board, playerlist, units, "fabric", -1)
+							elif option == 3 and playerlist[board.current_player].resources.get("spice") > 0 and spice_vendable:
+								sold_resources["spice"] += 1
+								update_resource_blocks(board, playerlist, units, "spice", -1)
+							elif option == 4 and playerlist[board.current_player].resources.get("fruit") > 0 and fruit_vendable:
+								sold_resources["fruit"] += 1
+								update_resource_blocks(board, playerlist, units, "fruit", -1)
+							else:
+								if not (diamonds_vendable or fabric_vendable or spice_vendable or fruit_vendable):
+									print("The market doesn't allow this particular resource to be sold (anymore)")
+								else:
+									print("You do not have sufficient resources to sell that")
 
-					#Give lira based on sold resources
+							draw_tile(frame, tilelist[10])
+							draw_units(frame, font, units, playerlist, board)
+							print("So far, you have sold", sum(sold_resources.values()), "resources")
+						else: # The player wants to stop selling resources
+							break
+
 					reward = tilelist[10].reward_mapping(str(sum(sold_resources.values()))) # Sum of sold resources as string mapped to lira reward
 					print("You have sold", str(sum(sold_resources.values())), "resources, rewarding you", reward, "lira!")
 					playerlist[board.current_player].update_resources("lira", reward)
-					#Switch stack
+					
 					tilelist[10].switch_stack()
 					units.get("market_tile1").update_image_path("images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
-					#Draw tile & Units
-					draw_tile(frame, tilelist[10])
-					draw_units(frame, font, units, playerlist, board)
+					
+					#draw_tile(frame, tilelist[10])
+					#draw_units(frame, font, units, playerlist, board)
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 					board.set_nextplayer()
 
@@ -643,12 +647,14 @@ def get_keyboardinput(event):
 				option = int(numbers_entered)
 			else:
 				option = 3
+			#print("option from get get_keyboardinput", option)
+
 	return option
 
 def prompt_input(event, display_message, range):
 	option = 0
 	print(display_message)
-	while not ((range[0] < option < range[1]) and (int(option))):
+	while not ((range[0] < option < range[1]) and (type(option) == int)):
 		option = get_keyboardinput(event)
 		if not (range[0] < option < range[1]):
 			print(display_message)
