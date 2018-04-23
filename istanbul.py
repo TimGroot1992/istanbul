@@ -398,13 +398,15 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print("Current player is Player", board.current_player + 1)
 					
 					sold_resources = {"diamonds": 0, "fabric": 0, "spice": 0, "fruit": 0}
-					display_message = "Please select an option: Press 1) diamonds, 2) fabric, 3) spice, 4) fruit, or enter 0 if you want to stop selling resources"
+					display_message1 = "Please select an option: Press 1) diamonds, 2) fabric, 3) spice, 4) fruit"
+					display_message2 = "Enter 0 if you want to stop selling resources"
 					
 					while True: # While the user wants to sell resources and hasn't entered "0"
 
 						while True: # While the user has not entered a valid number
 							option = -1
-							print(display_message)
+							print(display_message1)
+							print(display_message2)
 							option = int(get_keyboardinput(event))
 							if (-1 < option < 5) and type(option) == int:
 								break
@@ -433,8 +435,6 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 								else:
 									print("You do not have sufficient resources to sell that")
 
-							draw_tile(frame, tilelist[10])
-							draw_units(frame, font, units, playerlist, board)
 							print("So far, you have sold", sum(sold_resources.values()), "resources")
 						else: # The player wants to stop selling resources
 							break
@@ -443,11 +443,12 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print("You have sold", str(sum(sold_resources.values())), "resources, rewarding you", reward, "lira!")
 					playerlist[board.current_player].update_resources("lira", reward)
 					
+					draw_tile(frame, tilelist[10])
+					draw_units(frame, font, units, playerlist, board)
+
 					tilelist[10].switch_stack()
 					units.get("market_tile1").update_image_path("images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
 					
-					#draw_tile(frame, tilelist[10])
-					#draw_units(frame, font, units, playerlist, board)
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 					board.set_nextplayer()
 
