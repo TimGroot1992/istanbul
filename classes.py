@@ -63,12 +63,12 @@ class Tiles:
 
 		if self.name == "small_market":
 			self.merchandise = [
-				{"tilenumber": 1, "diamonds": 0, "fabric": 1, "spice": 3, "fruit": 1}, 
-				{"tilenumber": 2, "diamonds": 1, "fabric": 1, "spice": 2, "fruit": 1}
+				{"tilenumber": "1", "diamonds": 0, "fabric": 1, "spice": 3, "fruit": 1}, 
+				{"tilenumber": "2", "diamonds": 1, "fabric": 1, "spice": 2, "fruit": 1}
 				]
 			shuffle(self.merchandise)
+			#print("merchandise = ", self.merchandise)
 		#if self.name == "large_market":
-
 
 	# Postal office functions
 	def move_postalblocks(self, blocks):
@@ -108,6 +108,18 @@ class Tiles:
 		if sum([diamondsleft, fabricleft, spiceleft, fruitleft]) >= self.resources_price.count("choice"):
 			result = True
 		return result
+
+	# Market functions
+	def switch_stack(self):
+		self.merchandise = self.merchandise[1:] + self.merchandise[:1]
+		#print("stack after switching = ", self.merchandise)
+
+	def reward_mapping(self, amount): #Takes the amount of resources sold at the market as parm
+		if self.name == "small_market":
+			mapping_dict = {"0": 0, "1": 2, "2": 5, "3": 9, "4": 14, "5": 20}
+		else: #Large market
+			mapping_dict = {"0": 0, "1": 3, "2": 7, "3": 12, "4": 18, "5": 25}
+		return mapping_dict.get(amount)
 
 	# General functions
 	def update_players_present(self, player, action):

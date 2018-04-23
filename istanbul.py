@@ -93,7 +93,7 @@ def main():
 	gem_sultan6 = Object(tilelist[12].x + tilewidth*(1370/1611), tilelist[12].y + tileheight*(670/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
 
 	# Market tiles
-	market_tile = Object(tilelist[10].x + tilewidth*(650/1611), tilelist[10].y + tileheight*(840/1084), tilewidth/6, tileheight/10, "images/small_market_tile1.png")
+	market_tile1 = Object(tilelist[10].x + tilewidth*(322/1619), tilelist[10].y + tileheight*(330/1084), tilewidth/3.42, tileheight/1.78, "images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
 
 	units = {
 		"postalblock_1": postalblock_1, "postalblock_2": postalblock_2, "postalblock_3": postalblock_3, "postalblock_4": postalblock_4,
@@ -248,10 +248,6 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 			#pygame.event.wait()
 			print(event)
 
-			#Blit background
-			#Update location of all units within a list
-			#pygame.display.update(Unit list)
-
 			if event.type == pygame.MOUSEBUTTONUP:
 				mouseposition = pygame.mouse.get_pos()
 				pos_x = mouseposition[0]
@@ -324,7 +320,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 					board.set_nextplayer()
 
-				elif tile.name == "fruit_warehouse": #Perform fabric warehouse action
+				elif tile.name == "fruit_warehouse": #Perform fruit warehouse action
 					print("Performing fruit warehouse action")
 					print("Current player is Player", board.current_player + 1)
 					
@@ -336,7 +332,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 					board.set_nextplayer()
 
-				elif tile.name == "spice_warehouse": #Perform fabric warehouse action
+				elif tile.name == "spice_warehouse": #Perform spice warehouse action
 					print("Performing spice warehouse action")
 					print("Current player is Player", board.current_player + 1)
 					
@@ -348,12 +344,12 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 					board.set_nextplayer()
 
-				elif tile.name == "black_market": #Perform fabric warehouse action
+				elif tile.name == "black_market": #Perform Black Market action
 					print("Performing black market action")
 					print("Current player is Player", board.current_player + 1)
 
 					option = 0
-					display_message = "Please select an options: Press 1) fabric, 2) spice, 3) fruit"
+					display_message = "Please select an option: Press 1) fabric, 2) spice, 3) fruit"
 					print(display_message)
 					while not ((0 < option < 4) and (int(option))):
 						option = get_keyboardinput(event)
@@ -394,6 +390,60 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					else:
 						print("Too bad, you receive no diamonds...")
 
+					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
+					board.set_nextplayer()
+
+				elif tile.name == "small_market": #Perform Small Market action
+					print("Performing small_market market action")
+					print("Current player is Player", board.current_player + 1)
+
+					option = -1
+					#sold_resources = 0
+					sold_resources = {"diamonds": 0, "fabric": 0, "spice": 0, "fruit": 0}
+					display_message = "Please select an option: Press 1) diamonds, 2) fabric, 3) spice, 4) fruit, or enter 0 if you want to stop selling resources"
+					print(display_message)
+					while not ((-1 < option < 5) and (int(option))):
+						option = get_keyboardinput(event)
+						if not (-1 < option < 5):
+							print(display_message)
+							
+					diamonds_vendable = sold_resources.get("diamonds") < tilelist[10].merchandise[0].get("diamonds")
+					fabric_vendable = sold_resources.get("diamonds") < tilelist[10].merchandise[0].get("diamonds")
+					spice_vendable = sold_resources.get("diamonds") < tilelist[10].merchandise[0].get("diamonds")
+					fruit_vendable = sold_resources.get("diamonds") < tilelist[10].merchandise[0].get("diamonds")
+
+					if option == 1 and playerlist[board.current_player].resources.get("diamonds") > 0 and diamonds_vendable:
+						sold_resources["diamonds"] += 1
+						update_resource_blocks(board, playerlist, units, "diamonds", -1)
+						draw_units(frame, font, units, playerlist, board)
+					elif option == 2 and playerlist[board.current_player].resources.get("fabric") > 0 and fabric_vendable:
+						sold_resources["fabric"] += 1
+						update_resource_blocks(board, playerlist, units, "fabric", -1)
+						draw_units(frame, font, units, playerlist, board)
+					elif option == 3 and playerlist[board.current_player].resources.get("spice") > 0 and spice_vendable:
+						sold_resources["spice"] += 1
+						update_resource_blocks(board, playerlist, units, "spice", -1)
+						draw_units(frame, font, units, playerlist, board)
+					elif option == 4 and playerlist[board.current_player].resources.get("fruit") > 0 and fruit_vendable:
+						sold_resources["fruit"] += 1
+						update_resource_blocks(board, playerlist, units, "fruit", -1)
+						draw_units(frame, font, units, playerlist, board)
+					else:
+						if not (diamonds_vendable or fabric_vendable or spice_vendable or fruit_vendable):
+							print("The market doesn't allow this particular resource to be sold (anymore)")
+						else:
+							print("You do not have sufficient resources to sell that")
+
+					#Give lira based on sold resources
+					reward = tilelist[10].reward_mapping(str(sum(sold_resources.values()))) # Sum of sold resources as string mapped to lira reward
+					print("You have sold", str(sum(sold_resources.values())), "resources, rewarding you", reward, "lira!")
+					playerlist[board.current_player].update_resources("lira", reward)
+					#Switch stack
+					tilelist[10].switch_stack()
+					units.get("market_tile1").update_image_path("images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
+					#Draw tile & Units
+					draw_tile(frame, tilelist[10])
+					draw_units(frame, font, units, playerlist, board)
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 					board.set_nextplayer()
 
@@ -590,10 +640,10 @@ def get_keyboardinput(event):
 			enter_pressed = True
 			#print("You pressed enter")
 			if numbers_entered != "":
-				bet = int(numbers_entered)
+				option = int(numbers_entered)
 			else:
-				bet = 3
-	return bet
+				option = 3
+	return option
 
 def prompt_input(event, display_message, range):
 	option = 0
