@@ -64,12 +64,22 @@ class Tiles:
 		if self.name == "small_market":
 			self.merchandise = [
 				{"tilenumber": "1", "diamonds": 0, "fabric": 1, "spice": 3, "fruit": 1}, 
-				{"tilenumber": "2", "diamonds": 1, "fabric": 1, "spice": 2, "fruit": 1}
+				{"tilenumber": "2", "diamonds": 1, "fabric": 1, "spice": 2, "fruit": 1},
+				{"tilenumber": "3", "diamonds": 1, "fabric": 1, "spice": 1, "fruit": 2},
+				{"tilenumber": "4", "diamonds": 0, "fabric": 1, "spice": 2, "fruit": 2},
+				{"tilenumber": "5", "diamonds": 1, "fabric": 0, "spice": 2, "fruit": 2}
 				]
 			shuffle(self.merchandise)
-			#print("merchandise = ", self.merchandise)
-		#if self.name == "large_market":
-
+		if self.name == "large_market":
+			self.merchandise = [
+				{"tilenumber": "1", "diamonds": 2, "fabric": 2, "spice": 1, "fruit": 0}, 
+				{"tilenumber": "2", "diamonds": 2, "fabric": 1, "spice": 1, "fruit": 1},
+				{"tilenumber": "3", "diamonds": 3, "fabric": 1, "spice": 0, "fruit": 1},
+				{"tilenumber": "4", "diamonds": 3, "fabric": 1, "spice": 1, "fruit": 0},
+				{"tilenumber": "5", "diamonds": 2, "fabric": 2, "spice": 0, "fruit": 1}
+				]
+			shuffle(self.merchandise)
+			
 	# Postal office functions
 	def move_postalblocks(self, blocks):
 		blocks.append(blocks.pop(0))
