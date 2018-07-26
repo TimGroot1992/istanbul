@@ -28,7 +28,8 @@ p2_windowwidth = p1_windowwidth
 p2_windowheight = p1_windowheight
 
 black = (0, 0, 0)
-white = (255, 255, 204)
+white = (255, 255, 255)
+offwhite = (255, 255, 204)
 yellow = (255, 163, 26)
 red = (255, 0, 0)
 green = (0, 255, 0)
@@ -48,6 +49,7 @@ def main():
 		"sultans_palace": [4, 1], "large_market": [4, 2], "wainwright": [4, 3], "gemstone_dealer": [4, 4]}
 	tilelist = [Tiles(tile, tiles.get(tile), boardx, boardy, tilewidth, tileheight, tilegap) for tile in tiles]
 
+	# Object template: Object(x, y, width, height, image_path)
 	postalblock_1 = Object(tilelist[1].x + tilewidth*(191/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	postalblock_2 = Object(tilelist[1].x + tilewidth*(388/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	postalblock_3 = Object(tilelist[1].x + tilewidth*(584/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
@@ -63,17 +65,19 @@ def main():
 	resourceblock_7 = Object(resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(433/1074), resource_p2.width/15, resource_p2.width/15, "")
 	resourceblock_8 = Object(resource_p2.x + resource_p2.width*(373/1604), resource_p2.y + resource_p2.height*(573/1074), resource_p2.width/15, resource_p2.width/15, "")
 
+	# Coin- and text objects
 	coin_p1 = Object(resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/6, resource_p1.width/6, "")
 	coin_p2 = Object(resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/6, resource_p2.width/6, "")
 	lira_1 = Object(resource_p1.x + p1_windowwidth*(5/6), resource_p1.y + p1_windowheight*(1/5), resource_p1.width/6, resource_p1.width/6, "")
 	lira_2 = Object(resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/6, resource_p2.width/6, "")
 
+	# Mosque Tiles
 	gem_small_mosque1 = Object(tilelist[3].x, tilelist[3].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_small_mosque2 = Object(tilelist[3].x + tilewidth/15, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_great_mosque1 = Object(tilelist[0].x, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_great_mosque2 = Object(tilelist[0].x + tilewidth/15, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
 
-	# Gemstone Dealer gems
+	# Gemstone Dealer Gems
 	gem_gemstone1 = Object(tilelist[15].x + tilewidth/3.4, tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_gemstone2 = Object(tilelist[15].x + tilewidth/2.5, tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_gemstone3 = Object(tilelist[15].x + tilewidth*(830/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
@@ -84,7 +88,7 @@ def main():
 	gem_gemstone8 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(478/1077), tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_gemstone9 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(298/1077), tileheight/8, tileheight/8, "images/gemstone_2.png")
 
-	# Sultans Palace gems
+	# Sultans Palace Gems
 	gem_sultan1 = Object(tilelist[12].x + tilewidth*(650/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_sultan2 = Object(tilelist[12].x + tilewidth*(830/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_sultan3 = Object(tilelist[12].x + tilewidth*(1010/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
@@ -92,9 +96,13 @@ def main():
 	gem_sultan5 = Object(tilelist[12].x + tilewidth*(1370/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
 	gem_sultan6 = Object(tilelist[12].x + tilewidth*(1370/1611), tilelist[12].y + tileheight*(670/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
 
-	# Market tiles
+	# Market Tiles
 	small_market_tiles = Object(tilelist[10].x + tilewidth*(322/1619), tilelist[10].y + tileheight*(330/1084), tilewidth/3.42, tileheight/1.78, "images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
 	large_market_tiles = Object(tilelist[13].x + tilewidth*(313/1612), tilelist[13].y + tileheight*(325/1079), tilewidth/3.35, tileheight/1.78, "images/large_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
+
+	# End Turn Button and Text
+	end_turn_button = Object(p1_windowx + ((p1_windowwidth - tilewidth)/2), tilelist[15].y + tileheight, tilewidth, tileheight/2, "images/buttonblue.png")
+	end_turn_button_text = Object(p1_windowx + ((p1_windowwidth - tilewidth)/2), tilelist[15].y + tileheight, tilewidth, tileheight/2, "")
 
 	units = {
 		"postalblock_1": postalblock_1, "postalblock_2": postalblock_2, "postalblock_3": postalblock_3, "postalblock_4": postalblock_4,	
@@ -107,8 +115,9 @@ def main():
 		"gem_sultan1": gem_sultan1, "gem_sultan2": gem_sultan2, "gem_sultan3": gem_sultan3,
 		"gem_sultan4": gem_sultan4, "gem_sultan5": gem_sultan5, "gem_sultan6": gem_sultan6,
 		"small_market_tiles": small_market_tiles, "large_market_tiles": large_market_tiles,
-		"resource_p1": resource_p1, "resource_p2": resource_p2
-		}
+		"resource_p1": resource_p1, "resource_p2": resource_p2,
+		"end_turn_button": end_turn_button, "end_turn_button_text": end_turn_button_text
+	}
 
 	playerlist = [Players(i, tilelist, tilewidth, tileheight, units) for i in range(0, board.number_of_players)]
 	
@@ -149,7 +158,6 @@ def main():
 			do family members, get 3 lira or 1 bonus card
 			optionally: do governor, smuggler action	
 	'''
-
 
 def setup_GUI(framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist):
 	global background
@@ -214,16 +222,19 @@ def draw_boxes(frame, name):
 def draw_units(frame, font, units, playerlist, board):
 	for name, unit in units.items():
 		if "block" in name:
-			pygame.draw.rect(frame, white, (unit.x, unit.y, unit.width, unit.height))
+			pygame.draw.rect(frame, offwhite, (unit.x, unit.y, unit.width, unit.height))
 		elif "coin" in name:
 			pygame.gfxdraw.aacircle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
 			pygame.gfxdraw.filled_circle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
 		elif "lira" in name:
-			textsurface = font.render(str(playerlist[int(name.split("_")[1]) - 1].resources.get('lira')), False, (0, 0, 0))
+			textsurface = font.render(str(playerlist[int(name.split("_")[1]) - 1].resources.get('lira')), False, black)
 			if playerlist[int(name.split("_")[1]) - 1].resources.get('lira') < 10:
 				frame.blit(textsurface, (unit.x - unit.width/7, unit.y - unit.height/3))
 			else:
 				frame.blit(textsurface, (unit.x - unit.width/4, unit.y - unit.height/3))
+		elif "text" in name:
+			textsurface = font.render("End Turn", False, white)
+			frame.blit(textsurface, (unit.x + unit.width/3, unit.y + unit.height/3))
 		else: #Shape loaded by image
 			try:
 				currentunit = pygame.image.load(unit.image_path).convert_alpha()
@@ -263,12 +274,23 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					if pos_x > unit.x and pos_x < (unit.x + unit.width) and pos_y > unit.y and pos_y < (unit.y + unit.height):
 						clicked_object = key
 						break
-
 				print("You clicked on tile", clicked_tile)
 				if clicked_object != "None":
 					print("You clicked on object", clicked_object)
 
-				if clicked_tile == "postal_office": #Perform postal office action
+
+				if clicked_object == "end_turn_button":
+					print(f"player name is {playerlist[board.current_player].name}")
+					print(f"{playerlist[board.current_player].name}'s turn was ended!")
+					if "1" in playerlist[board.current_player].name: # Player was is the current player
+						units.get("end_turn_button").update_image_path("images/buttonred.png")
+					else:
+						units.get("end_turn_button").update_image_path("images/buttonblue.png")
+					draw_units(frame, font, units, playerlist, board)
+					board.set_nextplayer()
+					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
+
+				elif clicked_tile == "postal_office": #Perform postal office action
 					print("Performing postal office action")
 					print("Current player is Player", board.current_player + 1)
 					for key, value in tilelist[1].blocks[0].items():
