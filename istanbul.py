@@ -253,6 +253,7 @@ def draw_units(frame, font, units, playerlist, board):
 			currentunit = pygame.transform.smoothscale(currentunit, (int(unit.width), int(unit.height)))
 			#currentunit.set_colorkey((255, 255, 255))
 			frame.blit(currentunit, (unit.x, unit.y))
+		#print(f"I just drew unit {name}")
 
 def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 	global tilewidth
@@ -439,7 +440,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						if mouse_clicked():
 							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
 							#print(f"Clicked object is \"{clicked_object}\"")
-						
+
 							diamonds_vendable = sold_resources.get("diamonds") < tilelist[10].merchandise[0].get("diamonds")
 							fabric_vendable = sold_resources.get("fabric") < tilelist[10].merchandise[0].get("fabric")
 							spice_vendable = sold_resources.get("spice") < tilelist[10].merchandise[0].get("spice")
@@ -448,19 +449,15 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 							if (clicked_object == "resourceblock_1" or clicked_object == "resourceblock_5") and playerlist[board.current_player].resources.get("diamonds") > 0 and diamonds_vendable:
 								sold_resources["diamonds"] += 1
 								update_resource_blocks(board, playerlist, units, "diamonds", -1)
-								draw_units(frame, font, units, playerlist, board) # Update visually as well
 							elif (clicked_object == "resourceblock_2" or clicked_object == "resourceblock_6") and playerlist[board.current_player].resources.get("fabric") > 0 and fabric_vendable:
 								sold_resources["fabric"] += 1
 								update_resource_blocks(board, playerlist, units, "fabric", -1)
-								draw_units(frame, font, units, playerlist, board)
 							elif (clicked_object == "resourceblock_3" or clicked_object == "resourceblock_7") and playerlist[board.current_player].resources.get("spice") > 0 and spice_vendable:
 								sold_resources["spice"] += 1
 								update_resource_blocks(board, playerlist, units, "spice", -1)
-								draw_units(frame, font, units, playerlist, board)
 							elif (clicked_object == "resourceblock_4" or clicked_object == "resourceblock_8") and playerlist[board.current_player].resources.get("fruit") > 0 and fruit_vendable:
 								sold_resources["fruit"] += 1
 								update_resource_blocks(board, playerlist, units, "fruit", -1)
-								draw_units(frame, font, units, playerlist, board)
 							elif clicked_object == "None":
 								print("\tTo sell a resource, please click on your slider block of the desired resource")
 							else:
@@ -469,7 +466,9 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 								else:
 									print("You do not have sufficient resources to sell that")
 							print("\tSo far, you have sold", sum(sold_resources.values()), "resources")
-					
+							draw_units(frame, font, units, playerlist, board)
+							pygame.display.update()
+
 					reward = tilelist[10].reward_mapping(str(sum(sold_resources.values()))) # Sum of sold resources as string mapped to lira reward
 					print("You have sold", str(sum(sold_resources.values())), "resources, rewarding you", reward, "lira!")
 					print("")
