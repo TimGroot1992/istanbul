@@ -448,15 +448,19 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 							if (clicked_object == "resourceblock_1" or clicked_object == "resourceblock_5") and playerlist[board.current_player].resources.get("diamonds") > 0 and diamonds_vendable:
 								sold_resources["diamonds"] += 1
 								update_resource_blocks(board, playerlist, units, "diamonds", -1)
+								draw_units(frame, font, units, playerlist, board) # Update visually as well
 							elif (clicked_object == "resourceblock_2" or clicked_object == "resourceblock_6") and playerlist[board.current_player].resources.get("fabric") > 0 and fabric_vendable:
 								sold_resources["fabric"] += 1
 								update_resource_blocks(board, playerlist, units, "fabric", -1)
+								draw_units(frame, font, units, playerlist, board)
 							elif (clicked_object == "resourceblock_3" or clicked_object == "resourceblock_7") and playerlist[board.current_player].resources.get("spice") > 0 and spice_vendable:
 								sold_resources["spice"] += 1
 								update_resource_blocks(board, playerlist, units, "spice", -1)
+								draw_units(frame, font, units, playerlist, board)
 							elif (clicked_object == "resourceblock_4" or clicked_object == "resourceblock_8") and playerlist[board.current_player].resources.get("fruit") > 0 and fruit_vendable:
 								sold_resources["fruit"] += 1
 								update_resource_blocks(board, playerlist, units, "fruit", -1)
+								draw_units(frame, font, units, playerlist, board)
 							elif clicked_object == "None":
 								print("\tTo sell a resource, please click on your slider block of the desired resource")
 							else:
@@ -468,6 +472,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					
 					reward = tilelist[10].reward_mapping(str(sum(sold_resources.values()))) # Sum of sold resources as string mapped to lira reward
 					print("You have sold", str(sum(sold_resources.values())), "resources, rewarding you", reward, "lira!")
+					print("")
 					playerlist[board.current_player].update_resources("lira", reward)
 
 					tilelist[10].switch_stack()
@@ -533,7 +538,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print("Current player is Player", board.current_player + 1)
 					
 					if (tile.has_sufficient_resources(playerlist[board.current_player])) and (tile.gemstone_amount > 0): #Player has sufficient resources to pay requirements
-						for item in tile.resources_price:
+						for item in tilelist[12].resources_price:
 							if item != "winnow":
 								update_resource_blocks(board, playerlist, units, item, -1)
 							else:
@@ -560,8 +565,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						playerlist[board.current_player].update_resources("gemstones", 1)
 						print(playerlist[board.current_player].name, "bought a gemstone!")
 						
-						units.get("gem_sultan" + str(7 - tile.gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
-						units.get("gem_sultan" + str(7 - tile.gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
+						units.get("gem_sultan" + str(7 - tilelist[12].gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
+						units.get("gem_sultan" + str(7 - tilelist[12].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
 						playerlist[board.current_player].update_gemstone_slots()
 
 						tile.increase_resources_price()
@@ -580,24 +585,24 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 				elif clicked_tile == "gemstone_dealer": #Perform gemstone dealer action
 					print("Performing gemstone dealer action")
 					print("Current player is Player", board.current_player + 1)
-					if playerlist[board.current_player].resources.get("lira") >= tile.gemstone_price and tile.gemstone_amount > 0:
-						playerlist[board.current_player].update_resources("lira", -(tile.gemstone_price))
+					if playerlist[board.current_player].resources.get("lira") >= tilelist[15].gemstone_price and tilelist[15].gemstone_amount > 0:
+						playerlist[board.current_player].update_resources("lira", -(tilelist[15].gemstone_price))
 						playerlist[board.current_player].update_resources("gemstones", 1)
 						print(playerlist[board.current_player].name, "bought a gemstone!")
 						units.get("gem_gemstone" + str(10 - tile.gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
 						units.get("gem_gemstone" + str(10 - tile.gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
 						playerlist[board.current_player].update_gemstone_slots()
 
-						tile.increase_gemstone_price()
-						tile.decrease_gemstone_amount()
+						tilelist[15].increase_gemstone_price()
+						tilelist[15].decrease_gemstone_amount()
 						board.set_nextplayer()
+						print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
 					else:
-						if tile.gemstone_amount == 0:
+						if tilelist[15].gemstone_amount == 0:
 							print("The gemstone dealer ran out of gems, find another way to collect more gemstones!")
 						else:
 							print("You do not have sufficient resources to purchase a gemstone!")
 					
-					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
 					draw_tile(frame, tilelist[15])
 					draw_units(frame, font, units, playerlist, board)
 	
