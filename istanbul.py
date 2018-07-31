@@ -8,9 +8,9 @@ from pygame import gfxdraw
 
 from classes import Board, Players, Tiles, Object
 
-windowtype = RESIZABLE
-framewidth = 800		
-frameheight = 600
+windowtype = FULLSCREEN
+framewidth = 1920			
+frameheight = 1080
 boardx = 25
 boardy = 25
 tilegap = 5

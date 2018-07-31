@@ -174,15 +174,15 @@ class Board:
 		self.number_of_players = number_of_players
 		self.number_of_tiles = number_of_tiles
 		self.current_player = 0
-		self.next_player_button = "images/buttonred.png"
+		self.next_player_button = "images/buttonblue.png"
 		
 	def set_nextplayer(self):
 		if not (self.current_player + 1) > self.number_of_players - 1:
 			self.current_player = self.current_player + 1
-			self.next_player_button = "images/buttonblue.png"
+			self.next_player_button = "images/buttonred.png"
 		else:
 			self.current_player = 0
-			self.next_player_button = "images/buttonred.png"
+			self.next_player_button = "images/buttonblue.png"
 
 	def move_islegal(player, move_from, move_to): #Tile1, Tile2
 		print("move from is", move_from.location)
