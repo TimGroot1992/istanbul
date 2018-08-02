@@ -381,47 +381,47 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print("Performing black market action")
 					print("Current player is Player", board.current_player + 1)
 
-					option = 0
-					display_message = "Please select an option: Press 1) fabric, 2) spice, 3) fruit"
-					print(display_message)
-					while not ((0 < option < 4) and (int(option))):
-						option = get_keyboardinput(event)
-						if not (0 < option < 4):
-							print(display_message)
-					if option == 1:
-						draw_tile(frame, tilelist[8])
-						update_resource_blocks(board, playerlist, units, "fabric", 1)
-						draw_units(frame, font, units, playerlist, board)
-					elif option == 2:
-						draw_tile(frame, tilelist[8])
-						update_resource_blocks(board, playerlist, units, "spice", 1)
-						draw_units(frame, font, units, playerlist, board)
-					else:
-						draw_tile(frame, tilelist[8])
-						update_resource_blocks(board, playerlist, units, "fruit", 1)
-						draw_units(frame, font, units, playerlist, board)
+					print("\tPlease click on an option: fabric, spice or fruit!")
+					while clicked_object != "resourceblock_2" or clicked_object != "resourceblock_3" or clicked_object != "resourceblock_4" or clicked_object != "resourceblock_6" or clicked_object != "resourceblock_7" or clicked_object != "resourceblock_8":
+						if mouse_clicked():
+							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+							#print(f"Clicked object is \"{clicked_object}\"")
+							if (("2" in clicked_object) or ("6" in clicked_object)):
+								draw_tile(frame, tilelist[8])
+								update_resource_blocks(board, playerlist, units, "fabric", 1)
+								draw_units(frame, font, units, playerlist, board)
+							elif (("3" in clicked_object) or ("7" in clicked_object)):
+								draw_tile(frame, tilelist[8])
+								update_resource_blocks(board, playerlist, units, "spice", 1)
+								draw_units(frame, font, units, playerlist, board)
+							else:
+								draw_tile(frame, tilelist[8])
+								update_resource_blocks(board, playerlist, units, "fruit", 1)
+								draw_units(frame, font, units, playerlist, board)
+							pygame.display.update()
+							break
 					
-					print("Rolling the dice to see if you win any diamonds...")
+					print("\tRolling the dice to see if you win any diamonds...")
 					dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units) 
 					if dice_roll > 10:
-						print("Congratulations, you have won 3 diamonds!")
+						print("\tCongratulations, you have won 3 diamonds!")
 						#playerlist[board.current_player].update_resources("diamonds", 2)
 						draw_tile(frame, tilelist[8])
 						update_resource_blocks(board, playerlist, units, "diamonds", 3)
 						draw_units(frame, font, units, playerlist, board) 
 					elif dice_roll > 8:
-						print("Congratulations, you have won 2 diamonds!")
+						print("\t\tCongratulations, you have won 2 diamonds!")
 						#playerlist[board.current_player].update_resources("diamonds", 2)
 						draw_tile(frame, tilelist[8])
 						update_resource_blocks(board, playerlist, units, "diamonds", 2)
 						draw_units(frame, font, units, playerlist, board) 
 					elif dice_roll > 6:
-						print("Congratulations, you have won 1 diamond!")
+						print("\t\tCongratulations, you have won 1 diamond!")
 						draw_tile(frame, tilelist[8])
 						update_resource_blocks(board, playerlist, units, "diamonds", 1)
 						draw_units(frame, font, units, playerlist, board) 
 					else:
-						print("Too bad, you receive no diamonds...")
+						print("\t\tToo bad, you receive no diamonds...")
 
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
@@ -756,7 +756,7 @@ def roll_dice(board, frame, font, playerlist, tilelist, units):
 		# pause = 0.5 + ((12.25 - math_velocity(x_distance)/ 12.25) * 1.5)
 		# x_distance = x_distance + pause
 
-	print("You have thrown", (randomnumber + randomnumber2))
+	print("\tYou have thrown", (randomnumber + randomnumber2))
 	#pygame.display.update()
 	return randomnumber + randomnumber2
 
