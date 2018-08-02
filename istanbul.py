@@ -542,48 +542,67 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print("Performing sultans palace's action")
 					print("Current player is Player", board.current_player + 1)
 					
-					if (tile.has_sufficient_resources(playerlist[board.current_player])) and (tile.gemstone_amount > 0): #Player has sufficient resources to pay requirements
+					if (tilelist[12].has_sufficient_resources(playerlist[board.current_player])) and (tilelist[12].gemstone_amount > 0): #Player has sufficient resources to pay requirements
 						for item in tilelist[12].resources_price:
 							if item != "winnow":
 								update_resource_blocks(board, playerlist, units, item, -1)
-							else:
-								# Then pay the resource(s) of choice (the winnow)
-								sold = False
-								while not sold: #Player has to pick a resource possession to continue
-									display_message = "Now, please select your resource of choice to sell: Press 1) diamonds, 2) fabric, 3) spice, 4) fruit"
-									option = prompt_input(event, display_message, [0, 5])
-									if option == 1 and playerlist[board.current_player].resources.get("diamonds") > 0:
+								draw_units(frame, font, units, playerlist, board)
+								pygame.display.update()
+							#else:
+						# Then pay the resource(s) of choice (the winnow)
+						sold = False
+						while not sold: #Player has to pick a resource possession to continue
+							display_message = "\tNow, please select your resource of choice to sell: Press 1) diamonds, 2) fabric, 3) spice, 4) fruit"
+
+							while "resourceblock" not in clicked_object:
+								#pygame.event.wait()
+								if mouse_clicked():
+									clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+									#print(f"Clicked object is {clicked_object}")
+									if (("1" in clicked_object) or ("5" in clicked_object)) and playerlist[board.current_player].resources['diamonds'] > 0:
 										update_resource_blocks(board, playerlist, units, "diamonds", -1)
 										sold = True
-									elif option == 2 and playerlist[board.current_player].resources.get("fabric") > 0:
+										draw_units(frame, font, units, playerlist, board)
+										pygame.display.update()
+										break
+									elif (("2" in clicked_object) or ("6" in clicked_object)) and playerlist[board.current_player].resources['fabric'] > 0:
 										update_resource_blocks(board, playerlist, units, "fabric", -1)
 										sold = True
-									elif option == 3 and playerlist[board.current_player].resources.get("spice") > 0:
+										draw_units(frame, font, units, playerlist, board)
+										pygame.display.update()
+										break
+									elif (("3" in clicked_object) or ("7" in clicked_object)) and playerlist[board.current_player].resources['spice'] > 0:
 										update_resource_blocks(board, playerlist, units, "spice", -1)
 										sold = True
-									elif option == 4 and playerlist[board.current_player].resources.get("fruit") > 0:
+										draw_units(frame, font, units, playerlist, board)
+										pygame.display.update()
+										break
+									elif (("4" in clicked_object) or ("8" in clicked_object)) and playerlist[board.current_player].resources['fruit'] > 0:
 										update_resource_blocks(board, playerlist, units, "fruit", -1)
 										sold = True
+										draw_units(frame, font, units, playerlist, board)
+										pygame.display.update()
+										break
 									else:
-										print("You do not have sufficient resources to sell that, select another resource")
+										print("\tYou do not have sufficient resources to sell that, select another resource")
 							
 						playerlist[board.current_player].update_resources("gemstones", 1)
-						print(playerlist[board.current_player].name, "bought a gemstone!")
+						print("\t", playerlist[board.current_player].name, "bought a gemstone!")
 						
 						units.get("gem_sultan" + str(7 - tilelist[12].gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
 						units.get("gem_sultan" + str(7 - tilelist[12].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
 						playerlist[board.current_player].update_gemstone_slots()
 
-						tile.increase_resources_price()
-						tile.decrease_gemstone_amount()
+						tilelist[12].increase_resources_price()
+						tilelist[12].decrease_gemstone_amount()
 						board.set_nextplayer()
 					else:
-						if tile.gemstone_amount == 0:
+						if tilelist[12].gemstone_amount == 0:
 							print("The Sultan's palace ran out of gems, find another way to collect more gemstones!")
 						else:
 							print("You do not have sufficient resources to purchase a gemstone!")
 					
-					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
+					#print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
 					draw_tile(frame, tilelist[12])
 					draw_units(frame, font, units, playerlist, board)
 
