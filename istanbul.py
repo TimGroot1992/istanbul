@@ -8,9 +8,9 @@ from pygame import gfxdraw
 
 from classes import Board, Players, Tiles, Object
 
-windowtype = FULLSCREEN
-framewidth = 1920			
-frameheight = 1080
+windowtype = RESIZABLE
+framewidth = 800			
+frameheight = 600
 boardx = 25
 boardy = 25
 tilegap = 5
@@ -386,20 +386,26 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						if mouse_clicked():
 							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
 							#print(f"Clicked object is \"{clicked_object}\"")
-							if (("2" in clicked_object) or ("6" in clicked_object)):
+							if (("resourceblock_2" in clicked_object) or ("resourceblock_6" in clicked_object)):
 								draw_tile(frame, tilelist[8])
 								update_resource_blocks(board, playerlist, units, "fabric", 1)
 								draw_units(frame, font, units, playerlist, board)
-							elif (("3" in clicked_object) or ("7" in clicked_object)):
+								pygame.display.update()
+								break
+							elif (("resourceblock_3" in clicked_object) or ("resourceblock_7" in clicked_object)):
 								draw_tile(frame, tilelist[8])
 								update_resource_blocks(board, playerlist, units, "spice", 1)
 								draw_units(frame, font, units, playerlist, board)
-							else:
+								pygame.display.update()
+								break
+							elif (("resourceblock_4" in clicked_object) or ("resourceblock_8" in clicked_object)):
 								draw_tile(frame, tilelist[8])
 								update_resource_blocks(board, playerlist, units, "fruit", 1)
 								draw_units(frame, font, units, playerlist, board)
-							pygame.display.update()
-							break
+								pygame.display.update()
+								break
+							else:
+								print("\tPlease click on an option on your resource cart: fabric, spice or fruit")
 					
 					print("\tRolling the dice to see if you win any diamonds...")
 					dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units) 
