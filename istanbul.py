@@ -268,10 +268,9 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 
 			if event.type == pygame.MOUSEBUTTONUP:
 				clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-				print("You clicked on tile", clicked_tile)
+				#print("You clicked on tile", clicked_tile)
 				if clicked_object != "None":
-					print("You clicked on object", clicked_object)
-
+					#print("You clicked on object", clicked_object)
 
 				if clicked_object == "end_turn_button":
 					#print(f"player name is {playerlist[board.current_player].name}")
@@ -430,8 +429,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						print("\t\tToo bad, you receive no diamonds...")
 
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
 					board.set_nextplayer()
+					print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
 					draw_units(frame, font, units, playerlist, board)
 
 				elif clicked_tile == "small_market": #Perform Small Market action
@@ -439,8 +438,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print("Current player is Player", board.current_player + 1)
 					
 					sold_resources = {"diamonds": 0, "fabric": 0, "spice": 0, "fruit": 0}
-					display_message1 = "Please select an option: Press 1) diamonds, 2) fabric, 3) spice, 4) fruit"
-					display_message2 = "Enter 0 if you want to stop selling resources"
+					#display_message1 = "Please select an option: Press 1) diamonds, 2) fabric, 3) spice, 4) fruit"
+					#display_message2 = "Enter 0 if you want to stop selling resources"
 
 					while clicked_object != "end_turn_button":
 						if mouse_clicked():
@@ -540,7 +539,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 
 				elif clicked_tile == "sultans_palace": #Perform Sultans Palace action
 					print("Performing sultans palace's action")
-					print("Current player is Player", board.current_player + 1)
+					#print("Current player is Player", board.current_player + 1)
 					
 					if (tilelist[12].has_sufficient_resources(playerlist[board.current_player])) and (tilelist[12].gemstone_amount > 0): #Player has sufficient resources to pay requirements
 						for item in tilelist[12].resources_price:
@@ -551,11 +550,11 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 							#else:
 						# Then pay the resource(s) of choice (the winnow)
 						sold = False
+						print("\tPlease click on a resource of choice to sell")
 						while not sold: #Player has to pick a resource possession to continue
-							display_message = "\tNow, please select your resource of choice to sell: Press 1) diamonds, 2) fabric, 3) spice, 4) fruit"
-
+							
+							clicked_object = "None"
 							while "resourceblock" not in clicked_object:
-								#pygame.event.wait()
 								if mouse_clicked():
 									clicked_tile, clicked_object = get_clicked_item(tilelist, units)
 									#print(f"Clicked object is {clicked_object}")
@@ -587,7 +586,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 										print("\tYou do not have sufficient resources to sell that, select another resource")
 							
 						playerlist[board.current_player].update_resources("gemstones", 1)
-						print("\t", playerlist[board.current_player].name, "bought a gemstone!")
+						print(f"\t{playerlist[board.current_player].name} bought a gemstone!")
 						
 						units.get("gem_sultan" + str(7 - tilelist[12].gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
 						units.get("gem_sultan" + str(7 - tilelist[12].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
@@ -598,9 +597,9 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						board.set_nextplayer()
 					else:
 						if tilelist[12].gemstone_amount == 0:
-							print("The Sultan's palace ran out of gems, find another way to collect more gemstones!")
+							print("\tThe Sultan's palace ran out of gems, find another way to collect more gemstones!")
 						else:
-							print("You do not have sufficient resources to purchase a gemstone!")
+							print("\tYou do not have sufficient resources to purchase a gemstone!")
 					
 					#print("Next player's turn, go ahead", playerlist[board.current_player].name, "!")
 					draw_tile(frame, tilelist[12])
@@ -726,6 +725,7 @@ def get_clicked_item(tilelist, units):
 	return clicked_tile, clicked_object
 
 def mouse_clicked():
+	#pygame.event.wait()
 	for event in pygame.event.get():
 		#print(f"Nested Event: {event}")
 		if event.type == pygame.MOUSEBUTTONUP:
