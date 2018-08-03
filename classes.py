@@ -4,7 +4,7 @@ class Players:
 	def __init__(self, player, tilelist, tilewidth, tileheight, units):
 		additional_lira = player
 		self.name = "Player" + str(player + 1)
-		self.resources = {"lira": 2 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
+		self.resources = {"lira": 50 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
 		self.gemstone_slots = [
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(400/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(605/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
@@ -57,9 +57,11 @@ class Tiles:
 			self.gemstone_price = 15
 			self.gemstone_amount = 9
 		if self.name == "sultans_palace":
-			self.resources_price = ["diamonds", "fabric", "spice", "fruit", "winnow"]
-			self.resources_queue = ["diamonds", "fabric", "spice", "fruit", "winnow"]
+			self.resources_price = ["diamonds", "fabric", "flavourspice", "fruit", "winnow"] # Called spice flavourspice so the sort puts it between fabric and fruit!
+			self.resources_queue = ["diamonds", "fabric", "flavourspice", "fruit", "winnow"]
 			self.gemstone_amount = 6
+		if self.name == "wainwright" or self.name == "small_mosque" or self.name == "great_mosque":
+			self.gemstone_amount = 2
 
 		if self.name == "small_market":
 			self.merchandise = [
@@ -93,9 +95,10 @@ class Tiles:
 
 	# Sultans Palace functions
 	def increase_resources_price(self):
-		self.resources_price.append(self.resources_queue[0])
-		self.resources_price.sort()
-		self.resources_queue.pop(0)
+		if len(self.resources_queue) != 0:
+			self.resources_price.append(self.resources_queue[0])
+			self.resources_price.sort()
+			self.resources_queue.pop(0)
 
 	def has_sufficient_resources(self, current_player):
 		#print("resource price = ", self.resources_price)
@@ -103,7 +106,7 @@ class Tiles:
 		nchoice = self.resources_price.count("choice")
 		if (current_player.resources.get("diamonds") >= self.resources_price.count("diamonds")) and \
 			(current_player.resources.get("fabric") >= self.resources_price.count("fabric")) and \
-			current_player.resources.get("spice") >= self.resources_price.count("spice") and \
+			current_player.resources.get("spice") >= self.resources_price.count("flavourspice") and \
 			current_player.resources.get("fruit") >= self.resources_price.count("fruit") and \
 			self.has_leftover_choice(current_player):
 			result = True
@@ -183,6 +186,7 @@ class Board:
 		else:
 			self.current_player = 0
 			self.next_player_button = "images/buttonblue.png"
+		print(f"Next player's turn, go ahead Player{self.current_player + 1}!")
 
 	def move_islegal(player, move_from, move_to): #Tile1, Tile2
 		print("move from is", move_from.location)
