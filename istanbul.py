@@ -509,7 +509,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					draw_units(frame, font, units, playerlist, board)
 					board.set_nextplayer()
 				
-				elif clicked_tile == "wainwright": #Perform wainwright action
+				elif "wainwright" in clicked_tile: #Perform wainwright action
 					print("Performing wainwright action")
 					#print(f"current player is {playerlist[board.current_player].name[-1]}")
 
@@ -531,15 +531,16 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 							playerlist[board.current_player].update_gemstone_slots()
 
 							tilelist[14].decrease_gemstone_amount()
-
+							if tilelist[14].gemstone_amount == 0:
+								tilelist[14].name = "wainwright_empty"
 						draw_tile(frame, tilelist[14])
 						draw_units(frame, font, units, playerlist, board)
 						
 						board.set_nextplayer()
 					elif (not playerlist[board.current_player].resources.get("max_res") < 5):
-						print(playerlist[board.current_player].name, "already has a full wainwright!")
+						print(f"\t{playerlist[board.current_player].name} already has a full wainwright!")
 					else:
-						print("You do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
+						print("\tYou do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 
 				elif clicked_tile == "sultans_palace": #Perform Sultans Palace action
