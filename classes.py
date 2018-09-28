@@ -13,6 +13,20 @@ class Players:
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(1215/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(1415/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)] 
 		]
+		if "Player1" in self.name:
+			self.mosque_tile_slots = [
+				[units.get("resource_p" + str(player + 1)).x + 0 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y - (tilewidth/3.06)],
+				[units.get("resource_p" + str(player + 1)).x + 1 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y - (tilewidth/3.06)],
+				[units.get("resource_p" + str(player + 1)).x + 2 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y - (tilewidth/3.06)],
+				[units.get("resource_p" + str(player + 1)).x + 3 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y - (tilewidth/3.06)]
+			]
+		else:
+			self.mosque_tile_slots = [
+				[units.get("resource_p" + str(player + 1)).x + 0 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y + tileheight],
+				[units.get("resource_p" + str(player + 1)).x + 1 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y + tileheight],
+				[units.get("resource_p" + str(player + 1)).x + 2 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y + tileheight],
+				[units.get("resource_p" + str(player + 1)).x + 3 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y + tileheight]
+			]
 		self.units_stack = [self.name + "_merchant1", self.name + "_servant1", self.name + "_servant2", self.name + "_servant3", self.name + "_servant4"]
 		self.location = tilelist[6].location
 
@@ -32,6 +46,9 @@ class Players:
 
 	def update_gemstone_slots(self):
 		self.gemstone_slots.pop(0)
+
+	def update_tile_stack(self):
+		self.mosque_tile_slots.pop(0)
 
 	def update_location(self, location):
 		self.location = location
@@ -62,7 +79,8 @@ class Tiles:
 			self.gemstone_amount = 6
 		if self.name == "wainwright" or self.name == "small_mosque" or self.name == "great_mosque":
 			self.gemstone_amount = 2
-
+		if "mosque" in self.name:
+			self.tile_stack = ["small_mosque_1_2", "small_mosque_1_4", "small_mosque_2_2", "small_mosque_2_4"]
 		if self.name == "small_market":
 			self.merchandise = [
 				{"tilenumber": "1", "diamonds": 0, "fabric": 1, "spice": 3, "fruit": 1}, 
@@ -133,6 +151,14 @@ class Tiles:
 		else: #Large market
 			mapping_dict = {"0": 0, "1": 3, "2": 7, "3": 12, "4": 18, "5": 25}
 		return mapping_dict.get(amount)
+
+	# Mosque functions
+	def update_tile_stack(self, name):
+		self.tile_stack.remove(name)
+	def get_stack_top(self, name): # In: small_mosque_1_4, Out: small_mosque_1_2 (top of stack beginning with small_mosque_1)
+		for item in self.tile_stack:
+			if name in item:
+				return item
 
 	# General functions
 	def update_players_present(self, player, action):

@@ -9,8 +9,8 @@ from pygame import gfxdraw
 from classes import Board, Players, Tiles, Object
 
 windowtype = RESIZABLE
-framewidth = 800			
-frameheight = 600
+framewidth = 1600			
+frameheight = 1200
 boardx = 25
 boardy = 25
 tilegap = 5
@@ -114,6 +114,15 @@ def main():
 	small_market_tiles = Object(tilelist[10].x + tilewidth*(322/1619), tilelist[10].y + tileheight*(330/1084), tilewidth/3.42, tileheight/1.78, "images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
 	large_market_tiles = Object(tilelist[13].x + tilewidth*(313/1612), tilelist[13].y + tileheight*(325/1079), tilewidth/3.35, tileheight/1.78, "images/large_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
 
+	# Small Mosque Tiles
+	small_mosque_1_4 = Object(tilelist[3].x + tilewidth*(335/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_1_4.png")
+	small_mosque_1_2 = Object(tilelist[3].x + tilewidth*(335/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_1_2.png")
+	small_mosque_2_4 = Object(tilelist[3].x + tilewidth*(890/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_2_4.png")
+	small_mosque_2_2 = Object(tilelist[3].x + tilewidth*(890/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_2_2.png")
+
+
+	# Great Mosque Tiles
+
 	# End Turn Button and Text
 	end_turn_button = Object(p1_windowx + ((p1_windowwidth - tilewidth)/2), tilelist[15].y + tileheight, tilewidth, tileheight/2, "images/buttonblue.png")
 	end_turn_button_text = Object(p1_windowx + ((p1_windowwidth - tilewidth)/2), tilelist[15].y + tileheight, tilewidth, tileheight/2, "")
@@ -131,6 +140,7 @@ def main():
 		"gem_sultan1": gem_sultan1, "gem_sultan2": gem_sultan2, "gem_sultan3": gem_sultan3,
 		"gem_sultan4": gem_sultan4, "gem_sultan5": gem_sultan5, "gem_sultan6": gem_sultan6,
 		"small_market_tiles": small_market_tiles, "large_market_tiles": large_market_tiles,
+		"small_mosque_1_4": small_mosque_1_4, "small_mosque_1_2": small_mosque_1_2, "small_mosque_2_4": small_mosque_2_4, "small_mosque_2_2": small_mosque_2_2,
 		"end_turn_button": end_turn_button, "end_turn_button_text": end_turn_button_text
 	}
 
@@ -378,6 +388,49 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 					draw_units(frame, font, units, playerlist, board)
 					board.set_nextplayer()
+
+				elif clicked_tile == "small_mosque": #Perform Small Mosque Action (tile index 3)
+					print("Performing small mosque action")
+					print("Current player is Player", board.current_player + 1)
+					print("\tClick on a mosque tile to buy it or end your turn")
+
+					while clicked_object != "end_turn_button":
+						if mouse_clicked():
+							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+							print(f"Clicked object is \"{clicked_object}\"")
+
+							if "small_mosque_1" in clicked_object:
+								print("You clicked small_mosque_1")
+								top_tile = tilelist[3].get_stack_top("small_mosque_1")
+								tilelist[3].update_tile_stack(top_tile)
+
+								units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
+								units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
+								playerlist[board.current_player].update_tile_stack()
+
+								draw_tile(frame, tilelist[3])
+								board.set_nextplayer()
+								draw_units(frame, font, units, playerlist, board)
+								break
+								
+							elif "small_mosque_2" in clicked_object:
+								print("You clicked small_mosque_2")
+								top_tile = tilelist[3].get_stack_top("small_mosque_2")
+								tilelist[3].update_tile_stack(top_tile)
+
+								units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
+								units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
+								playerlist[board.current_player].update_tile_stack()
+
+								draw_tile(frame, tilelist[3])
+								board.set_nextplayer()
+								draw_units(frame, font, units, playerlist, board)
+								break
+
+							elif "end_turn_button" in clicked_object:
+								board.set_nextplayer()
+								draw_units(frame, font, units, playerlist, board)
+								break
 
 				elif clicked_tile == "black_market": #Perform Black Market action
 					print("Performing black market action")
