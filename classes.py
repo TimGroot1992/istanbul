@@ -4,7 +4,7 @@ class Players:
 	def __init__(self, player, tilelist, tilewidth, tileheight, units):
 		additional_lira = player
 		self.name = "Player" + str(player + 1)
-		self.resources = {"lira": 50 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2}
+		self.resources = {"lira": 50 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2, "bonuses": []}
 		self.gemstone_slots = [
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(400/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(605/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
@@ -49,6 +49,9 @@ class Players:
 
 	def update_tile_stack(self):
 		self.mosque_tile_slots.pop(0)
+
+	def update_bonuses(self, bonus):
+		self.bonuses.append(bonus)
 
 	def update_location(self, location):
 		self.location = location

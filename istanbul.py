@@ -9,8 +9,8 @@ from pygame import gfxdraw
 from classes import Board, Players, Tiles, Object
 
 windowtype = RESIZABLE
-framewidth = 1600			
-frameheight = 1200
+framewidth = 1920			
+frameheight = 1080
 boardx = 25
 boardy = 25
 tilegap = 5
@@ -357,11 +357,11 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					
 					playerlist[board.current_player].update_resources("fabric", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fabric")))
 					
-					draw_tile(frame, tilelist[2])
+					#draw_tile(frame, tilelist[2])
 					update_resource_blocks(board, playerlist, units, "fabric", 0)
-					draw_units(frame, font, units, playerlist, board)
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
 					board.set_nextplayer()
+					draw_units(frame, font, units, playerlist, board)
 
 				elif clicked_tile == "fruit_warehouse": #Perform fruit warehouse action
 					print("Performing fruit warehouse action")
@@ -371,10 +371,10 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					
 					draw_tile(frame, tilelist[4])
 					update_resource_blocks(board, playerlist, units, "fruit", 0)
-					draw_units(frame, font, units, playerlist, board)
+					#draw_units(frame, font, units, playerlist, board)
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-					draw_units(frame, font, units, playerlist, board)
 					board.set_nextplayer()
+					draw_units(frame, font, units, playerlist, board)
 
 				elif clicked_tile == "spice_warehouse": #Perform spice warehouse action
 					print("Performing spice warehouse action")
@@ -384,48 +384,58 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					
 					draw_tile(frame, tilelist[7])
 					update_resource_blocks(board, playerlist, units, "spice", 0)
-					draw_units(frame, font, units, playerlist, board)
+					#draw_units(frame, font, units, playerlist, board)
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-					draw_units(frame, font, units, playerlist, board)
 					board.set_nextplayer()
+					draw_units(frame, font, units, playerlist, board)
 
 				elif clicked_tile == "small_mosque": #Perform Small Mosque Action (tile index 3)
 					print("Performing small mosque action")
-					print("Current player is Player", board.current_player + 1)
+					#print("Current player is Player", board.current_player + 1)
 					print("\tClick on a mosque tile to buy it or end your turn")
 
 					while clicked_object != "end_turn_button":
 						if mouse_clicked():
 							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-							print(f"Clicked object is \"{clicked_object}\"")
+							print(f"\tClicked object is \"{clicked_object}\"")
 
 							if "small_mosque_1" in clicked_object:
-								print("You clicked small_mosque_1")
 								top_tile = tilelist[3].get_stack_top("small_mosque_1")
-								tilelist[3].update_tile_stack(top_tile)
+								if playerlist[board.current_player].resources.get("fabric") >= int(top_tile[-1]): # If player's resource is >= last character of mosque tile name
+									update_resource_blocks(board, playerlist, units, "fabric", -1)
+									print(playerlist[board.current_player].resources.get("bonuses"))
+									tilelist[3].update_tile_stack(top_tile)
 
-								units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
-								units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
-								playerlist[board.current_player].update_tile_stack()
+									units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
+									units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
+									playerlist[board.current_player].update_tile_stack()
 
-								draw_tile(frame, tilelist[3])
-								board.set_nextplayer()
-								draw_units(frame, font, units, playerlist, board)
-								break
+									draw_tile(frame, tilelist[3])
+									board.set_nextplayer()
+									draw_units(frame, font, units, playerlist, board)
+									break
+								else:
+									print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
 								
 							elif "small_mosque_2" in clicked_object:
-								print("You clicked small_mosque_2")
 								top_tile = tilelist[3].get_stack_top("small_mosque_2")
-								tilelist[3].update_tile_stack(top_tile)
+								if playerlist[board.current_player].resources.get("spice") >= int(top_tile[-1]): # If player's resource is >= last character of mosque tile name
+									update_resource_blocks(board, playerlist, units, "spice", -1)
+									tilelist[3].update_tile_stack(top_tile)
 
-								units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
-								units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
-								playerlist[board.current_player].update_tile_stack()
+									playerlist[board.current_player].update_bonuses(units.get(top_tile))
+									#print(playerlist[board.current_player].resources.get("bonuses"))
 
-								draw_tile(frame, tilelist[3])
-								board.set_nextplayer()
-								draw_units(frame, font, units, playerlist, board)
-								break
+									units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
+									units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
+									playerlist[board.current_player].update_tile_stack()
+
+									draw_tile(frame, tilelist[3])
+									board.set_nextplayer()
+									draw_units(frame, font, units, playerlist, board)
+									break
+								else:
+									print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")									
 
 							elif "end_turn_button" in clicked_object:
 								board.set_nextplayer()
@@ -485,8 +495,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						print("\t\tToo bad, you receive no diamonds...")
 
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-					draw_units(frame, font, units, playerlist, board)
 					board.set_nextplayer()
+					draw_units(frame, font, units, playerlist, board)
 
 				elif clicked_tile == "small_market": #Perform Small Market action
 					print("Performing small_market market action")
@@ -527,7 +537,6 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 									print("You do not have sufficient resources to sell that")
 							print("\tSo far, you have sold", sum(sold_resources.values()), "resources")
 							draw_units(frame, font, units, playerlist, board)
-							#pygame.display.update()
 
 					reward = tilelist[10].reward_mapping(str(sum(sold_resources.values()))) # Sum of sold resources as string mapped to lira reward
 					print("You have sold", str(sum(sold_resources.values())), "resources, rewarding you", reward, "lira!")
@@ -538,8 +547,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					units.get("small_market_tiles").update_image_path("images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
 					
 					draw_tile(frame, tilelist[10])
-					draw_units(frame, font, units, playerlist, board)
 					board.set_nextplayer()
+					draw_units(frame, font, units, playerlist, board)
 
 				elif clicked_tile == "tea_house": #Perform teahouse action
 					print("Performing tea house action, type in a number between 3-12 followed by an enter")
@@ -559,8 +568,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						print(f"Too bad, you receive only 2 lira. {playerlist[board.current_player].name} now has {playerlist[board.current_player].resources.get('lira')} lira")
 						playerlist[board.current_player].update_resources("lira", 2)
 					draw_tile(frame, tilelist[11])
-					draw_units(frame, font, units, playerlist, board)
 					board.set_nextplayer()
+					draw_units(frame, font, units, playerlist, board)
 				
 				elif "wainwright" in clicked_tile: #Perform wainwright action
 					print("Performing wainwright action")
@@ -587,9 +596,9 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 							if tilelist[14].gemstone_amount == 0:
 								tilelist[14].name = "wainwright_empty"
 						draw_tile(frame, tilelist[14])
-						draw_units(frame, font, units, playerlist, board)
-						
 						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
+
 					elif (not playerlist[board.current_player].resources.get("max_res") < 5):
 						print(f"\t{playerlist[board.current_player].name} already has a full wainwright!")
 					else:
@@ -605,11 +614,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 							if item != "winnow":
 								update_resource_blocks(board, playerlist, units, item, -1)
 								draw_units(frame, font, units, playerlist, board)
-								#pygame.display.update()
-							#else:
-						# Then pay the resource(s) of choice (the winnow)
-						
-						
+
 						for i in range(0, tilelist[12].resources_price.count("winnow")): # Sell an item of choice for every winnow you have to sell
 							print("\tPlease click on a resource of choice to sell")
 							sold = False
@@ -651,8 +656,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 
 						tilelist[12].increase_resources_price()
 						tilelist[12].decrease_gemstone_amount()
-						draw_units(frame, font, units, playerlist, board)
 						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
 					else:
 						if tilelist[12].gemstone_amount == 0:
 							print("\tThe Sultan's palace ran out of gems, find another way to collect more gemstones!")
@@ -675,20 +680,18 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 
 						tilelist[15].increase_gemstone_price()
 						tilelist[15].decrease_gemstone_amount()
+						draw_tile(frame, tilelist[15])
 						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
 					else:
 						if tilelist[15].gemstone_amount == 0:
 							print("The gemstone dealer ran out of gems, find another way to collect more gemstones!")
 						else:
-							print("You do not have sufficient resources to purchase a gemstone!")
-					
-					draw_tile(frame, tilelist[15])
-					draw_units(frame, font, units, playerlist, board)
+							print("You do not have sufficient resources to purchase a gemstone!")			
 	
 			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
 				pygame.quit()
 				sys.exit()
-		# pygame.display.update()
 		fpsClock.tick(fps)
 
 def update_resource_blocks(board, playerlist, units, name, amount):
@@ -761,7 +764,6 @@ def get_keyboardinput(event):
 			else:
 				option = 3
 			#print("option from get get_keyboardinput", option)
-
 	return option
 
 def get_clicked_item(tilelist, units):
