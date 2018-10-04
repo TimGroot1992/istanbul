@@ -115,10 +115,10 @@ def main():
 	large_market_tiles = Object(tilelist[13].x + tilewidth*(313/1612), tilelist[13].y + tileheight*(325/1079), tilewidth/3.35, tileheight/1.78, "images/large_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
 
 	# Small Mosque Tiles
-	small_mosque_1_4 = Object(tilelist[3].x + tilewidth*(335/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_1_4.png")
-	small_mosque_1_2 = Object(tilelist[3].x + tilewidth*(335/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_1_2.png")
-	small_mosque_2_4 = Object(tilelist[3].x + tilewidth*(890/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_2_4.png")
-	small_mosque_2_2 = Object(tilelist[3].x + tilewidth*(890/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_2_2.png")
+	small_mosque_fabric_4 = Object(tilelist[3].x + tilewidth*(335/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_fabric_4.png")
+	small_mosque_fabric_2 = Object(tilelist[3].x + tilewidth*(335/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_fabric_2.png")
+	small_mosque_spice_4 = Object(tilelist[3].x + tilewidth*(890/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_spice_4.png")
+	small_mosque_spice_2 = Object(tilelist[3].x + tilewidth*(890/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_spice_2.png")
 
 
 	# Great Mosque Tiles
@@ -140,7 +140,7 @@ def main():
 		"gem_sultan1": gem_sultan1, "gem_sultan2": gem_sultan2, "gem_sultan3": gem_sultan3,
 		"gem_sultan4": gem_sultan4, "gem_sultan5": gem_sultan5, "gem_sultan6": gem_sultan6,
 		"small_market_tiles": small_market_tiles, "large_market_tiles": large_market_tiles,
-		"small_mosque_1_4": small_mosque_1_4, "small_mosque_1_2": small_mosque_1_2, "small_mosque_2_4": small_mosque_2_4, "small_mosque_2_2": small_mosque_2_2,
+		"small_mosque_fabric_4": small_mosque_fabric_4, "small_mosque_fabric_2": small_mosque_fabric_2, "small_mosque_spice_4": small_mosque_spice_4, "small_mosque_spice_2": small_mosque_spice_2,
 		"end_turn_button": end_turn_button, "end_turn_button_text": end_turn_button_text
 	}
 
@@ -248,37 +248,45 @@ def draw_boxes(frame, name):
 		pygame.draw.rect(frame, red, (p2_windowx, p2_windowy, p2_windowwidth, p2_windowheight)) #Player2 window
 
 def draw_units(frame, font, units, playerlist, board):
-	for name, unit in units.items():
-		if "block" in name:
-			#print("drawing block with name", name, "at ", unit.x, ",", unit.y)
-			pygame.draw.rect(frame, offwhite, (unit.x, unit.y, unit.width, unit.height))
-		elif "coin" in name:
-			pygame.gfxdraw.aacircle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
-			pygame.gfxdraw.filled_circle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
-		elif "lira" in name:
-			textsurface = font.render(str(playerlist[int(name.split("_")[1]) - 1].resources.get('lira')), False, black)
-			if playerlist[int(name.split("_")[1]) - 1].resources.get('lira') < 10:
-				frame.blit(textsurface, (unit.x - unit.width/7, unit.y - unit.height/3))
-			else:
-				frame.blit(textsurface, (unit.x - unit.width/4, unit.y - unit.height/3))
-		elif "text" in name:
-			textsurface = font.render("End Turn", False, white)
-			frame.blit(textsurface, (unit.x + unit.width/3, unit.y + unit.height/3))
-		else: #Shape loaded by image
-			# print(f"unit image path is {unit.image_path} and board next player button is {board.next_player_button}")
-			try:
-				if name != "end_turn_button":
-					currentunit = pygame.image.load(unit.image_path).convert_alpha()
+	if type(units) is dict:
+		for name, unit in units.items():
+			if "block" in name:
+				#print("drawing block with name", name, "at ", unit.x, ",", unit.y)
+				pygame.draw.rect(frame, offwhite, (unit.x, unit.y, unit.width, unit.height))
+			elif "coin" in name:
+				pygame.gfxdraw.aacircle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
+				pygame.gfxdraw.filled_circle(frame, int(unit.x), int(unit.y), int(unit.width/2), yellow)
+			elif "lira" in name:
+				textsurface = font.render(str(playerlist[int(name.split("_")[1]) - 1].resources.get('lira')), False, black)
+				if playerlist[int(name.split("_")[1]) - 1].resources.get('lira') < 10:
+					frame.blit(textsurface, (unit.x - unit.width/7, unit.y - unit.height/3))
 				else:
-					currentunit = pygame.image.load(board.next_player_button).convert_alpha()
-			except:
-				currentunit = pygame.image.load("images/spice_warehouse.png").convert()
-				print("Error retrieving tile image, using spice warehouse as a default.")
-			currentunit = pygame.transform.smoothscale(currentunit, (int(unit.width), int(unit.height)))
-			#currentunit.set_colorkey((255, 255, 255))
-			frame.blit(currentunit, (unit.x, unit.y))
-		#print(f"I just drew unit {name}")
-	pygame.display.update()
+					frame.blit(textsurface, (unit.x - unit.width/4, unit.y - unit.height/3))
+			elif "text" in name:
+				textsurface = font.render("End Turn", False, white)
+				frame.blit(textsurface, (unit.x + unit.width/3, unit.y + unit.height/3))
+			else: #Shape loaded by image
+				# print(f"unit image path is {unit.image_path} and board next player button is {board.next_player_button}")
+				try:
+					if name != "end_turn_button":
+						currentunit = pygame.image.load(unit.image_path).convert_alpha()
+					else:
+						currentunit = pygame.image.load(board.next_player_button).convert_alpha()
+				except:
+					currentunit = pygame.image.load("images/spice_warehouse.png").convert()
+					print("Error retrieving tile image, using spice warehouse as a default.")
+				currentunit = pygame.transform.smoothscale(currentunit, (int(unit.width), int(unit.height)))
+				#currentunit.set_colorkey((255, 255, 255))
+				frame.blit(currentunit, (unit.x, unit.y))
+			#print(f"I just drew unit {name}")
+		pygame.display.update()
+
+	if type(units) is list:
+		for item in units:
+			print(item)
+			currentunit = pygame.image.load(item[1].image_path).convert_alpha()
+			currentunit = pygame.transform.smoothscale(currentunit, (int(item[1].width), int(item[1].height)))
+			frame.blit(currentunit, (item[1].x, item[1].y))
 
 def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 	global tilewidth
@@ -396,48 +404,53 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 
 					while clicked_object != "end_turn_button":
 						if mouse_clicked():
-							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-							print(f"\tClicked object is \"{clicked_object}\"")
+							if "end_turn_button" not in clicked_object: # Object clicked was not the end button
+							
+								clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+								#print(f"\tClicked object is \"{clicked_object}\"")
 
-							if "small_mosque_1" in clicked_object:
-								top_tile = tilelist[3].get_stack_top("small_mosque_1")
-								if playerlist[board.current_player].resources.get("fabric") >= int(top_tile[-1]): # If player's resource is >= last character of mosque tile name
-									update_resource_blocks(board, playerlist, units, "fabric", -1)
-									print(playerlist[board.current_player].resources.get("bonuses"))
+								tilename = clicked_object[:-2] # Take root of the tilename without number
+								
+								top_tile = tilelist[3].get_stack_top(tilename)
+								resource_name = tilename.split("_")[2]
+
+								print("bonuses: ")
+								print(playerlist[board.current_player].resources.get("bonuses"))
+
+								enough_resources = playerlist[board.current_player].resources.get(resource_name) >= int(top_tile[-1]) # True/False, player allowed to buy this mosque tile
+								
+								tile_not_owned = True
+								for array in playerlist[board.current_player].resources.get("bonuses"):
+									#print(f"nested array in bonuses = {array}")
+									if resource_name in array[0]:
+										tile_not_owned = False
+										break
+							
+								if (enough_resources and tile_not_owned): # Enough resources and allowed to buy
+   										
+									update_resource_blocks(board, playerlist, units, resource_name, -1)
+									#print(playerlist[board.current_player].resources.get("bonuses"))
 									tilelist[3].update_tile_stack(top_tile)
 
 									units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
 									units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
 									playerlist[board.current_player].update_tile_stack()
+									playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
+									units.pop(top_tile)
 
 									draw_tile(frame, tilelist[3])
+									draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
 									board.set_nextplayer()
 									draw_units(frame, font, units, playerlist, board)
+									break
+								elif not tile_not_owned: # Already have a mosque tile with this colour
+									print(f"\tYou already have a mosque tile of that resource in your possession!")
 									break
 								else:
 									print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
-								
-							elif "small_mosque_2" in clicked_object:
-								top_tile = tilelist[3].get_stack_top("small_mosque_2")
-								if playerlist[board.current_player].resources.get("spice") >= int(top_tile[-1]): # If player's resource is >= last character of mosque tile name
-									update_resource_blocks(board, playerlist, units, "spice", -1)
-									tilelist[3].update_tile_stack(top_tile)
-
-									playerlist[board.current_player].update_bonuses(units.get(top_tile))
-									#print(playerlist[board.current_player].resources.get("bonuses"))
-
-									units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
-									units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
-									playerlist[board.current_player].update_tile_stack()
-
-									draw_tile(frame, tilelist[3])
-									board.set_nextplayer()
-									draw_units(frame, font, units, playerlist, board)
 									break
-								else:
-									print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")									
 
-							elif "end_turn_button" in clicked_object:
+							else: # End turn button clicked
 								board.set_nextplayer()
 								draw_units(frame, font, units, playerlist, board)
 								break
