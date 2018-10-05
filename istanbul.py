@@ -399,61 +399,54 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 
 				elif clicked_tile == "small_mosque": #Perform Small Mosque Action (tile index 3)
 					print("Performing small mosque action")
-					#print("Current player is Player", board.current_player + 1)
-					print("\tClick on a mosque tile to buy it or end your turn")
-
-					while clicked_object != "end_turn_button":
+					print("Click on a mosque tile to buy it or end your turn")
+					
+					while ("end_turn_button" not in clicked_object) and ("small_mosque_fabric" not in clicked_object) and ("small_mosque_spice" not in clicked_object):
 						if mouse_clicked():
-							if "end_turn_button" not in clicked_object: # Object clicked was not the end button
-							
-								clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-								#print(f"\tClicked object is \"{clicked_object}\"")
+							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
 
-								tilename = clicked_object[:-2] # Take root of the tilename without number
-								
-								top_tile = tilelist[3].get_stack_top(tilename)
-								resource_name = tilename.split("_")[2]
+					if "end_turn_button" not in clicked_object: # Object clicked was not the end button
+						tilename = clicked_object[:-2] # Take root of the tilename without number
+						top_tile = tilelist[3].get_stack_top(tilename)
+						resource_name = tilename.split("_")[2]
 
-								print("bonuses: ")
-								print(playerlist[board.current_player].resources.get("bonuses"))
-
-								enough_resources = playerlist[board.current_player].resources.get(resource_name) >= int(top_tile[-1]) # True/False, player allowed to buy this mosque tile
-								
-								tile_not_owned = True
-								for array in playerlist[board.current_player].resources.get("bonuses"):
-									#print(f"nested array in bonuses = {array}")
-									if resource_name in array[0]:
-										tile_not_owned = False
-										break
-							
-								if (enough_resources and tile_not_owned): # Enough resources and allowed to buy
-   										
-									update_resource_blocks(board, playerlist, units, resource_name, -1)
-									#print(playerlist[board.current_player].resources.get("bonuses"))
-									tilelist[3].update_tile_stack(top_tile)
-
-									units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
-									units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
-									playerlist[board.current_player].update_tile_stack()
-									playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
-									units.pop(top_tile)
-
-									draw_tile(frame, tilelist[3])
-									draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
-									board.set_nextplayer()
-									draw_units(frame, font, units, playerlist, board)
-									break
-								elif not tile_not_owned: # Already have a mosque tile with this colour
-									print(f"\tYou already have a mosque tile of that resource in your possession!")
-									break
-								else:
-									print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
-									break
-
-							else: # End turn button clicked
-								board.set_nextplayer()
-								draw_units(frame, font, units, playerlist, board)
+						enough_resources = playerlist[board.current_player].resources.get(resource_name) >= int(top_tile[-1]) # True/False, player allowed to buy this mosque tile
+						
+						tile_not_owned = True
+						for array in playerlist[board.current_player].resources.get("bonuses"):
+							#print(f"nested array in bonuses = {array}")
+							if resource_name in array[0]:
+								tile_not_owned = False
 								break
+					
+						if (enough_resources and tile_not_owned): # Enough resources and allowed to buy
+									
+							update_resource_blocks(board, playerlist, units, resource_name, -1)
+							#print(playerlist[board.current_player].resources.get("bonuses"))
+							tilelist[3].update_tile_stack(top_tile)
+
+							units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
+							units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
+							playerlist[board.current_player].update_tile_stack()
+							playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
+							units.pop(top_tile)
+
+							draw_tile(frame, tilelist[3])
+							draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
+							board.set_nextplayer()
+							draw_units(frame, font, units, playerlist, board)
+							break
+						elif not tile_not_owned: # Already have a mosque tile with this colour
+							print(f"\tYou already have a mosque tile of that resource in your possession!")
+							break
+						else:
+							print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
+							break
+
+					else: # End turn button clicked
+						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
+						break
 
 				elif clicked_tile == "black_market": #Perform Black Market action
 					print("Performing black market action")
