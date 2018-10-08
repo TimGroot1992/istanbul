@@ -82,8 +82,10 @@ class Tiles:
 			self.gemstone_amount = 6
 		if self.name == "wainwright" or self.name == "small_mosque" or self.name == "great_mosque":
 			self.gemstone_amount = 2
-		if "mosque" in self.name:
+		if "small_mosque" in self.name:
 			self.tile_stack = ["small_mosque_fabric_2", "small_mosque_fabric_4", "small_mosque_spice_2", "small_mosque_spice_4"]
+		if "great_mosque" in self.name: 
+			self.tile_stack = ["great_mosque_diamonds_2", "great_mosque_diamonds_4", "great_mosque_fruit_2", "great_mosque_fruit_4"]
 		if self.name == "small_market":
 			self.merchandise = [
 				{"tilenumber": "1", "diamonds": 0, "fabric": 1, "spice": 3, "fruit": 1}, 

@@ -114,14 +114,15 @@ def main():
 	small_market_tiles = Object(tilelist[10].x + tilewidth*(322/1619), tilelist[10].y + tileheight*(330/1084), tilewidth/3.42, tileheight/1.78, "images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
 	large_market_tiles = Object(tilelist[13].x + tilewidth*(313/1612), tilelist[13].y + tileheight*(325/1079), tilewidth/3.35, tileheight/1.78, "images/large_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
 
-	# Small Mosque Tiles
+	# Mosque Tiles
 	small_mosque_fabric_4 = Object(tilelist[3].x + tilewidth*(335/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_fabric_4.png")
 	small_mosque_fabric_2 = Object(tilelist[3].x + tilewidth*(335/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_fabric_2.png")
 	small_mosque_spice_4 = Object(tilelist[3].x + tilewidth*(890/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_spice_4.png")
 	small_mosque_spice_2 = Object(tilelist[3].x + tilewidth*(890/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_spice_2.png")
-
-
-	# Great Mosque Tiles
+	great_mosque_diamonds_4 = Object(tilelist[0].x + tilewidth*(335/1607), tilelist[0].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/great_mosque_diamonds_4.png")
+	great_mosque_diamonds_2 = Object(tilelist[0].x + tilewidth*(335/1607), tilelist[0].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/great_mosque_diamonds_2.png")
+	great_mosque_fruit_4 = Object(tilelist[0].x + tilewidth*(890/1607), tilelist[0].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/great_mosque_fruit_4.png")
+	great_mosque_fruit_2 = Object(tilelist[0].x + tilewidth*(890/1607), tilelist[0].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/great_mosque_fruit_2.png")
 
 	# End Turn Button and Text
 	end_turn_button = Object(p1_windowx + ((p1_windowwidth - tilewidth)/2), tilelist[15].y + tileheight, tilewidth, tileheight/2, "images/buttonblue.png")
@@ -141,6 +142,7 @@ def main():
 		"gem_sultan4": gem_sultan4, "gem_sultan5": gem_sultan5, "gem_sultan6": gem_sultan6,
 		"small_market_tiles": small_market_tiles, "large_market_tiles": large_market_tiles,
 		"small_mosque_fabric_4": small_mosque_fabric_4, "small_mosque_fabric_2": small_mosque_fabric_2, "small_mosque_spice_4": small_mosque_spice_4, "small_mosque_spice_2": small_mosque_spice_2,
+		"great_mosque_diamonds_4": great_mosque_diamonds_4, "great_mosque_diamonds_2": great_mosque_diamonds_2, "great_mosque_fruit_4": great_mosque_fruit_4, "great_mosque_fruit_2": great_mosque_fruit_2,
 		"end_turn_button": end_turn_button, "end_turn_button_text": end_turn_button_text
 	}
 
@@ -432,6 +434,57 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 							units.pop(top_tile)
 
 							draw_tile(frame, tilelist[3])
+							draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
+							board.set_nextplayer()
+							draw_units(frame, font, units, playerlist, board)
+							break
+						elif not tile_not_owned: # Already have a mosque tile with this colour
+							print(f"\tYou already have a mosque tile of that resource in your possession!")
+							break
+						else:
+							print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
+							break
+
+					else: # End turn button clicked
+						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
+						break
+
+				elif clicked_tile == "great_mosque": #Perform Small Mosque Action (tile index 3)
+					print("Performing great mosque action")
+					print("Click on a mosque tile to buy it or end your turn")
+					
+					while ("end_turn_button" not in clicked_object) and ("great_mosque_diamonds" not in clicked_object) and ("great_mosque_fruit" not in clicked_object):
+						if mouse_clicked():
+							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+
+					if "end_turn_button" not in clicked_object: # Object clicked was not the end button
+						tilename = clicked_object[:-2] # Take root of the tilename without number
+						top_tile = tilelist[0].get_stack_top(tilename)
+						resource_name = tilename.split("_")[2]
+
+						enough_resources = playerlist[board.current_player].resources.get(resource_name) >= int(top_tile[-1]) # True/False, player allowed to buy this mosque tile
+						
+						tile_not_owned = True
+						for array in playerlist[board.current_player].resources.get("bonuses"):
+							#print(f"nested array in bonuses = {array}")
+							if resource_name in array[0]:
+								tile_not_owned = False
+								break
+					
+						if (enough_resources and tile_not_owned): # Enough resources and allowed to buy
+									
+							update_resource_blocks(board, playerlist, units, resource_name, -1)
+							#print(playerlist[board.current_player].resources.get("bonuses"))
+							tilelist[0].update_tile_stack(top_tile)
+
+							units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
+							units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
+							playerlist[board.current_player].update_tile_stack()
+							playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
+							units.pop(top_tile)
+
+							draw_tile(frame, tilelist[0])
 							draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
 							board.set_nextplayer()
 							draw_units(frame, font, units, playerlist, board)
