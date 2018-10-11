@@ -160,13 +160,14 @@ def main():
 	
 	print("Tile with name", currenttile.name, "has the following players present:", currenttile.players_present, ". The following units are present here:", currenttile.units_stack)
 	
-	print("player 1 location is", playerlist[0].location)
-	playerlist[0].update_location(tilelist[3].location)
-	print("player 1 location is now", playerlist[0].location)
+	#print("player 1 location is", playerlist[0].location)
+	#playerlist[0].update_location(tilelist[3].location)
+	#print("player 1 location is now", playerlist[0].location)
 
 	frame, font = setup_GUI(windowtype, framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
 	draw_board(frame, tilelist)
 	draw_units(frame, font, units, playerlist, board)
+	draw_tokens(frame, playerlist, board)
 	mainloop_GUI(board, frame, font, tilelist, units, playerlist)
 	
 	''' game logic
@@ -290,6 +291,13 @@ def draw_units(frame, font, units, playerlist, board):
 			currentunit = pygame.transform.smoothscale(currentunit, (int(item[1].width), int(item[1].height)))
 			frame.blit(currentunit, (item[1].x, item[1].y))
 
+def draw_tokens(frame, playerlist, board):
+	
+	merchant_p1 = pygame.image.load(playerlist[board.current_player].merchant["merchant_icon"]).convert_alpha()
+	merchant_p1 = pygame.transform.smoothscale(merchant_p1, (int(tilewidth / 6), int(tilewidth / 6)))
+	frame.blit(merchant_p1, (playerlist[board.current_player].merchant["location"][0], playerlist[board.current_player].merchant["location"][1]))
+	pygame.display.update()
+
 def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 	global tilewidth
 	global tileheight
@@ -303,9 +311,6 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 
 			if event.type == pygame.MOUSEBUTTONUP:
 				clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-				#print("You clicked on tile", clicked_tile)
-				#if clicked_object != "None":
-					#print("You clicked on object", clicked_object)
 
 				if clicked_object == "end_turn_button":
 					print(f"{playerlist[board.current_player].name}'s turn was ended!")
@@ -758,8 +763,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 						playerlist[board.current_player].update_resources("lira", -(tilelist[15].gemstone_price))
 						playerlist[board.current_player].update_resources("gemstones", 1)
 						print(playerlist[board.current_player].name, "bought a gemstone!")
-						units.get("gem_gemstone" + str(10 - tile.gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
-						units.get("gem_gemstone" + str(10 - tile.gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
+						units.get("gem_gemstone" + str(10 - tilelist[15].gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
+						units.get("gem_gemstone" + str(10 - tilelist[15].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
 						playerlist[board.current_player].update_gemstone_slots()
 
 						tilelist[15].increase_gemstone_price()

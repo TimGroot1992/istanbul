@@ -28,7 +28,13 @@ class Players:
 				[units.get("resource_p" + str(player + 1)).x + 1.5 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y + tileheight]
 			]
 		self.units_stack = [self.name + "_merchant1", self.name + "_servant1", self.name + "_servant2", self.name + "_servant3", self.name + "_servant4"]
-		self.location = tilelist[6].location
+		#self.location = tilelist[6].location
+
+		if "1" in self.name:
+			self.merchant = {"location": [tilelist[6].x, tilelist[6].y], "merchant_icon": "images/pawns/p1_merchant.png"}
+		else:
+			self.merchant = {"location": tilelist[6].location, "merchant_icon": "images/pawns/p2_merchant.png"}
+
 
 	def update_resources(self, resource, amount): #self, string, integer
 		if resource == "diamonds" or resource == "fruit" or resource == "fabric" or resource == "spice":
@@ -38,11 +44,6 @@ class Players:
 				self.resources[resource] = self.resources.get(resource) + amount
 		else:
 			self.resources[resource] = self.resources.get(resource) + amount
-		# elif resource == "max_res": #Cannot have more than 5 resources at a time
-		# 	if self.resources[resource] < 5:
-		# 		self.resources[resource] = self.resources.get(resource) + amount
-		# 	else:
-		# 		self.resources[resource] = 5;
 
 	def update_gemstone_slots(self):
 		self.gemstone_slots.pop(0)
