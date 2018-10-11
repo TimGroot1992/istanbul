@@ -82,33 +82,33 @@ def main():
 	lira_2 = Object(resource_p2.x + p2_windowwidth*(5/6), resource_p2.y + p2_windowheight*(1/5), resource_p2.width/6, resource_p2.width/6, "")
 
 	# Mosque Tiles Gems
-	gem_small_mosque1 = Object(tilelist[3].x, tilelist[3].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_small_mosque2 = Object(tilelist[3].x + tilewidth/15, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_great_mosque1 = Object(tilelist[0].x, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_great_mosque2 = Object(tilelist[0].x + tilewidth/15, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_small_mosque1 = Object(tilelist[3].x, tilelist[3].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_small_mosque2 = Object(tilelist[3].x + tilewidth/15, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_great_mosque1 = Object(tilelist[0].x, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_great_mosque2 = Object(tilelist[0].x + tilewidth/15, tilelist[0].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
 
 	# Wainwright Gems
-	gem_wainwright1 = Object(tilelist[14].x, tilelist[14].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_wainwright2 = Object(tilelist[14].x + tilewidth/15, tilelist[14].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_wainwright1 = Object(tilelist[14].x, tilelist[14].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_wainwright2 = Object(tilelist[14].x + tilewidth/15, tilelist[14].y + tileheight - tileheight/8, tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
 
 	# Gemstone Dealer Gems
-	gem_gemstone1 = Object(tilelist[15].x + tilewidth/3.4, tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_gemstone2 = Object(tilelist[15].x + tilewidth/2.5, tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_gemstone3 = Object(tilelist[15].x + tilewidth*(830/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_gemstone4 = Object(tilelist[15].x + tilewidth*(1000/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_gemstone5 = Object(tilelist[15].x + tilewidth*(1190/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_gemstone6 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_gemstone7 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(658/1077), tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_gemstone8 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(478/1077), tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_gemstone9 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(298/1077), tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_gemstone1 = Object(tilelist[15].x + tilewidth/3.4, tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_gemstone2 = Object(tilelist[15].x + tilewidth/2.5, tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_gemstone3 = Object(tilelist[15].x + tilewidth*(830/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_gemstone4 = Object(tilelist[15].x + tilewidth*(1000/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_gemstone5 = Object(tilelist[15].x + tilewidth*(1190/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_gemstone6 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight - tileheight/4.5, tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_gemstone7 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(658/1077), tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_gemstone8 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(478/1077), tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_gemstone9 = Object(tilelist[15].x + tilewidth*(1365/1609), tilelist[15].y + tileheight*(298/1077), tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
 
 	# Sultans Palace Gems
-	gem_sultan1 = Object(tilelist[12].x + tilewidth*(650/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_sultan2 = Object(tilelist[12].x + tilewidth*(830/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_sultan3 = Object(tilelist[12].x + tilewidth*(1010/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_sultan4 = Object(tilelist[12].x + tilewidth*(1190/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_sultan5 = Object(tilelist[12].x + tilewidth*(1370/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
-	gem_sultan6 = Object(tilelist[12].x + tilewidth*(1370/1611), tilelist[12].y + tileheight*(670/1084), tileheight/8, tileheight/8, "images/gemstone_2.png")
+	gem_sultan1 = Object(tilelist[12].x + tilewidth*(650/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_sultan2 = Object(tilelist[12].x + tilewidth*(830/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_sultan3 = Object(tilelist[12].x + tilewidth*(1010/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_sultan4 = Object(tilelist[12].x + tilewidth*(1190/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_sultan5 = Object(tilelist[12].x + tilewidth*(1370/1611), tilelist[12].y + tileheight*(840/1084), tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
+	gem_sultan6 = Object(tilelist[12].x + tilewidth*(1370/1611), tilelist[12].y + tileheight*(670/1084), tileheight/8, tileheight/8, "images/gemstones/gemstone_" + str(randint(1,9)) + ".png")
 
 	# Market Tiles
 	small_market_tiles = Object(tilelist[10].x + tilewidth*(322/1619), tilelist[10].y + tileheight*(330/1084), tilewidth/3.42, tileheight/1.78, "images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
