@@ -8,7 +8,7 @@ from pygame import gfxdraw
 
 from classes import Board, Players, Tiles, Object
 
-windowtype = RESIZABLE
+windowtype = FULLSCREEN
 framewidth = 1920			
 frameheight = 1080
 boardx = 25
@@ -112,7 +112,7 @@ def main():
 
 	# Market Tiles
 	small_market_tiles = Object(tilelist[10].x + tilewidth*(322/1619), tilelist[10].y + tileheight*(330/1084), tilewidth/3.42, tileheight/1.78, "images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
-	large_market_tiles = Object(tilelist[13].x + tilewidth*(313/1612), tilelist[13].y + tileheight*(325/1079), tilewidth/3.35, tileheight/1.78, "images/large_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
+	large_market_tiles = Object(tilelist[13].x + tilewidth*(313/1612), tilelist[13].y + tileheight*(325/1079), tilewidth/3.35, tileheight/1.78, "images/large_market_tile" + tilelist[13].merchandise[0].get("tilenumber") + ".png")
 
 	# Mosque Tiles
 	small_mosque_fabric_4 = Object(tilelist[3].x + tilewidth*(335/1607), tilelist[3].y + tileheight*(385/1075), tilewidth/3.06, tilewidth/3.06, "images/small_mosque_fabric_4.png")
@@ -534,23 +534,23 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print("\tRolling the dice to see if you win any diamonds...")
 					dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units) 
 					if dice_roll > 10:
-						print("\tCongratulations, you have won 3 diamonds!")
-						#playerlist[board.current_player].update_resources("diamonds", 2)
 						draw_tile(frame, tilelist[8])
 						update_resource_blocks(board, playerlist, units, "diamonds", 3)
 						draw_units(frame, font, units, playerlist, board) 
+						print("\tCongratulations, you have won 3 diamonds!")
 					elif dice_roll > 8:
-						print("\t\tCongratulations, you have won 2 diamonds!")
-						#playerlist[board.current_player].update_resources("diamonds", 2)
 						draw_tile(frame, tilelist[8])
 						update_resource_blocks(board, playerlist, units, "diamonds", 2)
 						draw_units(frame, font, units, playerlist, board) 
+						print("\t\tCongratulations, you have won 2 diamonds!")
 					elif dice_roll > 6:
-						print("\t\tCongratulations, you have won 1 diamond!")
 						draw_tile(frame, tilelist[8])
 						update_resource_blocks(board, playerlist, units, "diamonds", 1)
 						draw_units(frame, font, units, playerlist, board) 
+						print("\t\tCongratulations, you have won 1 diamond!")
 					else:
+						draw_tile(frame, tilelist[8])
+						draw_units(frame, font, units, playerlist, board) 
 						print("\t\tToo bad, you receive no diamonds...")
 
 					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
@@ -562,39 +562,26 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					print("Current player is Player", board.current_player + 1)
 					
 					sold_resources = {"diamonds": 0, "fabric": 0, "spice": 0, "fruit": 0}
-					#display_message1 = "Please select an option: Press 1) diamonds, 2) fabric, 3) spice, 4) fruit"
-					#display_message2 = "Enter 0 if you want to stop selling resources"
+					resource_mapping = {"1": "diamonds", "5": "diamonds", "2": "fabric", "6": "fabric", "3": "spice", "7": "spice", "4": "fruit", "8": "fruit"} # clicked object to resource
+
 
 					while clicked_object != "end_turn_button":
 						if mouse_clicked():
 							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-							#print(f"Clicked object is \"{clicked_object}\"")
-
-							diamonds_vendable = sold_resources.get("diamonds") < tilelist[10].merchandise[0].get("diamonds")
-							fabric_vendable = sold_resources.get("fabric") < tilelist[10].merchandise[0].get("fabric")
-							spice_vendable = sold_resources.get("spice") < tilelist[10].merchandise[0].get("spice")
-							fruit_vendable = sold_resources.get("fruit") < tilelist[10].merchandise[0].get("fruit")
-
-							if (clicked_object == "resourceblock_1" or clicked_object == "resourceblock_5") and playerlist[board.current_player].resources.get("diamonds") > 0 and diamonds_vendable:
-								sold_resources["diamonds"] += 1
-								update_resource_blocks(board, playerlist, units, "diamonds", -1)
-							elif (clicked_object == "resourceblock_2" or clicked_object == "resourceblock_6") and playerlist[board.current_player].resources.get("fabric") > 0 and fabric_vendable:
-								sold_resources["fabric"] += 1
-								update_resource_blocks(board, playerlist, units, "fabric", -1)
-							elif (clicked_object == "resourceblock_3" or clicked_object == "resourceblock_7") and playerlist[board.current_player].resources.get("spice") > 0 and spice_vendable:
-								sold_resources["spice"] += 1
-								update_resource_blocks(board, playerlist, units, "spice", -1)
-							elif (clicked_object == "resourceblock_4" or clicked_object == "resourceblock_8") and playerlist[board.current_player].resources.get("fruit") > 0 and fruit_vendable:
-								sold_resources["fruit"] += 1
-								update_resource_blocks(board, playerlist, units, "fruit", -1)
-							elif clicked_object == "None":
-								print("\tTo sell a resource, please click on your slider block of the desired resource")
+							
+							if "resourceblock" in clicked_object:
+								current_resource = resource_mapping.get(clicked_object[-1])
+								if playerlist[board.current_player].resources.get(current_resource) < 1: # not able to buy
+									print("\t\tYou do not have sufficient resources to sell that")
+								elif sold_resources.get(current_resource) >= tilelist[10].merchandise[0].get(current_resource): # not vendable
+									print("\t\tThe market doesn't allow this particular resource to be sold (anymore)")
+								else: # all requirements met
+									sold_resources[current_resource] += 1
+									update_resource_blocks(board, playerlist, units, current_resource, -1)
 							else:
-								if not (diamonds_vendable or fabric_vendable or spice_vendable or fruit_vendable):
-									print("\tThe market doesn't allow this particular resource to be sold (anymore)")
-								else:
-									print("You do not have sufficient resources to sell that")
-							print("\tSo far, you have sold", sum(sold_resources.values()), "resources")
+								print("\tTo sell a resource, please click on your slider block of the desired resource")
+							
+							print(f"\tSo far, you have sold", sum(sold_resources.values()), "resources")
 							draw_units(frame, font, units, playerlist, board)
 
 					reward = tilelist[10].reward_mapping(str(sum(sold_resources.values()))) # Sum of sold resources as string mapped to lira reward
@@ -606,6 +593,44 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					units.get("small_market_tiles").update_image_path("images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
 					
 					draw_tile(frame, tilelist[10])
+					board.set_nextplayer()
+					draw_units(frame, font, units, playerlist, board)
+
+				elif clicked_tile == "large_market": #Perform Small Market action
+					print("Performing large_market market action")
+					print("Current player is Player", board.current_player + 1)
+					
+					sold_resources = {"diamonds": 0, "fabric": 0, "spice": 0, "fruit": 0}
+					resource_mapping = {"1": "diamonds", "5": "diamonds", "2": "fabric", "6": "fabric", "3": "spice", "7": "spice", "4": "fruit", "8": "fruit"} # clicked object to resource
+
+					while clicked_object != "end_turn_button":
+						if mouse_clicked():
+							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+							
+							if "resourceblock" in clicked_object:
+								current_resource = resource_mapping.get(clicked_object[-1])
+								if playerlist[board.current_player].resources.get(current_resource) < 1: # not able to buy
+									print("\t\tYou do not have sufficient resources to sell that")
+								elif sold_resources.get(current_resource) >= tilelist[13].merchandise[0].get(current_resource): # not vendable
+									print("\t\tThe market doesn't allow this particular resource to be sold (anymore)")
+								else: # all requirements met
+									sold_resources[current_resource] += 1
+									update_resource_blocks(board, playerlist, units, current_resource, -1)
+							else:
+								print("\tTo sell a resource, please click on your slider block of the desired resource")
+							
+							print(f"\tSo far, you have sold", sum(sold_resources.values()), "resources")
+							draw_units(frame, font, units, playerlist, board)
+
+					reward = tilelist[13].reward_mapping(str(sum(sold_resources.values()))) # Sum of sold resources as string mapped to lira reward
+					print("You have sold", str(sum(sold_resources.values())), "resources, rewarding you", reward, "lira!")
+					print("")
+					playerlist[board.current_player].update_resources("lira", reward)
+
+					tilelist[13].switch_stack()
+					units.get("large_market_tiles").update_image_path("images/large_market_tile" + tilelist[13].merchandise[0].get("tilenumber") + ".png")
+					
+					draw_tile(frame, tilelist[13])
 					board.set_nextplayer()
 					draw_units(frame, font, units, playerlist, board)
 
