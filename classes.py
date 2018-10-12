@@ -3,6 +3,7 @@ from random import shuffle
 class Players:
 	def __init__(self, player, tilelist, tilewidth, tileheight, units):
 		additional_lira = player
+		self.player = "p" + str(player + 1)
 		self.name = "Player" + str(player + 1)
 		self.resources = {"lira": 50 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2, "bonuses": []}
 		self.gemstone_slots = [
@@ -28,12 +29,11 @@ class Players:
 				[units.get("resource_p" + str(player + 1)).x + 1.5 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y + tileheight]
 			]
 		self.units_stack = [self.name + "_merchant1", self.name + "_servant1", self.name + "_servant2", self.name + "_servant3", self.name + "_servant4"]
-		#self.location = tilelist[6].location
 
-		if "1" in self.name:
-			self.merchant = {"location": [tilelist[6].x, tilelist[6].y], "merchant_icon": "images/pawns/p1_merchant.png"}
-		else:
-			self.merchant = {"location": tilelist[6].location, "merchant_icon": "images/pawns/p2_merchant.png"}
+		# if "1" in self.name:
+		# 	self.merchant = {"location": tilelist[6], "merchant_icon": "images/tokens/p1_merchant.png"}
+		# else:
+		# 	self.merchant = {"location": tilelist[6], "merchant_icon": "images/tokens/p2_merchant.png"}
 
 
 	def update_resources(self, resource, amount): #self, string, integer
@@ -60,10 +60,18 @@ class Players:
 class Tiles:
 	def __init__(self, name, location, boardx, boardy, tilewidth, tileheight, tilegap):
 		self.name = name
-		self.tilenumbers = []
+		self.tileid = []
 		self.location = location
 		self.x = boardy + ((self.location[1] - 1) * (tilewidth + tilegap))
 		self.y = boardx + ((self.location[0] - 1) * (tileheight + tilegap))
+		self.token_grid = {
+							"p1_merchant": [self.x + (tilewidth / 4 + tilewidth / 24), self.y + (tileheight / 6)],
+							"p1_assistant_ 1": [self.x + (tilewidth / 24) + tilegap, self.y + (tileheight / 6) * 2],
+
+							"p2_merchant": [self.x + (tilewidth / 2 + tilewidth / 24), self.y + (tileheight / 6)],
+							"p2_assistant_1": [self.x + ((tilewidth / 4) * 3 + tilewidth / 24), self.y + (tileheight / 6) * 2]
+						  }
+
 		self.players_present = []
 		self.units_stack = []
 		if self.name == "postal_office":
@@ -79,7 +87,7 @@ class Tiles:
 			self.gemstone_amount = 9
 		if self.name == "sultans_palace":
 			self.resources_price = ["diamonds", "fabric", "flavourspice", "fruit", "winnow"] # Called spice flavourspice so the sort puts it between fabric and fruit!
-			self.resources_queue = ["diamonds", "fabric", "flavourspice", "fruit", "winnow"]
+			self.resources_queue = ["diamonds", "fabric", "flavourspice", "fruit", "winnow"] # Winnow is resource of choice, named to be last alphabetically
 			self.gemstone_amount = 6
 		if self.name == "wainwright" or self.name == "small_mosque" or self.name == "great_mosque":
 			self.gemstone_amount = 2
@@ -178,15 +186,11 @@ class Tiles:
 
 class Object:
 	def __init__(self, x, y, width, height, image_path):
-		#self.name = image_path.split("_")[2]
 		self.x = x
 		self.y = y
 		self.width = width
 		self.height = height
 		self.image_path = image_path
-
-	#def update_name(self, newname):
-	#	self.name = newname
 
 	def set_x(self, newx):
 		self.x = newx
@@ -202,6 +206,20 @@ class Object:
 
 	def update_image_path(self, image_path):
 		self.image_path = image_path
+
+class Token:
+	def __init__(self, image_path, visibility, tile_number):
+		self.visible = visibility
+		self.image_path = image_path
+		self.tile_number = tile_number
+
+	def switch_visibility(self):
+		print(f"visibility before: {self.visible}")
+		self.visible = not self.visible
+		print(f"visibility after: {self.visible}")
+
+	def set_tile_number(self, tile_number):
+		self.tile_number = tile_number
 
 
 class Board:
@@ -220,16 +238,17 @@ class Board:
 			self.next_player_button = "images/buttonblue.png"
 		print(f"Next player's turn, go ahead Player{self.current_player + 1}!")
 
-	def move_islegal(player, move_from, move_to): #Tile1, Tile2
-		print("move from is", move_from.location)
-		print("move to is", move_to.location)
-		#x1, y1 = move_from.location[0], move_from.location[1]
-		#x2, y2 = move_to.location[0], move_to.location[1]
-		#xdist = abs(move_to.location[0] - move_from.location[0])
-		#ydist = abs(move_to.location[1] - move_from.location[1])
-		if ((abs(move_to.location[0] - move_from.location[0]) == 0 and (abs(move_to.location[1] - move_from.location[1]) == 1 or abs(move_to.location[1] - move_from.location[1]) == 2)) or 
-			(abs(move_to.location[1] - move_from.location[1]) == 0 and (abs(move_to.location[0] - move_from.location[0]) == 1 or abs(move_to.location[0] - move_from.location[0]) == 2)) or 
-			(abs(move_to.location[0] - move_from.location[0]) == abs(move_to.location[1] - move_from.location[1]) == 1)):
+	def move_is_legal(self, move_from, move_to): #Tile1, Tile2
+		#print("move from is", move_from)
+		#print("move to is", move_to)
+
+		#x1, y1 = move_from[0], move_from[1]
+		#x2, y2 = move_to[0], move_to[1]
+		#xdist = abs(move_to[0] - move_from[0])
+		#ydist = abs(move_to[1] - move_from[1])
+		if ((abs(move_to[0] - move_from[0]) == 0 and (abs(move_to[1] - move_from[1]) == 1 or abs(move_to[1] - move_from[1]) == 2)) or 
+			(abs(move_to[1] - move_from[1]) == 0 and (abs(move_to[0] - move_from[0]) == 1 or abs(move_to[0] - move_from[0]) == 2)) or 
+			(abs(move_to[0] - move_from[0]) == abs(move_to[1] - move_from[1]) == 1)):
 			return True
 		else:
 			return False

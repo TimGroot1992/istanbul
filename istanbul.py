@@ -6,11 +6,11 @@ import pygame
 from pygame.locals import *
 from pygame import gfxdraw
 
-from classes import Board, Players, Tiles, Object
+from classes import Board, Players, Tiles, Object, Token
 
-windowtype = FULLSCREEN
-framewidth = 1920			
-frameheight = 1080
+windowtype = RESIZABLE
+framewidth = 800			
+frameheight = 600
 boardx = 25
 boardy = 25
 tilegap = 5
@@ -41,8 +41,8 @@ background2 = (0, 68, 102)
 def main():
 	#board = Board(int(sys.argv[1]), 16)
 	board = Board(2, 16)
-	print("Playing Istanbul with", board.number_of_players, "players!")
 	print("")
+	print("Playing Istanbul with", board.number_of_players, "players!")
 
 	'''
 	Indices:
@@ -59,6 +59,7 @@ def main():
 		"sultans_palace": [4, 1], "large_market": [4, 2], "wainwright": [4, 3], "gemstone_dealer": [4, 4]}
 	tilelist = [Tiles(tile, tiles.get(tile), boardx, boardy, tilewidth, tileheight, tilegap) for tile in tiles]
 
+	## UNITS ##
 	# Object template: Object(x, y, width, height, image_path)
 	postalblock_1 = Object(tilelist[1].x + tilewidth*(191/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
 	postalblock_2 = Object(tilelist[1].x + tilewidth*(388/1612), tilelist[1].y + tileheight/1.7, tileheight/7.2, tileheight/7.2, "")
@@ -145,30 +146,22 @@ def main():
 		"great_mosque_diamonds_4": great_mosque_diamonds_4, "great_mosque_diamonds_2": great_mosque_diamonds_2, "great_mosque_fruit_4": great_mosque_fruit_4, "great_mosque_fruit_2": great_mosque_fruit_2,
 		"end_turn_button": end_turn_button, "end_turn_button_text": end_turn_button_text
 	}
+	## TOKENS ##
+	p1_merchant = Token("images/tokens/p1_merchant.png", True, 6)
+	p2_merchant = Token("images/tokens/p2_merchant.png", True, 6)
+
+	tokens = {
+		"p1_merchant": p1_merchant, "p2_merchant": p2_merchant 
+	}
+
 
 	playerlist = [Players(i, tilelist, tilewidth, tileheight, units) for i in range(0, board.number_of_players)]
-	
-	for player in playerlist:
-		print("Money for", player.name, "is", player.resources.get("lira"), "lira.")
-	
-	#Initiate fountain for all players
-	currenttile = tilelist[6] #Fountain
-	for i in range(0, len(playerlist)):
-		currenttile.update_players_present(playerlist[i].name, "addition")
-		for unit in playerlist[i].units_stack:
-			currenttile.update_units_stack(playerlist[i].name, unit)
-	
-	print("Tile with name", currenttile.name, "has the following players present:", currenttile.players_present, ". The following units are present here:", currenttile.units_stack)
-	
-	#print("player 1 location is", playerlist[0].location)
-	#playerlist[0].update_location(tilelist[3].location)
-	#print("player 1 location is now", playerlist[0].location)
 
 	frame, font = setup_GUI(windowtype, framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
 	draw_board(frame, tilelist)
 	draw_units(frame, font, units, playerlist, board)
-	draw_tokens(frame, playerlist, board)
-	mainloop_GUI(board, frame, font, tilelist, units, playerlist)
+	draw_tokens(frame, board, playerlist, tilelist, tokens)
+	mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist)
 	
 	''' game logic
 	while game hasnt ended:
@@ -291,14 +284,20 @@ def draw_units(frame, font, units, playerlist, board):
 			currentunit = pygame.transform.smoothscale(currentunit, (int(item[1].width), int(item[1].height)))
 			frame.blit(currentunit, (item[1].x, item[1].y))
 
-def draw_tokens(frame, playerlist, board):
-	
-	merchant_p1 = pygame.image.load(playerlist[board.current_player].merchant["merchant_icon"]).convert_alpha()
-	merchant_p1 = pygame.transform.smoothscale(merchant_p1, (int(tilewidth / 6), int(tilewidth / 6)))
-	frame.blit(merchant_p1, (playerlist[board.current_player].merchant["location"][0], playerlist[board.current_player].merchant["location"][1]))
+def draw_tokens(frame, board, playerlist, tilelist, tokens):
+	# for every token
+	# determine location
+	# blit on location using the grid
+	for token_name, token in tokens.items():
+		if token.visible:
+			current_token = pygame.image.load(token.image_path).convert_alpha()
+			current_token = pygame.transform.smoothscale(current_token, (int(tilewidth / 6), int(tilewidth / 6)))
+			frame.blit(current_token, (tilelist[token.tile_number].token_grid[token_name][0], tilelist[token.tile_number].token_grid[token_name][1]))
+
 	pygame.display.update()
 
-def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
+
+def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 	global tilewidth
 	global tileheight
 
@@ -367,16 +366,26 @@ def mainloop_GUI(board, frame, font, tilelist, units, playerlist):
 					draw_units(frame, font, units, playerlist, board)
 
 				elif clicked_tile == "fabric_warehouse": #Perform fabric warehouse action
-					print("Performing fabric warehouse action")
-					#print("Current player is Player", board.current_player + 1)
-					
-					playerlist[board.current_player].update_resources("fabric", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fabric")))
-					
-					#draw_tile(frame, tilelist[2])
-					update_resource_blocks(board, playerlist, units, "fabric", 0)
-					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-					board.set_nextplayer()
-					draw_units(frame, font, units, playerlist, board)
+					current_tile = tilelist[tokens[playerlist[board.current_player].player + "_merchant"].tile_number] # Ingest tilenumber based on current player name in token to find the current tile
+					if board.move_is_legal(current_tile.location , tilelist[2].location):
+						
+						# move/update token position for current player
+						tokens[playerlist[board.current_player].player + "_merchant"].set_tile_number(2)
+						draw_tile(frame, current_tile) # Draw origin tile to remove token there
+						# TODO: leave one servant behind
+							# ------------------------------------------
+						# draw tokens
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
+						
+						print("Performing fabric warehouse action")
+						playerlist[board.current_player].update_resources("fabric", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fabric")))
+						
+						update_resource_blocks(board, playerlist, units, "fabric", 0)
+						print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
+						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
+					else:
+						print(f"Move not legal")
 
 				elif clicked_tile == "fruit_warehouse": #Perform fruit warehouse action
 					print("Performing fruit warehouse action")
