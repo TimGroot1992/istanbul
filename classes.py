@@ -5,7 +5,7 @@ class Players:
 		additional_lira = player
 		self.player = "p" + str(player + 1)
 		self.name = "Player" + str(player + 1)
-		self.resources = {"lira": 50 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2, "bonuses": []}
+		self.resources = {"lira": 2 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2, "bonuses": []}
 		self.gemstone_slots = [
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(400/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(605/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
@@ -133,7 +133,6 @@ class Tiles:
 			self.resources_queue.pop(0)
 
 	def has_sufficient_resources(self, current_player):
-		#print("resource price = ", self.resources_price)
 		result = False
 		nchoice = self.resources_price.count("choice")
 		if (current_player.resources.get("diamonds") >= self.resources_price.count("diamonds")) and \
@@ -208,19 +207,19 @@ class Object:
 		self.image_path = image_path
 
 class Token:
-	def __init__(self, image_path, visibility, tile_number):
-		self.visible = visibility
+	def __init__(self, image_path, visibility, entry_fee, tile_number):
 		self.image_path = image_path
+		self.visible = visibility
+		self.entry_fee = entry_fee
 		self.tile_number = tile_number
 
 	def switch_visibility(self):
-		print(f"visibility before: {self.visible}")
+		#print(f"visibility before: {self.visible}")
 		self.visible = not self.visible
-		print(f"visibility after: {self.visible}")
+		#print(f"visibility after: {self.visible}")
 
 	def set_tile_number(self, tile_number):
 		self.tile_number = tile_number
-
 
 class Board:
 	def __init__(self, number_of_players, number_of_tiles):
@@ -238,17 +237,28 @@ class Board:
 			self.next_player_button = "images/buttonblue.png"
 		print(f"Next player's turn, go ahead Player{self.current_player + 1}!")
 
-	def move_is_legal(self, move_from, move_to): #Tile1, Tile2
+	def move_is_legal_distance(self, origin, destination): #Tile1, Tile2
 		#print("move from is", move_from)
 		#print("move to is", move_to)
 
-		#x1, y1 = move_from[0], move_from[1]
-		#x2, y2 = move_to[0], move_to[1]
-		#xdist = abs(move_to[0] - move_from[0])
-		#ydist = abs(move_to[1] - move_from[1])
-		if ((abs(move_to[0] - move_from[0]) == 0 and (abs(move_to[1] - move_from[1]) == 1 or abs(move_to[1] - move_from[1]) == 2)) or 
-			(abs(move_to[1] - move_from[1]) == 0 and (abs(move_to[0] - move_from[0]) == 1 or abs(move_to[0] - move_from[0]) == 2)) or 
-			(abs(move_to[0] - move_from[0]) == abs(move_to[1] - move_from[1]) == 1)):
+		#x1, y1 = origin[0], origin[1]
+		#x2, y2 = destination[0], destination[1]
+		#xdist = abs(destination[0] - origin[0])
+		#ydist = abs(destination[1] - origin[1])
+
+		if ((abs(destination[0] - origin[0]) == 0 and (abs(destination[1] - origin[1]) == 1 or abs(destination[1] - origin[1]) == 2)) or 
+			(abs(destination[1] - origin[1]) == 0 and (abs(destination[0] - origin[0]) == 1 or abs(destination[0] - origin[0]) == 2)) or 
+			(abs(destination[0] - origin[0]) == abs(destination[1] - origin[1]) == 1)):
+			return True
+		else:
+			return False
+
+	def move_is_legal_cost(self, playerlist, tokens, destination):
+		for token_name, token in tokens.items():
+			fee = 0
+			if token.entry_fee:
+				fee += 2
+		if playerlist[self.current_player].resources.get("lira") >= fee:
 			return True
 		else:
 			return False

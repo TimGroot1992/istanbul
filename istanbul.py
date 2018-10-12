@@ -147,13 +147,12 @@ def main():
 		"end_turn_button": end_turn_button, "end_turn_button_text": end_turn_button_text
 	}
 	## TOKENS ##
-	p1_merchant = Token("images/tokens/p1_merchant.png", True, 6)
-	p2_merchant = Token("images/tokens/p2_merchant.png", True, 6)
+	p1_merchant = Token("images/tokens/p1_merchant.png", True, True, 6) # @parms: image path, visibility, entry fee, tile number
+	p2_merchant = Token("images/tokens/p2_merchant.png", True, True, 6)
 
 	tokens = {
 		"p1_merchant": p1_merchant, "p2_merchant": p2_merchant 
 	}
-
 
 	playerlist = [Players(i, tilelist, tilewidth, tileheight, units) for i in range(0, board.number_of_players)]
 
@@ -204,10 +203,7 @@ def draw_board(frame, tilelist):
 			currenttile = pygame.image.load(path).convert()
 		except:
 			currenttile = pygame.image.load("images/spice_warehouse.png").convert()
-			#print("except ", tile.name)
-		#tilex = tile.coordinates[0]
-		#tiley = tile.coordinates[1]
-		#print("printing tile ", tile.name, "at x=", tilex, ", y=", tiley)
+
 		currenttile = pygame.transform.smoothscale(currenttile, (int(tilewidth), int(tileheight)))
 		frame.blit(currenttile, (tile.x, tile.y))
 
@@ -255,12 +251,12 @@ def draw_units(frame, font, units, playerlist, board):
 			elif "lira" in name:
 				textsurface = font.render(str(playerlist[int(name.split("_")[1]) - 1].resources.get('lira')), False, black)
 				if playerlist[int(name.split("_")[1]) - 1].resources.get('lira') < 10:
-					frame.blit(textsurface, (unit.x - unit.width/7, unit.y - unit.height/3))
+					frame.blit(textsurface, (unit.x - unit.width / 7, unit.y - unit.height / 3))
 				else:
-					frame.blit(textsurface, (unit.x - unit.width/4, unit.y - unit.height/3))
+					frame.blit(textsurface, (unit.x - unit.width / 4, unit.y - unit.height / 3))
 			elif "text" in name:
 				textsurface = font.render("End Turn", False, white)
-				frame.blit(textsurface, (unit.x + unit.width/3, unit.y + unit.height/3))
+				frame.blit(textsurface, (unit.x + unit.width / 3, unit.y + unit.height / 3))
 			else: #Shape loaded by image
 				# print(f"unit image path is {unit.image_path} and board next player button is {board.next_player_button}")
 				try:
@@ -285,9 +281,6 @@ def draw_units(frame, font, units, playerlist, board):
 			frame.blit(currentunit, (item[1].x, item[1].y))
 
 def draw_tokens(frame, board, playerlist, tilelist, tokens):
-	# for every token
-	# determine location
-	# blit on location using the grid
 	for token_name, token in tokens.items():
 		if token.visible:
 			current_token = pygame.image.load(token.image_path).convert_alpha()
@@ -317,475 +310,502 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					draw_units(frame, font, units, playerlist, board)
 
 				elif clicked_tile == "postal_office": #Perform postal office action
-					print("Performing postal office action")
-					print("Current player is Player", board.current_player + 1)
-					for key, value in tilelist[1].blocks[0].items():
-						if value == 1:
-							#print("You receive", key)
-							if "lira" in key:
-								playerlist[board.current_player].update_resources("lira", int(key.split("_")[1]))
-							update_resource_blocks(board, playerlist, units, key, 1)
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 1, tokens)
+					if move_legal:
+						print("Performing postal office action")
+						print("Current player is Player", board.current_player + 1)
+						for key, value in tilelist[1].blocks[0].items():
+							if value == 1:
+								#print("You receive", key)
+								if "lira" in key:
+									playerlist[board.current_player].update_resources("lira", int(key.split("_")[1]))
+								update_resource_blocks(board, playerlist, units, key, 1)
 
-					print(playerlist[board.current_player].name, "now has", 
-							playerlist[board.current_player].resources.get("lira"), "lira,", 
-							playerlist[board.current_player].resources.get("fabric"), "fabric,", 
-							playerlist[board.current_player].resources.get("spice"), "spice,", 
-							playerlist[board.current_player].resources.get("diamonds"), "diamonds and", 
-							playerlist[board.current_player].resources.get("fruit"), "fruit.")
-					tilelist[1].move_postalblocks(tilelist[1].blocks)
+						print(playerlist[board.current_player].name, "now has", 
+								playerlist[board.current_player].resources.get("lira"), "lira,", 
+								playerlist[board.current_player].resources.get("fabric"), "fabric,", 
+								playerlist[board.current_player].resources.get("spice"), "spice,", 
+								playerlist[board.current_player].resources.get("diamonds"), "diamonds and", 
+								playerlist[board.current_player].resources.get("fruit"), "fruit.")
+						tilelist[1].move_postalblocks(tilelist[1].blocks)
 
-					#for unit in units:
-					for name, unit in units.items(): 
-						if "postalblock" in name:
+						#for unit in units:
+						for name, unit in units.items(): 
+							if "postalblock" in name:
 
-							if tilelist[1].blocks[0].get("fabric") == tilelist[1].blocks[0].get("lira_2_1") == tilelist[1].blocks[0].get("diamonds") == tilelist[1].blocks[0].get("lira_2_2") == 1:
-								unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
-							elif "postalblock_1" in name:
-								if tilelist[1].blocks[0].get("fabric") == 1:
+								if tilelist[1].blocks[0].get("fabric") == tilelist[1].blocks[0].get("lira_2_1") == tilelist[1].blocks[0].get("diamonds") == tilelist[1].blocks[0].get("lira_2_2") == 1:
 									unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
-								else:
-									unit.set_y(tilelist[1].y + tileheight/1.7)
-							elif "postalblock_2" in name:
-								if tilelist[1].blocks[0].get("lira_2_1") == 1:
-									unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
-								else:
-									unit.set_y(tilelist[1].y + tileheight/1.7)
-							elif "postalblock_3" in name:
-								if tilelist[1].blocks[0].get("diamonds") == 1:
-									unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
-								else:
-									unit.set_y(tilelist[1].y + tileheight/1.7)
-							elif "postalblock_4" in name:
-								if tilelist[1].blocks[0].get("lira_2_2") == 1:
-									unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
-								else:
-									unit.set_y(tilelist[1].y + tileheight/1.7)
+								elif "postalblock_1" in name:
+									if tilelist[1].blocks[0].get("fabric") == 1:
+										unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
+									else:
+										unit.set_y(tilelist[1].y + tileheight/1.7)
+								elif "postalblock_2" in name:
+									if tilelist[1].blocks[0].get("lira_2_1") == 1:
+										unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
+									else:
+										unit.set_y(tilelist[1].y + tileheight/1.7)
+								elif "postalblock_3" in name:
+									if tilelist[1].blocks[0].get("diamonds") == 1:
+										unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
+									else:
+										unit.set_y(tilelist[1].y + tileheight/1.7)
+								elif "postalblock_4" in name:
+									if tilelist[1].blocks[0].get("lira_2_2") == 1:
+										unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
+									else:
+										unit.set_y(tilelist[1].y + tileheight/1.7)
 
-					board.set_nextplayer()
-					draw_tile(frame, tilelist[1])
-					draw_units(frame, font, units, playerlist, board)
+						board.set_nextplayer()
+						draw_tile(frame, tilelist[1])
+						draw_units(frame, font, units, playerlist, board)
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 				elif clicked_tile == "fabric_warehouse": #Perform fabric warehouse action
-					current_tile = tilelist[tokens[playerlist[board.current_player].player + "_merchant"].tile_number] # Ingest tilenumber based on current player name in token to find the current tile
-					if board.move_is_legal(current_tile.location , tilelist[2].location):
-						
-						# move/update token position for current player
-						tokens[playerlist[board.current_player].player + "_merchant"].set_tile_number(2)
-						draw_tile(frame, current_tile) # Draw origin tile to remove token there
-						# TODO: leave one servant behind
-							# ------------------------------------------
-						# draw tokens
-						draw_tokens(frame, board, playerlist, tilelist, tokens)
-						
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 2, tokens)
+					if move_legal:
 						print("Performing fabric warehouse action")
 						playerlist[board.current_player].update_resources("fabric", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fabric")))
 						
+						draw_tile(frame, tilelist[2])
 						update_resource_blocks(board, playerlist, units, "fabric", 0)
-						print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
+						print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The carrying capacity for this player is", playerlist[board.current_player].resources.get("max_res"))
 						board.set_nextplayer()
 						draw_units(frame, font, units, playerlist, board)
-					else:
-						print(f"Move not legal")
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 				elif clicked_tile == "fruit_warehouse": #Perform fruit warehouse action
-					print("Performing fruit warehouse action")
-					#print("Current player is Player", board.current_player + 1)
-					
-					playerlist[board.current_player].update_resources("fruit", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fruit")))
-					
-					draw_tile(frame, tilelist[4])
-					update_resource_blocks(board, playerlist, units, "fruit", 0)
-					#draw_units(frame, font, units, playerlist, board)
-					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-					board.set_nextplayer()
-					draw_units(frame, font, units, playerlist, board)
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 4, tokens)
+					if move_legal:
+						print("Performing fruit warehouse action")
+						playerlist[board.current_player].update_resources("fruit", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fruit")))
+						
+						draw_tile(frame, tilelist[4])
+						update_resource_blocks(board, playerlist, units, "fruit", 0)
+						#draw_units(frame, font, units, playerlist, board)
+						print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The carrying capacity for this player is", playerlist[board.current_player].resources.get("max_res"))
+						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 				elif clicked_tile == "spice_warehouse": #Perform spice warehouse action
-					print("Performing spice warehouse action")
-					print("Current player is Player", board.current_player + 1)
-					
-					playerlist[board.current_player].update_resources("spice", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("spice")))
-					
-					draw_tile(frame, tilelist[7])
-					update_resource_blocks(board, playerlist, units, "spice", 0)
-					#draw_units(frame, font, units, playerlist, board)
-					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-					board.set_nextplayer()
-					draw_units(frame, font, units, playerlist, board)
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 7, tokens)
+					if move_legal:
+						print("Performing spice warehouse action")
+						
+						playerlist[board.current_player].update_resources("spice", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("spice")))
+						
+						draw_tile(frame, tilelist[7])
+						update_resource_blocks(board, playerlist, units, "spice", 0)
+						#draw_units(frame, font, units, playerlist, board)
+						print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The carrying capacity for this player is", playerlist[board.current_player].resources.get("max_res"))
+						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 				elif clicked_tile == "small_mosque": #Perform Small Mosque Action (tile index 3)
-					print("Performing small mosque action")
-					print("Click on a mosque tile to buy it or end your turn")
-					
-					while ("end_turn_button" not in clicked_object) and ("small_mosque_fabric" not in clicked_object) and ("small_mosque_spice" not in clicked_object):
-						if mouse_clicked():
-							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-
-					if "end_turn_button" not in clicked_object: # Object clicked was not the end button
-						tilename = clicked_object[:-2] # Take root of the tilename without number
-						top_tile = tilelist[3].get_stack_top(tilename)
-						resource_name = tilename.split("_")[2]
-
-						enough_resources = playerlist[board.current_player].resources.get(resource_name) >= int(top_tile[-1]) # True/False, player allowed to buy this mosque tile
-						
-						tile_not_owned = True
-						for array in playerlist[board.current_player].resources.get("bonuses"):
-							#print(f"nested array in bonuses = {array}")
-							if resource_name in array[0]:
-								tile_not_owned = False
-								break
-					
-						if (enough_resources and tile_not_owned): # Enough resources and allowed to buy
-									
-							update_resource_blocks(board, playerlist, units, resource_name, -1)
-							#print(playerlist[board.current_player].resources.get("bonuses"))
-							tilelist[3].update_tile_stack(top_tile)
-
-							units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
-							units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
-							playerlist[board.current_player].update_tile_stack()
-							playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
-							units.pop(top_tile)
-
-							draw_tile(frame, tilelist[3])
-							draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
-							board.set_nextplayer()
-							draw_units(frame, font, units, playerlist, board)
-							break
-						elif not tile_not_owned: # Already have a mosque tile with this colour
-							print(f"\tYou already have a mosque tile of that resource in your possession!")
-							break
-						else:
-							print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
-							break
-
-					else: # End turn button clicked
-						board.set_nextplayer()
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 3, tokens)
+					if move_legal:
+						print("Performing small mosque action")
+						print("Click on a mosque tile to buy it or end your turn")
+						draw_tile(frame, tilelist[3])
 						draw_units(frame, font, units, playerlist, board)
-						break
-
-				elif clicked_tile == "great_mosque": #Perform Small Mosque Action (tile index 3)
-					print("Performing great mosque action")
-					print("Click on a mosque tile to buy it or end your turn")
-					
-					while ("end_turn_button" not in clicked_object) and ("great_mosque_diamonds" not in clicked_object) and ("great_mosque_fruit" not in clicked_object):
-						if mouse_clicked():
-							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-
-					if "end_turn_button" not in clicked_object: # Object clicked was not the end button
-						tilename = clicked_object[:-2] # Take root of the tilename without number
-						top_tile = tilelist[0].get_stack_top(tilename)
-						resource_name = tilename.split("_")[2]
-
-						enough_resources = playerlist[board.current_player].resources.get(resource_name) >= int(top_tile[-1]) # True/False, player allowed to buy this mosque tile
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
 						
-						tile_not_owned = True
-						for array in playerlist[board.current_player].resources.get("bonuses"):
-							#print(f"nested array in bonuses = {array}")
-							if resource_name in array[0]:
-								tile_not_owned = False
-								break
-					
-						if (enough_resources and tile_not_owned): # Enough resources and allowed to buy
+						while ("end_turn_button" not in clicked_object) and ("small_mosque_fabric" not in clicked_object) and ("small_mosque_spice" not in clicked_object):
+							if mouse_clicked():
+								clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+
+								if "fabric" in clicked_object or "spice" in clicked_object: # Object clicked was not the end button
+									tilename = clicked_object[:-2] # Take root of the tilename without number
+									top_tile = tilelist[3].get_stack_top(tilename)
+									resource_name = tilename.split("_")[2]
+
+									enough_resources = playerlist[board.current_player].resources.get(resource_name) >= int(top_tile[-1]) # True/False, player allowed to buy this mosque tile
 									
-							update_resource_blocks(board, playerlist, units, resource_name, -1)
-							#print(playerlist[board.current_player].resources.get("bonuses"))
-							tilelist[0].update_tile_stack(top_tile)
+									tile_not_owned = True
+									for array in playerlist[board.current_player].resources.get("bonuses"):
+										if resource_name in array[0]:
+											tile_not_owned = False
+											print(f"\tBreak if resourcename in array 0 activated")
+											break
+								
+									if (enough_resources and tile_not_owned): # Enough resources and allowed to buy		
+										update_resource_blocks(board, playerlist, units, resource_name, -1)
+										tilelist[3].update_tile_stack(top_tile)
 
-							units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
-							units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
-							playerlist[board.current_player].update_tile_stack()
-							playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
-							units.pop(top_tile)
+										units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
+										units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
+										playerlist[board.current_player].update_tile_stack()
+										playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
+										units.pop(top_tile)
 
-							draw_tile(frame, tilelist[0])
-							draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
-							board.set_nextplayer()
-							draw_units(frame, font, units, playerlist, board)
-							break
-						elif not tile_not_owned: # Already have a mosque tile with this colour
-							print(f"\tYou already have a mosque tile of that resource in your possession!")
-							break
-						else:
-							print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
-							break
+										draw_tile(frame, tilelist[3])
+										draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
+										board.set_nextplayer()
+										draw_units(frame, font, units, playerlist, board)
+										draw_tokens(frame, board, playerlist, tilelist, tokens)
+										print(f"\tBreak enough resources and tile not owned activated")
+										break
+									elif not tile_not_owned: # Already have a mosque tile with this colour
+										print(f"\tYou already have a mosque tile of that resource in your possession!")
+										clicked_object = ""
+									else:
+										print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
+										clicked_object = ""
 
-					else: # End turn button clicked
-						board.set_nextplayer()
+								elif "end_turn_button" in clicked_object: # End turn button clicked
+									board.set_nextplayer()
+									draw_units(frame, font, units, playerlist, board)
+									break
+
+				elif clicked_tile == "great_mosque": #Perform Great Mosque Action (tile index 0)
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 0, tokens)
+					if move_legal:
+						print("Performing great mosque action")
+						print("Click on a mosque tile to buy it or end your turn")
+						draw_tile(frame, tilelist[0])
 						draw_units(frame, font, units, playerlist, board)
-						break
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
+						
+						while ("end_turn_button" not in clicked_object) and ("great_mosque_diamonds" not in clicked_object) and ("great_mosque_fruit" not in clicked_object):
+							if mouse_clicked():
+								clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+
+								if "diamonds" in clicked_object or "fruit" in clicked_object: # Object clicked was not the end button
+									tilename = clicked_object[:-2] # Take root of the tilename without number
+									top_tile = tilelist[0].get_stack_top(tilename)
+									resource_name = tilename.split("_")[2]
+
+									enough_resources = playerlist[board.current_player].resources.get(resource_name) >= int(top_tile[-1]) # True/False, player allowed to buy this mosque tile
+									
+									tile_not_owned = True
+									for array in playerlist[board.current_player].resources.get("bonuses"):
+										if resource_name in array[0]:
+											tile_not_owned = False
+											break
+								
+									if (enough_resources and tile_not_owned): # Enough resources and allowed to buy
+												
+										update_resource_blocks(board, playerlist, units, resource_name, -1)
+										tilelist[0].update_tile_stack(top_tile)
+
+										units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
+										units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
+										playerlist[board.current_player].update_tile_stack()
+										playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
+										units.pop(top_tile)
+
+										draw_tile(frame, tilelist[0])
+										draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
+										board.set_nextplayer()
+										draw_units(frame, font, units, playerlist, board)
+										draw_tokens(frame, board, playerlist, tilelist, tokens)
+										break
+									elif not tile_not_owned: # Already have a mosque tile with this colour
+										print(f"\tYou already have a mosque tile of that resource in your possession!")
+										clicked_object = ""
+									else:
+										print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
+										clicked_object = ""
+
+								elif "end_turn_button" in clicked_object: # End turn button clicked
+									board.set_nextplayer()
+									draw_units(frame, font, units, playerlist, board)
+									break
 
 				elif clicked_tile == "black_market": #Perform Black Market action
-					print("Performing black market action")
-					print("Current player is Player", board.current_player + 1)
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 8, tokens)
+					if move_legal:
+						print("Performing black market action")
+						print("Current player is Player", board.current_player + 1)
 
-					print("\tPlease click on an option: fabric, spice or fruit!")
-					while clicked_object != "resourceblock_2" or clicked_object != "resourceblock_3" or clicked_object != "resourceblock_4" or clicked_object != "resourceblock_6" or clicked_object != "resourceblock_7" or clicked_object != "resourceblock_8":
-						if mouse_clicked():
-							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-							#print(f"Clicked object is \"{clicked_object}\"")
-							if (("resourceblock_2" in clicked_object) or ("resourceblock_6" in clicked_object)):
-								draw_tile(frame, tilelist[8])
-								update_resource_blocks(board, playerlist, units, "fabric", 1)
-								draw_units(frame, font, units, playerlist, board)
-								#pygame.display.update()
-								break
-							elif (("resourceblock_3" in clicked_object) or ("resourceblock_7" in clicked_object)):
-								draw_tile(frame, tilelist[8])
-								update_resource_blocks(board, playerlist, units, "spice", 1)
-								draw_units(frame, font, units, playerlist, board)
-								#pygame.display.update()
-								break
-							elif (("resourceblock_4" in clicked_object) or ("resourceblock_8" in clicked_object)):
-								draw_tile(frame, tilelist[8])
-								update_resource_blocks(board, playerlist, units, "fruit", 1)
-								draw_units(frame, font, units, playerlist, board)
-								#pygame.display.update()
-								break
-							else:
-								print("\tPlease click on an option on your resource cart: fabric, spice or fruit")
-					
-					print("\tRolling the dice to see if you win any diamonds...")
-					dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units) 
-					if dice_roll > 10:
-						draw_tile(frame, tilelist[8])
-						update_resource_blocks(board, playerlist, units, "diamonds", 3)
-						draw_units(frame, font, units, playerlist, board) 
-						print("\tCongratulations, you have won 3 diamonds!")
-					elif dice_roll > 8:
-						draw_tile(frame, tilelist[8])
-						update_resource_blocks(board, playerlist, units, "diamonds", 2)
-						draw_units(frame, font, units, playerlist, board) 
-						print("\t\tCongratulations, you have won 2 diamonds!")
-					elif dice_roll > 6:
-						draw_tile(frame, tilelist[8])
-						update_resource_blocks(board, playerlist, units, "diamonds", 1)
-						draw_units(frame, font, units, playerlist, board) 
-						print("\t\tCongratulations, you have won 1 diamond!")
-					else:
-						draw_tile(frame, tilelist[8])
-						draw_units(frame, font, units, playerlist, board) 
-						print("\t\tToo bad, you receive no diamonds...")
+						print("\tPlease click on an option: fabric, spice or fruit!")
+						while clicked_object != "resourceblock_2" or clicked_object != "resourceblock_3" or clicked_object != "resourceblock_4" or clicked_object != "resourceblock_6" or clicked_object != "resourceblock_7" or clicked_object != "resourceblock_8":
+							if mouse_clicked():
+								clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+								#print(f"Clicked object is \"{clicked_object}\"")
+								if (("resourceblock_2" in clicked_object) or ("resourceblock_6" in clicked_object)):
+									draw_tile(frame, tilelist[8])
+									update_resource_blocks(board, playerlist, units, "fabric", 1)
+									draw_units(frame, font, units, playerlist, board)
+									#pygame.display.update()
+									break
+								elif (("resourceblock_3" in clicked_object) or ("resourceblock_7" in clicked_object)):
+									draw_tile(frame, tilelist[8])
+									update_resource_blocks(board, playerlist, units, "spice", 1)
+									draw_units(frame, font, units, playerlist, board)
+									#pygame.display.update()
+									break
+								elif (("resourceblock_4" in clicked_object) or ("resourceblock_8" in clicked_object)):
+									draw_tile(frame, tilelist[8])
+									update_resource_blocks(board, playerlist, units, "fruit", 1)
+									draw_units(frame, font, units, playerlist, board)
+									#pygame.display.update()
+									break
+								else:
+									print("\tPlease click on an option on your resource cart: fabric, spice or fruit")
+						
+						print("\tRolling the dice to see if you win any diamonds...")
+						dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units) 
+						if dice_roll > 10:
+							draw_tile(frame, tilelist[8])
+							update_resource_blocks(board, playerlist, units, "diamonds", 3)
+							#draw_units(frame, font, units, playerlist, board) 
+							print("\tCongratulations, you have won 3 diamonds!")
+						elif dice_roll > 8:
+							draw_tile(frame, tilelist[8])
+							update_resource_blocks(board, playerlist, units, "diamonds", 2)
+							#draw_units(frame, font, units, playerlist, board) 
+							print("\t\tCongratulations, you have won 2 diamonds!")
+						elif dice_roll > 6:
+							draw_tile(frame, tilelist[8])
+							update_resource_blocks(board, playerlist, units, "diamonds", 1)
+							#draw_units(frame, font, units, playerlist, board) 
+							print("\t\tCongratulations, you have won 1 diamond!")
+						else:
+							draw_tile(frame, tilelist[8])
+							#draw_units(frame, font, units, playerlist, board) 
+							print("\t\tToo bad, you receive no diamonds...")
 
-					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-					board.set_nextplayer()
-					draw_units(frame, font, units, playerlist, board)
+						print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The carrying capacity for this player is", playerlist[board.current_player].resources.get("max_res"))
+						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 				elif clicked_tile == "small_market": #Perform Small Market action
-					print("Performing small_market market action")
-					print("Current player is Player", board.current_player + 1)
-					
-					sold_resources = {"diamonds": 0, "fabric": 0, "spice": 0, "fruit": 0}
-					resource_mapping = {"1": "diamonds", "5": "diamonds", "2": "fabric", "6": "fabric", "3": "spice", "7": "spice", "4": "fruit", "8": "fruit"} # clicked object to resource
-
-
-					while clicked_object != "end_turn_button":
-						if mouse_clicked():
-							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-							
-							if "resourceblock" in clicked_object:
-								current_resource = resource_mapping.get(clicked_object[-1])
-								if playerlist[board.current_player].resources.get(current_resource) < 1: # not able to buy
-									print("\t\tYou do not have sufficient resources to sell that")
-								elif sold_resources.get(current_resource) >= tilelist[10].merchandise[0].get(current_resource): # not vendable
-									print("\t\tThe market doesn't allow this particular resource to be sold (anymore)")
-								else: # all requirements met
-									sold_resources[current_resource] += 1
-									update_resource_blocks(board, playerlist, units, current_resource, -1)
-							else:
-								print("\tTo sell a resource, please click on your slider block of the desired resource")
-							
-							print(f"\tSo far, you have sold", sum(sold_resources.values()), "resources")
-							draw_units(frame, font, units, playerlist, board)
-
-					reward = tilelist[10].reward_mapping(str(sum(sold_resources.values()))) # Sum of sold resources as string mapped to lira reward
-					print("You have sold", str(sum(sold_resources.values())), "resources, rewarding you", reward, "lira!")
-					print("")
-					playerlist[board.current_player].update_resources("lira", reward)
-
-					tilelist[10].switch_stack()
-					units.get("small_market_tiles").update_image_path("images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
-					
-					draw_tile(frame, tilelist[10])
-					board.set_nextplayer()
-					draw_units(frame, font, units, playerlist, board)
-
-				elif clicked_tile == "large_market": #Perform Small Market action
-					print("Performing large_market market action")
-					print("Current player is Player", board.current_player + 1)
-					
-					sold_resources = {"diamonds": 0, "fabric": 0, "spice": 0, "fruit": 0}
-					resource_mapping = {"1": "diamonds", "5": "diamonds", "2": "fabric", "6": "fabric", "3": "spice", "7": "spice", "4": "fruit", "8": "fruit"} # clicked object to resource
-
-					while clicked_object != "end_turn_button":
-						if mouse_clicked():
-							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-							
-							if "resourceblock" in clicked_object:
-								current_resource = resource_mapping.get(clicked_object[-1])
-								if playerlist[board.current_player].resources.get(current_resource) < 1: # not able to buy
-									print("\t\tYou do not have sufficient resources to sell that")
-								elif sold_resources.get(current_resource) >= tilelist[13].merchandise[0].get(current_resource): # not vendable
-									print("\t\tThe market doesn't allow this particular resource to be sold (anymore)")
-								else: # all requirements met
-									sold_resources[current_resource] += 1
-									update_resource_blocks(board, playerlist, units, current_resource, -1)
-							else:
-								print("\tTo sell a resource, please click on your slider block of the desired resource")
-							
-							print(f"\tSo far, you have sold", sum(sold_resources.values()), "resources")
-							draw_units(frame, font, units, playerlist, board)
-
-					reward = tilelist[13].reward_mapping(str(sum(sold_resources.values()))) # Sum of sold resources as string mapped to lira reward
-					print("You have sold", str(sum(sold_resources.values())), "resources, rewarding you", reward, "lira!")
-					print("")
-					playerlist[board.current_player].update_resources("lira", reward)
-
-					tilelist[13].switch_stack()
-					units.get("large_market_tiles").update_image_path("images/large_market_tile" + tilelist[13].merchandise[0].get("tilenumber") + ".png")
-					
-					draw_tile(frame, tilelist[13])
-					board.set_nextplayer()
-					draw_units(frame, font, units, playerlist, board)
-
-				elif clicked_tile == "tea_house": #Perform teahouse action
-					print("Performing tea house action, type in a number between 3-12 followed by an enter")
-					bet = 1
-					while not ((2 < bet < 13) and (int(bet))):
-						bet = get_keyboardinput(event)
-						if not (2 < bet < 13):
-							print("Your bet must be between 3 and 12, please try again.")
-					print("Your bet is", bet, "... Rolling the dice...")
-					dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units)
-					if (dice_roll >= bet):
-						playerlist[board.current_player].update_resources("lira", bet)
-						#print("Congrats, you receive", bet, "lira!", "player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
-						print(f"Congrats, your receive {bet} lira! {playerlist[board.current_player].name} now has {playerlist[board.current_player].resources.get('lira')} lira")
-					else:
-						#print("Too bad, you receive only 2 lira", "player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
-						print(f"Too bad, you receive only 2 lira. {playerlist[board.current_player].name} now has {playerlist[board.current_player].resources.get('lira')} lira")
-						playerlist[board.current_player].update_resources("lira", 2)
-					draw_tile(frame, tilelist[11])
-					board.set_nextplayer()
-					draw_units(frame, font, units, playerlist, board)
-				
-				elif "wainwright" in clicked_tile: #Perform wainwright action
-					print("Performing wainwright action")
-					#print(f"current player is {playerlist[board.current_player].name[-1]}")
-
-					if playerlist[board.current_player].resources.get("lira") >= 7 and playerlist[board.current_player].resources.get("max_res") < 5:
-						playerlist[board.current_player].update_resources("lira", -7)
-						playerlist[board.current_player].update_resources("max_res", 1)
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 10, tokens)
+					if move_legal:
+						print("Performing small_market market action")
+						print("Current player is Player", board.current_player + 1)
 						
-						current_player = playerlist[board.current_player].name[-1]
-						if playerlist[board.current_player].resources.get("max_res") != 5:
-							units.get("resource_p" + current_player).update_image_path("images/resource" + str(playerlist[board.current_player].resources.get("max_res")) + "_" + current_player + ".png")
-							print(f"\t{playerlist[board.current_player].name} bought a cart extension!")
-						else: # This is the last cart extension this player will buy
-							units.get("resource_p" + current_player).update_image_path("images/resource" + str(playerlist[board.current_player].resources.get("max_res")) + "_" + current_player + ".png")
-							playerlist[board.current_player].update_resources("gemstones", 1)
-							print(f"\t{playerlist[board.current_player].name} bought a cart extension and also received a gemstone!")
+						sold_resources = {"diamonds": 0, "fabric": 0, "spice": 0, "fruit": 0}
+						resource_mapping = {"1": "diamonds", "5": "diamonds", "2": "fabric", "6": "fabric", "3": "spice", "7": "spice", "4": "fruit", "8": "fruit"} # clicked object to resource
 
-							units.get("gem_wainwright" + str(tilelist[14].gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
-							units.get("gem_wainwright" + str(tilelist[14].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
-							playerlist[board.current_player].update_gemstone_slots()
 
-							tilelist[14].decrease_gemstone_amount()
-							if tilelist[14].gemstone_amount == 0:
-								tilelist[14].name = "wainwright_empty"
-						draw_tile(frame, tilelist[14])
-						board.set_nextplayer()
-						draw_units(frame, font, units, playerlist, board)
-
-					elif (not playerlist[board.current_player].resources.get("max_res") < 5):
-						print(f"\t{playerlist[board.current_player].name} already has a full wainwright!")
-					else:
-						print("\tYou do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
-					print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The max amount of resources for this player is", playerlist[board.current_player].resources.get("max_res"))
-
-				elif clicked_tile == "sultans_palace": #Perform Sultans Palace action
-					print("Performing sultans palace's action")
-					#print("Current player is Player", board.current_player + 1)
-					
-					if (tilelist[12].has_sufficient_resources(playerlist[board.current_player])) and (tilelist[12].gemstone_amount > 0): #Player has sufficient resources to pay requirements
-						for item in tilelist[12].resources_price:
-							if item != "winnow":
-								update_resource_blocks(board, playerlist, units, item, -1)
+						while clicked_object != "end_turn_button":
+							if mouse_clicked():
+								clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+								
+								if "resourceblock" in clicked_object:
+									current_resource = resource_mapping.get(clicked_object[-1])
+									if playerlist[board.current_player].resources.get(current_resource) < 1: # not able to buy
+										print("\t\tYou do not have sufficient resources to sell that")
+									elif sold_resources.get(current_resource) >= tilelist[10].merchandise[0].get(current_resource): # not vendable
+										print("\t\tThe market doesn't allow this particular resource to be sold (anymore)")
+									else: # all requirements met
+										sold_resources[current_resource] += 1
+										update_resource_blocks(board, playerlist, units, current_resource, -1)
+								else:
+									print("\tTo sell a resource, please click on your slider block of the desired resource")
+								
+								print(f"\tSo far, you have sold", sum(sold_resources.values()), "resources")
 								draw_units(frame, font, units, playerlist, board)
 
-						for i in range(0, tilelist[12].resources_price.count("winnow")): # Sell an item of choice for every winnow you have to sell
-							print("\tPlease click on a resource of choice to sell")
-							sold = False
-							while not sold: #Player has to pick a resource possession to continue
-								clicked_object = "None"
-								while "resourceblock" not in clicked_object:
-									if mouse_clicked():
-										clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-										#print(f"Clicked object is {clicked_object}")
-										if (("1" in clicked_object) or ("5" in clicked_object)) and playerlist[board.current_player].resources['diamonds'] > 0:
-											update_resource_blocks(board, playerlist, units, "diamonds", -1)
-											sold = True
-											draw_units(frame, font, units, playerlist, board)
-											# break
-										elif (("2" in clicked_object) or ("6" in clicked_object)) and playerlist[board.current_player].resources['fabric'] > 0:
-											update_resource_blocks(board, playerlist, units, "fabric", -1)
-											sold = True
-											draw_units(frame, font, units, playerlist, board)
-											# break
-										elif (("3" in clicked_object) or ("7" in clicked_object)) and playerlist[board.current_player].resources['spice'] > 0:
-											update_resource_blocks(board, playerlist, units, "spice", -1)
-											sold = True
-											draw_units(frame, font, units, playerlist, board)
-											# break
-										elif (("4" in clicked_object) or ("8" in clicked_object)) and playerlist[board.current_player].resources['fruit'] > 0:
-											update_resource_blocks(board, playerlist, units, "fruit", -1)
-											sold = True
-											draw_units(frame, font, units, playerlist, board)
-											# break
-										else:
-											print("\tYou do not have sufficient resources to sell that, select another resource")
-							
-						playerlist[board.current_player].update_resources("gemstones", 1)
-						print(f"\t{playerlist[board.current_player].name} bought a gemstone!")
-						
-						units.get("gem_sultan" + str(7 - tilelist[12].gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
-						units.get("gem_sultan" + str(7 - tilelist[12].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
-						playerlist[board.current_player].update_gemstone_slots()
+						reward = tilelist[10].reward_mapping(str(sum(sold_resources.values()))) # Sum of sold resources as string mapped to lira reward
+						print("You have sold", str(sum(sold_resources.values())), "resources, rewarding you", reward, "lira!")
+						print("")
+						playerlist[board.current_player].update_resources("lira", reward)
 
-						tilelist[12].increase_resources_price()
-						tilelist[12].decrease_gemstone_amount()
+						tilelist[10].switch_stack()
+						units.get("small_market_tiles").update_image_path("images/small_market_tile" + tilelist[10].merchandise[0].get("tilenumber") + ".png")
+						
+						draw_tile(frame, tilelist[10])
 						board.set_nextplayer()
 						draw_units(frame, font, units, playerlist, board)
-					else:
-						if tilelist[12].gemstone_amount == 0:
-							print("\tThe Sultan's palace ran out of gems, find another way to collect more gemstones!")
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
+
+				elif clicked_tile == "large_market": #Perform Small Market action
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 13, tokens)
+					if move_legal:
+						print("Performing large_market market action")
+						print("Current player is Player", board.current_player + 1)
+						
+						sold_resources = {"diamonds": 0, "fabric": 0, "spice": 0, "fruit": 0}
+						resource_mapping = {"1": "diamonds", "5": "diamonds", "2": "fabric", "6": "fabric", "3": "spice", "7": "spice", "4": "fruit", "8": "fruit"} # clicked object to resource
+
+						while clicked_object != "end_turn_button":
+							if mouse_clicked():
+								clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+								
+								if "resourceblock" in clicked_object:
+									current_resource = resource_mapping.get(clicked_object[-1])
+									if playerlist[board.current_player].resources.get(current_resource) < 1: # not able to buy
+										print("\t\tYou do not have sufficient resources to sell that")
+									elif sold_resources.get(current_resource) >= tilelist[13].merchandise[0].get(current_resource): # not vendable
+										print("\t\tThe market doesn't allow this particular resource to be sold (anymore)")
+									else: # all requirements met
+										sold_resources[current_resource] += 1
+										update_resource_blocks(board, playerlist, units, current_resource, -1)
+								else:
+									print("\tTo sell a resource, please click on your slider block of the desired resource")
+								
+								print(f"\tSo far, you have sold", sum(sold_resources.values()), "resources")
+								draw_units(frame, font, units, playerlist, board)
+
+						reward = tilelist[13].reward_mapping(str(sum(sold_resources.values()))) # Sum of sold resources as string mapped to lira reward
+						print("You have sold", str(sum(sold_resources.values())), "resources, rewarding you", reward, "lira!")
+						print("")
+						playerlist[board.current_player].update_resources("lira", reward)
+
+						tilelist[13].switch_stack()
+						units.get("large_market_tiles").update_image_path("images/large_market_tile" + tilelist[13].merchandise[0].get("tilenumber") + ".png")
+						
+						draw_tile(frame, tilelist[13])
+						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
+
+				elif clicked_tile == "tea_house": #Perform teahouse action
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 11, tokens)
+					if move_legal:
+						print("Performing tea house action, type in a number between 3-12 followed by an enter")
+						bet = 1
+						while not ((2 < bet < 13) and (int(bet))):
+							bet = get_keyboardinput(event)
+							if not (2 < bet < 13):
+								print("Your bet must be between 3 and 12, please try again.")
+						print("Your bet is", bet, "... Rolling the dice...")
+						dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units)
+						if (dice_roll >= bet):
+							playerlist[board.current_player].update_resources("lira", bet)
+							#print("Congrats, you receive", bet, "lira!", "player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
+							print(f"Congrats, your receive {bet} lira! {playerlist[board.current_player].name} now has {playerlist[board.current_player].resources.get('lira')} lira")
 						else:
-							print("\tYou do not have sufficient resources to purchase a gemstone!")
-					
-					draw_tile(frame, tilelist[12])
-					draw_units(frame, font, units, playerlist, board)
+							#print("Too bad, you receive only 2 lira", "player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
+							print(f"Too bad, you receive only 2 lira. {playerlist[board.current_player].name} now has {playerlist[board.current_player].resources.get('lira')} lira")
+							playerlist[board.current_player].update_resources("lira", 2)
+						draw_tile(frame, tilelist[11])
+						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
+				
+				elif "wainwright" in clicked_tile: #Perform wainwright action
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 14, tokens)
+					if move_legal:
+						print("Performing wainwright action")
+						#print(f"current player is {playerlist[board.current_player].name[-1]}")
+
+						if playerlist[board.current_player].resources.get("lira") >= 7 and playerlist[board.current_player].resources.get("max_res") < 5:
+							playerlist[board.current_player].update_resources("lira", -7)
+							playerlist[board.current_player].update_resources("max_res", 1)
+							
+							current_player = playerlist[board.current_player].name[-1]
+							if playerlist[board.current_player].resources.get("max_res") != 5:
+								units.get("resource_p" + current_player).update_image_path("images/resource" + str(playerlist[board.current_player].resources.get("max_res")) + "_" + current_player + ".png")
+								print(f"\t{playerlist[board.current_player].name} bought a cart extension!")
+							else: # This is the last cart extension this player will buy
+								units.get("resource_p" + current_player).update_image_path("images/resource" + str(playerlist[board.current_player].resources.get("max_res")) + "_" + current_player + ".png")
+								playerlist[board.current_player].update_resources("gemstones", 1)
+								print(f"\t{playerlist[board.current_player].name} bought a cart extension and also received a gemstone!")
+
+								units.get("gem_wainwright" + str(tilelist[14].gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
+								units.get("gem_wainwright" + str(tilelist[14].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
+								playerlist[board.current_player].update_gemstone_slots()
+
+								tilelist[14].decrease_gemstone_amount()
+								if tilelist[14].gemstone_amount == 0:
+									tilelist[14].name = "wainwright_empty"
+							draw_tile(frame, tilelist[14])
+							board.set_nextplayer()
+							draw_units(frame, font, units, playerlist, board)
+							draw_tokens(frame, board, playerlist, tilelist, tokens)
+
+						elif (not playerlist[board.current_player].resources.get("max_res") < 5):
+							print(f"\t{playerlist[board.current_player].name} already has a full wainwright!")
+						else:
+							print("\tYou do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
+						print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The carrying capacity for this player is", playerlist[board.current_player].resources.get("max_res"))
+
+				elif clicked_tile == "sultans_palace": #Perform Sultans Palace action
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 12, tokens)
+					if move_legal:
+						print("Performing sultans palace's action")
+						#print("Current player is Player", board.current_player + 1)
+						
+						if (tilelist[12].has_sufficient_resources(playerlist[board.current_player])) and (tilelist[12].gemstone_amount > 0): #Player has sufficient resources to pay requirements
+							for item in tilelist[12].resources_price:
+								if item != "winnow":
+									update_resource_blocks(board, playerlist, units, item, -1)
+									draw_units(frame, font, units, playerlist, board)
+
+							for i in range(0, tilelist[12].resources_price.count("winnow")): # Sell an item of choice for every winnow you have to sell
+								print("\tPlease click on a resource of choice to sell")
+								sold = False
+								while not sold: #Player has to pick a resource possession to continue
+									clicked_object = "None"
+									while "resourceblock" not in clicked_object:
+										if mouse_clicked():
+											clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+											#print(f"Clicked object is {clicked_object}")
+											if (("1" in clicked_object) or ("5" in clicked_object)) and playerlist[board.current_player].resources['diamonds'] > 0:
+												update_resource_blocks(board, playerlist, units, "diamonds", -1)
+												sold = True
+												draw_units(frame, font, units, playerlist, board)
+												# break
+											elif (("2" in clicked_object) or ("6" in clicked_object)) and playerlist[board.current_player].resources['fabric'] > 0:
+												update_resource_blocks(board, playerlist, units, "fabric", -1)
+												sold = True
+												draw_units(frame, font, units, playerlist, board)
+												# break
+											elif (("3" in clicked_object) or ("7" in clicked_object)) and playerlist[board.current_player].resources['spice'] > 0:
+												update_resource_blocks(board, playerlist, units, "spice", -1)
+												sold = True
+												draw_units(frame, font, units, playerlist, board)
+												# break
+											elif (("4" in clicked_object) or ("8" in clicked_object)) and playerlist[board.current_player].resources['fruit'] > 0:
+												update_resource_blocks(board, playerlist, units, "fruit", -1)
+												sold = True
+												draw_units(frame, font, units, playerlist, board)
+												# break
+											else:
+												print("\tYou do not have sufficient resources to sell that, select another resource")
+								
+							playerlist[board.current_player].update_resources("gemstones", 1)
+							print(f"\t{playerlist[board.current_player].name} bought a gemstone!")
+							
+							units.get("gem_sultan" + str(7 - tilelist[12].gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
+							units.get("gem_sultan" + str(7 - tilelist[12].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
+							playerlist[board.current_player].update_gemstone_slots()
+
+							tilelist[12].increase_resources_price()
+							tilelist[12].decrease_gemstone_amount()
+							board.set_nextplayer()
+							draw_units(frame, font, units, playerlist, board)
+							draw_tokens(frame, board, playerlist, tilelist, tokens)
+						else:
+							if tilelist[12].gemstone_amount == 0:
+								print("\tThe Sultan's palace ran out of gems, find another way to collect more gemstones!")
+							else:
+								print("\tYou do not have sufficient resources to purchase a gemstone!")
+						
+						draw_tile(frame, tilelist[12])
+						draw_units(frame, font, units, playerlist, board)
 
 				elif clicked_tile == "gemstone_dealer": #Perform gemstone dealer action
-					print("Performing gemstone dealer action")
-					print("Current player is Player", board.current_player + 1)
-					if playerlist[board.current_player].resources.get("lira") >= tilelist[15].gemstone_price and tilelist[15].gemstone_amount > 0:
-						playerlist[board.current_player].update_resources("lira", -(tilelist[15].gemstone_price))
-						playerlist[board.current_player].update_resources("gemstones", 1)
-						print(playerlist[board.current_player].name, "bought a gemstone!")
-						units.get("gem_gemstone" + str(10 - tilelist[15].gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
-						units.get("gem_gemstone" + str(10 - tilelist[15].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
-						playerlist[board.current_player].update_gemstone_slots()
+					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 15, tokens)
+					if move_legal:
+						print("Performing gemstone dealer action")
+						print("Current player is Player", board.current_player + 1)
+						if playerlist[board.current_player].resources.get("lira") >= tilelist[15].gemstone_price and tilelist[15].gemstone_amount > 0:
+							playerlist[board.current_player].update_resources("lira", -(tilelist[15].gemstone_price))
+							playerlist[board.current_player].update_resources("gemstones", 1)
+							print(playerlist[board.current_player].name, "bought a gemstone!")
+							units.get("gem_gemstone" + str(10 - tilelist[15].gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
+							units.get("gem_gemstone" + str(10 - tilelist[15].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
+							playerlist[board.current_player].update_gemstone_slots()
 
-						tilelist[15].increase_gemstone_price()
-						tilelist[15].decrease_gemstone_amount()
-						draw_tile(frame, tilelist[15])
-						board.set_nextplayer()
-						draw_units(frame, font, units, playerlist, board)
-					else:
-						if tilelist[15].gemstone_amount == 0:
-							print("The gemstone dealer ran out of gems, find another way to collect more gemstones!")
+							tilelist[15].increase_gemstone_price()
+							tilelist[15].decrease_gemstone_amount()
+							draw_tile(frame, tilelist[15])
+							board.set_nextplayer()
+							draw_units(frame, font, units, playerlist, board)
+							draw_tokens(frame, board, playerlist, tilelist, tokens)
 						else:
-							print("You do not have sufficient resources to purchase a gemstone!")			
+							if tilelist[15].gemstone_amount == 0:
+								print("The gemstone dealer ran out of gems, find another way to collect more gemstones!")
+							else:
+								print("You do not have sufficient resources to purchase a gemstone!")			
 	
 			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
 				pygame.quit()
@@ -817,6 +837,32 @@ def update_resource_blocks(board, playerlist, units, name, amount):
 			units.get("resourceblock_4").set_x(units.get("resource_p1").x + units.get("resource_p1").width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units.get("resource_p1").width*(186/1604)))
 		else:
 			units.get("resourceblock_8").set_x(units.get("resource_p2").x + units.get("resource_p2").width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units.get("resource_p2").width*(186/1604)))
+
+def move_legal_handler(board, frame, playerlist, tilelist, tile_index, tokens):
+	current_tile = tilelist[tokens[playerlist[board.current_player].player + "_merchant"].tile_number] # Ingest tilenumber based on current player name in token to find the current tile
+	if not board.move_is_legal_distance(current_tile.location , tilelist[tile_index].location):
+		print(f"\tYou are not allowed to move to this tile! Please select another")
+		return False
+	elif not board.move_is_legal_cost(playerlist, tokens, tilelist[tile_index].location):
+		print(f"\tUnable to move to this tile since you cannot pay the entry fee(s) to the other player(s)! Please select another:")
+		return False
+	else: # all requirements met for a legal move
+		tokens[playerlist[board.current_player].player + "_merchant"].set_tile_number(tile_index) # Move/update token position for current player
+		draw_tile(frame, current_tile) # Draw origin tile to remove token there
+
+		for token_name, token in tokens.items(): # Pay possible fees
+			if (playerlist[board.current_player].player not in token_name) and (token.tile_number == tile_index) and (token.entry_fee): # If and only if an entry fee applies and it's not the current player
+				playerlist[board.current_player].update_resources("lira", -2)
+				if "1" in token.image_path:
+					playerlist[0].update_resources("lira", 2)
+					print(f"\t{playerlist[board.current_player].name} paid an entry fee to player 1")
+				elif "2" in token.image_path:
+					playerlist[1].update_resources("lira", 2)
+					print(f"\t{playerlist[board.current_player].name} paid an entry fee to player 2")
+
+		# TODO: leave one servant behind
+			# ------------------------------------------
+		return True
 
 def get_keyboardinput(event):
 	enter_pressed = False
