@@ -8,9 +8,9 @@ from pygame import gfxdraw
 
 from classes import Board, Players, Tiles, Object, Token
 
-windowtype = RESIZABLE
-framewidth = 800			
-frameheight = 600
+windowtype = FULLSCREEN
+framewidth = 1920			
+frameheight = 1080
 boardx = 25
 boardy = 25
 tilegap = 5
@@ -310,7 +310,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					draw_units(frame, font, units, playerlist, board)
 
 				elif clicked_tile == "postal_office": #Perform postal office action
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 1, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 1, tokens)
 					if move_legal:
 						print("Performing postal office action")
 						print("Current player is Player", board.current_player + 1)
@@ -362,7 +362,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 				elif clicked_tile == "fabric_warehouse": #Perform fabric warehouse action
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 2, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 2, tokens)
 					if move_legal:
 						print("Performing fabric warehouse action")
 						playerlist[board.current_player].update_resources("fabric", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fabric")))
@@ -375,7 +375,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 				elif clicked_tile == "fruit_warehouse": #Perform fruit warehouse action
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 4, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 4, tokens)
 					if move_legal:
 						print("Performing fruit warehouse action")
 						playerlist[board.current_player].update_resources("fruit", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fruit")))
@@ -389,7 +389,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 				elif clicked_tile == "spice_warehouse": #Perform spice warehouse action
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 7, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 7, tokens)
 					if move_legal:
 						print("Performing spice warehouse action")
 						
@@ -404,118 +404,116 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 				elif clicked_tile == "small_mosque": #Perform Small Mosque Action (tile index 3)
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 3, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 3, tokens)
 					if move_legal:
 						print("Performing small mosque action")
 						print("Click on a mosque tile to buy it or end your turn")
-						draw_tile(frame, tilelist[3])
-						draw_units(frame, font, units, playerlist, board)
-						draw_tokens(frame, board, playerlist, tilelist, tokens)
+						# draw_tile(frame, tilelist[3])
+						# draw_units(frame, font, units, playerlist, board)
+						# draw_tokens(frame, board, playerlist, tilelist, tokens)
 						
 						while ("end_turn_button" not in clicked_object) and ("small_mosque_fabric" not in clicked_object) and ("small_mosque_spice" not in clicked_object):
+							clicked_object = ""
 							if mouse_clicked():
 								clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-
-								if "fabric" in clicked_object or "spice" in clicked_object: # Object clicked was not the end button
-									tilename = clicked_object[:-2] # Take root of the tilename without number
-									top_tile = tilelist[3].get_stack_top(tilename)
-									resource_name = tilename.split("_")[2]
-
-									enough_resources = playerlist[board.current_player].resources.get(resource_name) >= int(top_tile[-1]) # True/False, player allowed to buy this mosque tile
-									
-									tile_not_owned = True
-									for array in playerlist[board.current_player].resources.get("bonuses"):
-										if resource_name in array[0]:
-											tile_not_owned = False
-											print(f"\tBreak if resourcename in array 0 activated")
-											break
 								
-									if (enough_resources and tile_not_owned): # Enough resources and allowed to buy		
-										update_resource_blocks(board, playerlist, units, resource_name, -1)
-										tilelist[3].update_tile_stack(top_tile)
+						if "fabric" in clicked_object or "spice" in clicked_object: # Object clicked was not the end button
+							tilename = clicked_object[:-2] # Take root of the tilename without number
+							top_tile = tilelist[3].get_stack_top(tilename)
+							resource_name = tilename.split("_")[2]
 
-										units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
-										units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
-										playerlist[board.current_player].update_tile_stack()
-										playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
-										units.pop(top_tile)
+							enough_resources = playerlist[board.current_player].resources.get(resource_name) >= int(top_tile[-1]) # True/False, player allowed to buy this mosque tile
+							
+							tile_not_owned = True
+							for array in playerlist[board.current_player].resources.get("bonuses"):
+								if resource_name in array[0]:
+									tile_not_owned = False
 
-										draw_tile(frame, tilelist[3])
-										draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
-										board.set_nextplayer()
-										draw_units(frame, font, units, playerlist, board)
-										draw_tokens(frame, board, playerlist, tilelist, tokens)
-										print(f"\tBreak enough resources and tile not owned activated")
-										break
-									elif not tile_not_owned: # Already have a mosque tile with this colour
-										print(f"\tYou already have a mosque tile of that resource in your possession!")
-										clicked_object = ""
-									else:
-										print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
-										clicked_object = ""
+							if (enough_resources and tile_not_owned): # Enough resources and allowed to buy		
+								update_resource_blocks(board, playerlist, units, resource_name, -1)
+								tilelist[3].update_tile_stack(top_tile)
 
-								elif "end_turn_button" in clicked_object: # End turn button clicked
-									board.set_nextplayer()
-									draw_units(frame, font, units, playerlist, board)
-									break
+								units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
+								units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
+								playerlist[board.current_player].update_tile_stack()
+								playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
+								units.pop(top_tile)
+
+								draw_tile(frame, tilelist[3])
+								draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
+								board.set_nextplayer()
+								draw_units(frame, font, units, playerlist, board)
+								draw_tokens(frame, board, playerlist, tilelist, tokens)
+
+							elif not tile_not_owned: # Already have a mosque tile with this colour
+								print(f"\tYou already have a mosque tile of that resource in your possession!")
+								clicked_object = ""
+							else:
+								print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
+								clicked_object = ""
+
+						elif "end_turn_button" in clicked_object: # End turn button clicked
+							board.set_nextplayer()
+							draw_units(frame, font, units, playerlist, board)
+							break
 
 				elif clicked_tile == "great_mosque": #Perform Great Mosque Action (tile index 0)
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 0, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 0, tokens)
 					if move_legal:
 						print("Performing great mosque action")
 						print("Click on a mosque tile to buy it or end your turn")
-						draw_tile(frame, tilelist[0])
-						draw_units(frame, font, units, playerlist, board)
-						draw_tokens(frame, board, playerlist, tilelist, tokens)
+						# draw_tile(frame, tilelist[0])
+						# draw_units(frame, font, units, playerlist, board)
+						# draw_tokens(frame, board, playerlist, tilelist, tokens)
 						
 						while ("end_turn_button" not in clicked_object) and ("great_mosque_diamonds" not in clicked_object) and ("great_mosque_fruit" not in clicked_object):
 							if mouse_clicked():
 								clicked_tile, clicked_object = get_clicked_item(tilelist, units)
 
-								if "diamonds" in clicked_object or "fruit" in clicked_object: # Object clicked was not the end button
-									tilename = clicked_object[:-2] # Take root of the tilename without number
-									top_tile = tilelist[0].get_stack_top(tilename)
-									resource_name = tilename.split("_")[2]
+						if "diamonds" in clicked_object or "fruit" in clicked_object: # Object clicked was not the end button
+							tilename = clicked_object[:-2] # Take root of the tilename without number
+							top_tile = tilelist[0].get_stack_top(tilename)
+							resource_name = tilename.split("_")[2]
 
-									enough_resources = playerlist[board.current_player].resources.get(resource_name) >= int(top_tile[-1]) # True/False, player allowed to buy this mosque tile
-									
-									tile_not_owned = True
-									for array in playerlist[board.current_player].resources.get("bonuses"):
-										if resource_name in array[0]:
-											tile_not_owned = False
-											break
-								
-									if (enough_resources and tile_not_owned): # Enough resources and allowed to buy
-												
-										update_resource_blocks(board, playerlist, units, resource_name, -1)
-										tilelist[0].update_tile_stack(top_tile)
-
-										units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
-										units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
-										playerlist[board.current_player].update_tile_stack()
-										playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
-										units.pop(top_tile)
-
-										draw_tile(frame, tilelist[0])
-										draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
-										board.set_nextplayer()
-										draw_units(frame, font, units, playerlist, board)
-										draw_tokens(frame, board, playerlist, tilelist, tokens)
-										break
-									elif not tile_not_owned: # Already have a mosque tile with this colour
-										print(f"\tYou already have a mosque tile of that resource in your possession!")
-										clicked_object = ""
-									else:
-										print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
-										clicked_object = ""
-
-								elif "end_turn_button" in clicked_object: # End turn button clicked
-									board.set_nextplayer()
-									draw_units(frame, font, units, playerlist, board)
+							enough_resources = playerlist[board.current_player].resources.get(resource_name) >= int(top_tile[-1]) # True/False, player allowed to buy this mosque tile
+							
+							tile_not_owned = True
+							for array in playerlist[board.current_player].resources.get("bonuses"):
+								if resource_name in array[0]:
+									tile_not_owned = False
 									break
+						
+							if (enough_resources and tile_not_owned): # Enough resources and allowed to buy
+										
+								update_resource_blocks(board, playerlist, units, resource_name, -1)
+								tilelist[0].update_tile_stack(top_tile)
+
+								units.get(top_tile).set_x(playerlist[board.current_player].mosque_tile_slots[0][0])
+								units.get(top_tile).set_y(playerlist[board.current_player].mosque_tile_slots[0][1])
+								playerlist[board.current_player].update_tile_stack()
+								playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
+								units.pop(top_tile)
+
+								draw_tile(frame, tilelist[0])
+								draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
+								board.set_nextplayer()
+								draw_units(frame, font, units, playerlist, board)
+								draw_tokens(frame, board, playerlist, tilelist, tokens)
+								break
+							elif not tile_not_owned: # Already have a mosque tile with this colour
+								print(f"\tYou already have a mosque tile of that resource in your possession!")
+								clicked_object = ""
+							else:
+								print(f"\tYou do not have sufficient resources to buy this mosque tile, select another or end your turn")
+								clicked_object = ""
+
+						elif "end_turn_button" in clicked_object: # End turn button clicked
+							board.set_nextplayer()
+							draw_units(frame, font, units, playerlist, board)
+							break
 
 				elif clicked_tile == "black_market": #Perform Black Market action
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 8, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 8, tokens)
 					if move_legal:
 						print("Performing black market action")
 						print("Current player is Player", board.current_player + 1)
@@ -574,7 +572,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 				elif clicked_tile == "small_market": #Perform Small Market action
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 10, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 10, tokens)
 					if move_legal:
 						print("Performing small_market market action")
 						print("Current player is Player", board.current_player + 1)
@@ -616,7 +614,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 				elif clicked_tile == "large_market": #Perform Small Market action
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 13, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 13, tokens)
 					if move_legal:
 						print("Performing large_market market action")
 						print("Current player is Player", board.current_player + 1)
@@ -657,7 +655,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 				elif clicked_tile == "tea_house": #Perform teahouse action
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 11, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 11, tokens)
 					if move_legal:
 						print("Performing tea house action, type in a number between 3-12 followed by an enter")
 						bet = 1
@@ -681,7 +679,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 				
 				elif "wainwright" in clicked_tile: #Perform wainwright action
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 14, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 14, tokens)
 					if move_legal:
 						print("Performing wainwright action")
 						#print(f"current player is {playerlist[board.current_player].name[-1]}")
@@ -718,7 +716,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The carrying capacity for this player is", playerlist[board.current_player].resources.get("max_res"))
 
 				elif clicked_tile == "sultans_palace": #Perform Sultans Palace action
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 12, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 12, tokens)
 					if move_legal:
 						print("Performing sultans palace's action")
 						#print("Current player is Player", board.current_player + 1)
@@ -783,7 +781,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 
 				elif clicked_tile == "gemstone_dealer": #Perform gemstone dealer action
-					move_legal = move_legal_handler(board, frame, playerlist, tilelist, 15, tokens)
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 15, tokens)
 					if move_legal:
 						print("Performing gemstone dealer action")
 						print("Current player is Player", board.current_player + 1)
@@ -805,7 +803,18 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 							if tilelist[15].gemstone_amount == 0:
 								print("The gemstone dealer ran out of gems, find another way to collect more gemstones!")
 							else:
-								print("You do not have sufficient resources to purchase a gemstone!")			
+								print("You do not have sufficient resources to purchase a gemstone!")	
+
+				elif clicked_tile == "fountain": #Perform gemstone dealer action	
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 6, tokens)
+					if move_legal:
+						print("You have arrived at the fountain")
+						print("Current player is Player", board.current_player + 1)
+
+						draw_tile(frame, tilelist[6])
+						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
 	
 			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
 				pygame.quit()
@@ -838,9 +847,9 @@ def update_resource_blocks(board, playerlist, units, name, amount):
 		else:
 			units.get("resourceblock_8").set_x(units.get("resource_p2").x + units.get("resource_p2").width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units.get("resource_p2").width*(186/1604)))
 
-def move_legal_handler(board, frame, playerlist, tilelist, tile_index, tokens):
+def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_index, tokens):
 	current_tile = tilelist[tokens[playerlist[board.current_player].player + "_merchant"].tile_number] # Ingest tilenumber based on current player name in token to find the current tile
-	if not board.move_is_legal_distance(current_tile.location , tilelist[tile_index].location):
+	if not board.move_is_legal_distance(current_tile.location, tilelist[tile_index].location):
 		print(f"\tYou are not allowed to move to this tile! Please select another")
 		return False
 	elif not board.move_is_legal_cost(playerlist, tokens, tilelist[tile_index].location):
@@ -850,18 +859,22 @@ def move_legal_handler(board, frame, playerlist, tilelist, tile_index, tokens):
 		tokens[playerlist[board.current_player].player + "_merchant"].set_tile_number(tile_index) # Move/update token position for current player
 		draw_tile(frame, current_tile) # Draw origin tile to remove token there
 
-		for token_name, token in tokens.items(): # Pay possible fees
-			if (playerlist[board.current_player].player not in token_name) and (token.tile_number == tile_index) and (token.entry_fee): # If and only if an entry fee applies and it's not the current player
-				playerlist[board.current_player].update_resources("lira", -2)
-				if "1" in token.image_path:
-					playerlist[0].update_resources("lira", 2)
-					print(f"\t{playerlist[board.current_player].name} paid an entry fee to player 1")
-				elif "2" in token.image_path:
-					playerlist[1].update_resources("lira", 2)
-					print(f"\t{playerlist[board.current_player].name} paid an entry fee to player 2")
+		if tile_index != 6: # Only if the destination is not the fountain
+			for token_name, token in tokens.items(): # Pay possible fees
+				if (playerlist[board.current_player].player not in token_name) and (token.tile_number == tile_index) and (token.entry_fee): # If and only if an entry fee applies and it's not the current player
+					playerlist[board.current_player].update_resources("lira", -2)
+					if "1" in token.image_path:
+						playerlist[0].update_resources("lira", 2)
+						print(f"\t{playerlist[board.current_player].name} paid an entry fee to player 1")
+					elif "2" in token.image_path:
+						playerlist[1].update_resources("lira", 2)
+						print(f"\t{playerlist[board.current_player].name} paid an entry fee to player 2")
 
 		# TODO: leave one servant behind
 			# ------------------------------------------
+		draw_tile(frame, current_tile)
+		draw_units(frame, font, units, playerlist, board)
+		draw_tokens(frame, board, playerlist, tilelist, tokens)
 		return True
 
 def get_keyboardinput(event):
