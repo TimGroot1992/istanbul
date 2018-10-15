@@ -53,11 +53,25 @@ def main():
 		9				10					11					12					13				14						15
 	'''
 
-	tiles = {"great_mosque": [1, 1], "postal_office": [1, 2], "fabric_warehouse": [1, 3], "small_mosque": [1, 4], 
-		"fruit_warehouse": [2, 1], "police_station": [2, 2],"fountain": [2, 3], "spice_warehouse": [2, 4], 
-		"black_market": [3, 1], "caravansary": [3, 2], "small_market": [3, 3], "tea_house": [3, 4],
-		"sultans_palace": [4, 1], "large_market": [4, 2], "wainwright": [4, 3], "gemstone_dealer": [4, 4]}
-	tilelist = [Tiles(tile, tiles.get(tile), boardx, boardy, tilewidth, tileheight, tilegap) for tile in tiles]
+	tiles = {
+		"great_mosque": {"index": 0, "location": [1, 1]}, 
+		"postal_office": {"index": 1, "location": [1, 2]}, 
+		"fabric_warehouse": {"index": 2, "location": [1, 3]}, 
+		"small_mosque": {"index": 3, "location": [1, 4]},
+		"fruit_warehouse": {"index": 4, "location": [2, 1]},
+		"police_station": {"index": 5, "location": [2, 2]},
+		"fountain": {"index": 6, "location": [2, 3]}, 
+		"spice_warehouse": {"index": 7, "location": [2, 4]},  
+		"black_market": {"index": 8, "location": [3, 1]}, 
+		"caravansary": {"index": 9, "location": [3, 2]}, 
+		"small_market": {"index": 10, "location": [3, 3]}, 
+		"tea_house": {"index": 11, "location": [3, 4]}, 
+		"sultans_palace": {"index": 12, "location": [4, 1]}, 
+		"large_market": {"index": 13, "location": [4, 2]}, 
+		"wainwright": {"index": 14, "location": [4, 3]}, 
+		"gemstone_dealer": {"index": 15, "location": [4, 4]} 
+	}
+	tilelist = [Tiles(tile, tiles[tile]["index"], tiles[tile]["location"], boardx, boardy, tilewidth, tileheight, tilegap) for tile in tiles]
 
 	## UNITS ##
 	# Object template: Object(x, y, width, height, image_path)
@@ -816,6 +830,30 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						board.set_nextplayer()
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
+
+				elif clicked_tile == "police_station": #Perform police station action: TODO!
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 5, tokens)
+					if move_legal:
+						print("Performing police station action")
+						print("Current player is Player", board.current_player + 1)
+
+						draw_tile(frame, tilelist[5])
+						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
+
+				elif clicked_tile == "caravansary": #Performing caravansary action: TODO!
+					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 9, tokens)
+					if move_legal:
+						print("Performing caravansary action")
+						print("Current player is Player", board.current_player + 1)
+
+						draw_tile(frame, tilelist[9])
+						board.set_nextplayer()
+						draw_units(frame, font, units, playerlist, board)
+						draw_tokens(frame, board, playerlist, tilelist, tokens)
+
+
 	
 			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
 				pygame.quit()
@@ -853,7 +891,7 @@ def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_ind
 	if not board.move_is_legal_distance(current_tile.location, tilelist[tile_index].location):
 		print(f"\tYou are not allowed to move to this tile! Please select another")
 		return False
-	elif not board.move_is_legal_cost(playerlist, tokens, tilelist[tile_index].location):
+	elif not board.move_is_legal_cost(playerlist, tokens, tilelist[tile_index]):
 		print(f"\tUnable to move to this tile since you cannot pay the entry fee(s) to the other player(s)! Please select another:")
 		return False
 	else: # all requirements met for a legal move

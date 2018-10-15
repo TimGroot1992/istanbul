@@ -58,9 +58,9 @@ class Players:
 		self.location = location
 
 class Tiles:
-	def __init__(self, name, location, boardx, boardy, tilewidth, tileheight, tilegap):
+	def __init__(self, name, index, location, boardx, boardy, tilewidth, tileheight, tilegap):
 		self.name = name
-		self.tileid = []
+		self.index = index
 		self.location = location
 		self.x = boardy + ((self.location[1] - 1) * (tilewidth + tilegap))
 		self.y = boardx + ((self.location[0] - 1) * (tileheight + tilegap))
@@ -253,12 +253,14 @@ class Board:
 		else:
 			return False
 
-	def move_is_legal_cost(self, playerlist, tokens, destination):
+	def move_is_legal_cost(self, playerlist, tokens, destination_tile):
+		fee = 0
 		for token_name, token in tokens.items():
-			fee = 0
-			if token.entry_fee:
+			#print(f"token image path is {token.image_path}, token tile number is {token.tile_number} and destination tile index is {destination_tile.index}")
+			if token.entry_fee and (token.tile_number == destination_tile.index):
 				fee += 2
-		if playerlist[self.current_player].resources.get("lira") >= fee:
+		
+		if playerlist[self.current_player].resources.get("lira") >= fee or destination_tile.name == "fountain":
 			return True
 		else:
 			return False
