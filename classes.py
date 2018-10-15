@@ -5,7 +5,7 @@ class Players:
 		additional_lira = player
 		self.player = "p" + str(player + 1)
 		self.name = "Player" + str(player + 1)
-		self.resources = {"lira": 2 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2, "bonuses": []}
+		self.resources = {"lira": 50 + additional_lira, "gemstones": 0, "diamonds": 0, "fruit": 0, "fabric": 0, "spice": 0, "max_res": 2, "bonuses": []}
 		self.gemstone_slots = [
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(400/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
 			[units.get("resource_p" + str(player + 1)).x + tilewidth*(605/1605), units.get("resource_p" + str(player + 1)).y + tileheight*(770/1072)], 
@@ -29,11 +29,6 @@ class Players:
 				[units.get("resource_p" + str(player + 1)).x + 1.5 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y + tileheight]
 			]
 		self.units_stack = [self.name + "_merchant1", self.name + "_servant1", self.name + "_servant2", self.name + "_servant3", self.name + "_servant4"]
-
-		# if "1" in self.name:
-		# 	self.merchant = {"location": tilelist[6], "merchant_icon": "images/tokens/p1_merchant.png"}
-		# else:
-		# 	self.merchant = {"location": tilelist[6], "merchant_icon": "images/tokens/p2_merchant.png"}
 
 
 	def update_resources(self, resource, amount): #self, string, integer
