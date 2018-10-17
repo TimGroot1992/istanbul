@@ -9,8 +9,8 @@ from pygame import gfxdraw
 from classes import Board, Players, Tiles, Object, Token
 
 windowtype = RESIZABLE
-framewidth = 1920			
-frameheight = 1080
+framewidth = 800				
+frameheight = 600
 boardx = 25
 boardy = 25
 tilegap = 5
@@ -161,14 +161,26 @@ def main():
 		"end_turn_button": end_turn_button, "end_turn_button_text": end_turn_button_text
 	}
 	## TOKENS ##
-	p1_merchant = Token("images/tokens/p1_merchant.png", True, True, 6) # @parms: image path, visibility, entry fee, tile number
-	p2_merchant = Token("images/tokens/p2_merchant.png", True, True, 6)
+	p1_merchant = Token("p1_merchant", "images/tokens/p1_merchant.png", True, True, 6) # @parms: image path, visibility, entry fee, tile number
+	p2_merchant = Token("p2_merchant", "images/tokens/p2_merchant.png", True, True, 6)
+
+	p1_assistant_1 = Token("p1_assistant_1", "images/tokens/p1_assistant.png", False, False, 6)
+	p1_assistant_2 = Token("p1_assistant_2", "images/tokens/p1_assistant.png", False, False, 6)
+	p1_assistant_3 = Token("p1_assistant_3", "images/tokens/p1_assistant.png", False, False, 6)
+	p1_assistant_4 = Token("p1_assistant_4", "images/tokens/p1_assistant.png", False, False, 6)
+
+	p2_assistant_1 = Token("p2_assistant_1", "images/tokens/p2_assistant.png", False, False, 6)
+	p2_assistant_2 = Token("p2_assistant_2", "images/tokens/p2_assistant.png", False, False, 6)
+	p2_assistant_3 = Token("p2_assistant_3", "images/tokens/p2_assistant.png", False, False, 6)
+	p2_assistant_4 = Token("p2_assistant_4", "images/tokens/p2_assistant.png", False, False, 6)
 
 	tokens = {
-		"p1_merchant": p1_merchant, "p2_merchant": p2_merchant 
+		"p1_merchant": p1_merchant, "p2_merchant": p2_merchant,
+		"p1_assistant_1": p1_assistant_1, "p1_assistant_2": p1_assistant_2, "p1_assistant_3": p1_assistant_3, "p1_assistant_4": p1_assistant_4, 
+		"p2_assistant_1": p2_assistant_1, "p2_assistant_2": p2_assistant_2, "p2_assistant_3": p2_assistant_3, "p2_assistant_4": p2_assistant_4
 	}
 
-	playerlist = [Players(i, tilelist, tilewidth, tileheight, units) for i in range(0, board.number_of_players)]
+	playerlist = [Players(i, tilelist, tilewidth, tileheight, units, tokens) for i in range(0, board.number_of_players)]
 
 	frame, font = setup_GUI(windowtype, framewidth, frameheight, boardwidth, boardheight, tilewidth, tileheight, tilegap, boardx, boardy, tilelist)
 	draw_board(frame, tilelist)
@@ -297,6 +309,8 @@ def draw_units(frame, font, units, playerlist, board):
 def draw_tokens(frame, board, playerlist, tilelist, tokens):
 	for token_name, token in tokens.items():
 		if token.visible:
+			if "assistant" in token_name:
+				token_name = token_name[0: -2]
 			current_token = pygame.image.load(token.image_path).convert_alpha()
 			current_token = pygame.transform.smoothscale(current_token, (int(tilewidth / 6), int(tilewidth / 6)))
 			frame.blit(current_token, (tilelist[token.tile_number].token_grid[token_name][0], tilelist[token.tile_number].token_grid[token_name][1]))
@@ -877,13 +891,15 @@ def update_resource_blocks(board, playerlist, units, name, amount):
 			units.get("resourceblock_8").set_x(units.get("resource_p2").x + units.get("resource_p2").width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units.get("resource_p2").width*(186/1604)))
 
 def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_index, tokens):
+	legal_move = True
 	current_tile = tilelist[tokens[playerlist[board.current_player].player + "_merchant"].tile_number] # Ingest tilenumber based on current player name in token to find the current tile
 	if not board.move_is_legal_distance(current_tile.location, tilelist[tile_index].location):
 		print(f"\tYou are not allowed to move to this tile! Please select another")
-		return False
+		legal_move = False
 	elif not board.move_is_legal_cost(playerlist, tokens, tilelist[tile_index]):
 		print(f"\tUnable to move to this tile since you cannot pay the entry fee(s) to the other player(s)! Please select another:")
-		return False
+		legal_move = False
+
 	else: # all requirements met for a legal move
 		tokens[playerlist[board.current_player].player + "_merchant"].set_tile_number(tile_index) # Move/update token position for current player
 		draw_tile(frame, current_tile) # Draw origin tile to remove token there
@@ -899,12 +915,23 @@ def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_ind
 						playerlist[1].update_resources("lira", 2)
 						print(f"\t{playerlist[board.current_player].name} paid an entry fee to player 2")
 
-		# TODO: leave one servant behind
-			# ------------------------------------------
+			if len(playerlist[board.current_player].token_stack) > 0: # Allowed to do tile action
+				assistant_name = playerlist[board.current_player].token_stack[0] # Top of assistant stack
+				print(f"assistant name from top of stack is {assistant_name}")
+				playerlist[board.current_player].update_token_stack() # Pop token from stack
+				tokens[assistant_name].switch_visibility()
+				tokens[assistant_name].set_tile_number(tile_index)
+	 			# draw_tokens takes care of showing the visible token at new location on the board
+			else:
+				# draw_tile(frame, current_tile)
+				# draw_units(frame, font, units, playerlist, board)
+				# draw_tokens(frame, board, playerlist, tilelist, tokens)
+				legal_move = False
+
 		draw_tile(frame, current_tile)
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
-		return True
+		return legal_move
 
 def get_keyboardinput(event):
 	enter_pressed = False

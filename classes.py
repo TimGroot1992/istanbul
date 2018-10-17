@@ -1,7 +1,7 @@
 from random import shuffle
 
 class Players:
-	def __init__(self, player, tilelist, tilewidth, tileheight, units):
+	def __init__(self, player, tilelist, tilewidth, tileheight, units, tokens):
 		additional_lira = player
 		self.player = "p" + str(player + 1)
 		self.name = "Player" + str(player + 1)
@@ -28,8 +28,11 @@ class Players:
 				[units.get("resource_p" + str(player + 1)).x + 1 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y + tileheight],
 				[units.get("resource_p" + str(player + 1)).x + 1.5 * tilewidth/3.06, units.get("resource_p" + str(player + 1)).y + tileheight]
 			]
-		self.units_stack = [self.name + "_merchant1", self.name + "_servant1", self.name + "_servant2", self.name + "_servant3", self.name + "_servant4"]
-
+		
+		self.token_stack = []
+		for i in range(1, 5): # Insert all assistants in a stack at start of the game
+			self.token_stack.append(self.player + "_assistant_" + str(i))
+		# print(f"token stack for {self.player} = {self.token_stack}")
 
 	def update_resources(self, resource, amount): #self, string, integer
 		if resource == "diamonds" or resource == "fruit" or resource == "fabric" or resource == "spice":
@@ -49,8 +52,9 @@ class Players:
 	def update_bonuses(self, name, bonus):
 		self.resources.get("bonuses").insert(0, [name, bonus])
 
-	def update_location(self, location):
-		self.location = location
+	def update_token_stack(self):
+		self.token_stack.pop(0)
+	
 
 class Tiles:
 	def __init__(self, name, index, location, boardx, boardy, tilewidth, tileheight, tilegap):
@@ -61,14 +65,14 @@ class Tiles:
 		self.y = boardx + ((self.location[0] - 1) * (tileheight + tilegap))
 		self.token_grid = {
 							"p1_merchant": [self.x + (tilewidth / 4 + tilewidth / 24), self.y + (tileheight / 6)],
-							"p1_assistant_ 1": [self.x + (tilewidth / 24) + tilegap, self.y + (tileheight / 6) * 2],
+							"p1_assistant": [self.x + (tilewidth / 24) + tilegap, self.y + (tileheight / 6) * 2],
 
 							"p2_merchant": [self.x + (tilewidth / 2 + tilewidth / 24), self.y + (tileheight / 6)],
-							"p2_assistant_1": [self.x + ((tilewidth / 4) * 3 + tilewidth / 24), self.y + (tileheight / 6) * 2]
+							"p2_assistant": [self.x + ((tilewidth / 4) * 3 + tilewidth / 24), self.y + (tileheight / 6) * 2]
 						  }
 
-		self.players_present = []
-		self.units_stack = []
+		#self.players_present = []
+		#self.units_stack = []
 		if self.name == "postal_office":
 			self.blocks = [
 				{"fabric": 0, "lira_2_1": 0, "diamonds": 0, "lira_2_2": 0, "spice": 1, "lira_1_1": 1, "fruit": 1, "lira_1_2": 1}, 
@@ -202,16 +206,17 @@ class Object:
 		self.image_path = image_path
 
 class Token:
-	def __init__(self, image_path, visibility, entry_fee, tile_number):
+	def __init__(self, name, image_path, visibility, entry_fee, tile_number):
+		self.name = name
 		self.image_path = image_path
 		self.visible = visibility
 		self.entry_fee = entry_fee
 		self.tile_number = tile_number
 
 	def switch_visibility(self):
-		#print(f"visibility before: {self.visible}")
+		#print(f"visibility before: {self.visible} for token {self.name}")
 		self.visible = not self.visible
-		#print(f"visibility after: {self.visible}")
+		#print(f"visibility after: {self.visible} for token {self.name}")
 
 	def set_tile_number(self, tile_number):
 		self.tile_number = tile_number
