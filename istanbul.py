@@ -345,7 +345,6 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 1, tokens)
 					if move_legal:
 						print("Performing postal office action")
-						print("Current player is Player", board.current_player + 1)
 						for key, value in tilelist[1].blocks[0].items():
 							if value == 1:
 								#print("You receive", key)
@@ -550,7 +549,6 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 8, tokens)
 					if move_legal:
 						print("Performing black market action")
-						print("Current player is Player", board.current_player + 1)
 
 						print("\tPlease click on an option: fabric, spice or fruit!")
 						while clicked_object != "resourceblock_2" or clicked_object != "resourceblock_3" or clicked_object != "resourceblock_4" or clicked_object != "resourceblock_6" or clicked_object != "resourceblock_7" or clicked_object != "resourceblock_8":
@@ -594,7 +592,6 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 10, tokens)
 					if move_legal:
 						print("Performing small_market market action")
-						print("Current player is Player", board.current_player + 1)
 						
 						sold_resources = {"diamonds": 0, "fabric": 0, "spice": 0, "fruit": 0}
 						resource_mapping = {"1": "diamonds", "5": "diamonds", "2": "fabric", "6": "fabric", "3": "spice", "7": "spice", "4": "fruit", "8": "fruit"} # clicked object to resource
@@ -636,7 +633,6 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 13, tokens)
 					if move_legal:
 						print("Performing large_market market action")
-						print("Current player is Player", board.current_player + 1)
 						
 						sold_resources = {"diamonds": 0, "fabric": 0, "spice": 0, "fruit": 0}
 						resource_mapping = {"1": "diamonds", "5": "diamonds", "2": "fabric", "6": "fabric", "3": "spice", "7": "spice", "4": "fruit", "8": "fruit"} # clicked object to resource
@@ -701,7 +697,6 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 14, tokens)
 					if move_legal:
 						print("Performing wainwright action")
-						#print(f"current player is {playerlist[board.current_player].name[-1]}")
 
 						if playerlist[board.current_player].resources.get("lira") >= 7 and playerlist[board.current_player].resources.get("max_res") < 5:
 							playerlist[board.current_player].update_resources("lira", -7)
@@ -741,7 +736,6 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 12, tokens)
 					if move_legal:
 						print("Performing sultans palace's action")
-						#print("Current player is Player", board.current_player + 1)
 						
 						if (tilelist[12].has_sufficient_resources(playerlist[board.current_player])) and (tilelist[12].gemstone_amount > 0): #Player has sufficient resources to pay requirements
 							for item in tilelist[12].resources_price:
@@ -806,7 +800,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 15, tokens)
 					if move_legal:
 						print("Performing gemstone dealer action")
-						print("Current player is Player", board.current_player + 1)
+						
 						if playerlist[board.current_player].resources.get("lira") >= tilelist[15].gemstone_price and tilelist[15].gemstone_amount > 0:
 							playerlist[board.current_player].update_resources("lira", -(tilelist[15].gemstone_price))
 							playerlist[board.current_player].update_resources("gemstones", 1)
@@ -859,7 +853,20 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 5, tokens)
 					if move_legal:
 						print("Performing police station action")
-						print("Current player is Player", board.current_player + 1)
+
+						# if prisoner available -> wait for click on tile other than fountain or police station -> do tile action
+						for token_name, token in tokens.items():
+							if (playerlist[board.current_player].player + "_prisoner" in token_name) and (token.tile_number == 5):
+								# do stuff
+								print(f"Prisoner for current player is at the police station")
+								
+								clicked_tile = ""
+								while True:
+									if mouse_clicked():
+										clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+										if (type(clicked_tile) != str) and (clicked_tile.name != "fountain") and (clicked_tile.name != "police_station"):
+											print(f"Do {clicked_tile.name} action")
+											break
 
 						draw_tile(frame, tilelist[5])
 						board.set_nextplayer()
@@ -870,7 +877,6 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 9, tokens)
 					if move_legal:
 						print("Performing caravansary action")
-						print("Current player is Player", board.current_player + 1)
 
 						draw_tile(frame, tilelist[9])
 						board.set_nextplayer()

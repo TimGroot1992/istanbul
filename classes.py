@@ -57,7 +57,6 @@ class Players:
 	def pop_token_stack(self):
 		self.token_stack.pop(0)
 	
-
 class Tiles:
 	def __init__(self, name, index, location, boardx, boardy, tilewidth, tileheight, tilegap):
 		self.name = name
