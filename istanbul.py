@@ -830,6 +830,8 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						print("You have arrived at the fountain")
 						print("Current player is Player", board.current_player + 1)
 
+						# TODO: while end button not clicked: click on tiles to return assistants to token stack
+
 						draw_tile(frame, tilelist[6])
 						board.set_nextplayer()
 						draw_units(frame, font, units, playerlist, board)
@@ -905,7 +907,11 @@ def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_ind
 		draw_tile(frame, current_tile) # Draw origin tile to remove token there
 
 		if tile_index != 6: # Only if the destination is not the fountain
-			for token_name, token in tokens.items(): # Pay possible fees
+
+			assistant_present = ""
+			for token_name, token in tokens.items(): # Loop thought tokens
+
+				# Pay possible entry fees to other players
 				if (playerlist[board.current_player].player not in token_name) and (token.tile_number == tile_index) and (token.entry_fee): # If and only if an entry fee applies and it's not the current player
 					playerlist[board.current_player].update_resources("lira", -2)
 					if "1" in token.image_path:
@@ -915,17 +921,20 @@ def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_ind
 						playerlist[1].update_resources("lira", 2)
 						print(f"\t{playerlist[board.current_player].name} paid an entry fee to player 2")
 
-			if len(playerlist[board.current_player].token_stack) > 0: # Allowed to do tile action
+				# Check if assistant already present for current player
+				if (playerlist[board.current_player].player + "_assistant" in token_name) and (token.tile_number == tile_index) and (token.visible):
+					assistant_present = token
+
+			if assistant_present != "":
+				playerlist[board.current_player].insert_token_stack(assistant_present.name)
+				assistant_present.switch_visibility()
+			elif len(playerlist[board.current_player].token_stack) > 0: # Allowed to do tile action
 				assistant_name = playerlist[board.current_player].token_stack[0] # Top of assistant stack
-				print(f"assistant name from top of stack is {assistant_name}")
-				playerlist[board.current_player].update_token_stack() # Pop token from stack
+				#print(f"assistant name from top of stack is {assistant_name}")
+				playerlist[board.current_player].pop_token_stack() # Pop token from stack
 				tokens[assistant_name].switch_visibility()
 				tokens[assistant_name].set_tile_number(tile_index)
-	 			# draw_tokens takes care of showing the visible token at new location on the board
 			else:
-				# draw_tile(frame, current_tile)
-				# draw_units(frame, font, units, playerlist, board)
-				# draw_tokens(frame, board, playerlist, tilelist, tokens)
 				legal_move = False
 
 		draw_tile(frame, current_tile)

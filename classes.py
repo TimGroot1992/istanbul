@@ -52,7 +52,10 @@ class Players:
 	def update_bonuses(self, name, bonus):
 		self.resources.get("bonuses").insert(0, [name, bonus])
 
-	def update_token_stack(self):
+	def insert_token_stack(self, token_name):
+		self.token_stack.append(token_name)
+
+	def pop_token_stack(self):
 		self.token_stack.pop(0)
 	
 
@@ -71,8 +74,6 @@ class Tiles:
 							"p2_assistant": [self.x + ((tilewidth / 4) * 3 + tilewidth / 24), self.y + (tileheight / 6) * 2]
 						  }
 
-		#self.players_present = []
-		#self.units_stack = []
 		if self.name == "postal_office":
 			self.blocks = [
 				{"fabric": 0, "lira_2_1": 0, "diamonds": 0, "lira_2_2": 0, "spice": 1, "lira_1_1": 1, "fruit": 1, "lira_1_2": 1}, 
