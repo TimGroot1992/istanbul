@@ -32,7 +32,6 @@ class Players:
 		self.token_stack = []
 		for i in range(1, 5): # Insert all assistants in a stack at start of the game
 			self.token_stack.append(self.player + "_assistant_" + str(i))
-		# print(f"token stack for {self.player} = {self.token_stack}")
 
 	def update_resources(self, resource, amount): #self, string, integer
 		if resource == "diamonds" or resource == "fruit" or resource == "fabric" or resource == "spice":

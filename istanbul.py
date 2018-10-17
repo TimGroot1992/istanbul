@@ -337,7 +337,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					board.set_nextplayer()
 					draw_units(frame, font, units, playerlist, board)
 
-				elif clicked_tile == "postal_office": #Perform postal office action
+				elif clicked_tile.name == "postal_office": #Perform postal office action
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 1, tokens)
 					if move_legal:
 						print("Performing postal office action")
@@ -389,7 +389,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-				elif clicked_tile == "fabric_warehouse": #Perform fabric warehouse action
+				elif clicked_tile.name == "fabric_warehouse": #Perform fabric warehouse action
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 2, tokens)
 					if move_legal:
 						print("Performing fabric warehouse action")
@@ -402,7 +402,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-				elif clicked_tile == "fruit_warehouse": #Perform fruit warehouse action
+				elif clicked_tile.name == "fruit_warehouse": #Perform fruit warehouse action
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 4, tokens)
 					if move_legal:
 						print("Performing fruit warehouse action")
@@ -417,7 +417,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-				elif clicked_tile == "spice_warehouse": #Perform spice warehouse action
+				elif clicked_tile.name == "spice_warehouse": #Perform spice warehouse action
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 7, tokens)
 					if move_legal:
 						print("Performing spice warehouse action")
@@ -432,7 +432,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-				elif clicked_tile == "small_mosque": #Perform Small Mosque Action (tile index 3)
+				elif clicked_tile.name == "small_mosque": #Perform Small Mosque Action (tile index 3)
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 3, tokens)
 					if move_legal:
 						print("Performing small mosque action")
@@ -486,7 +486,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 								draw_units(frame, font, units, playerlist, board)
 								break
 
-				elif clicked_tile == "great_mosque": #Perform Great Mosque Action (tile index 0)
+				elif clicked_tile.name == "great_mosque": #Perform Great Mosque Action (tile index 0)
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 0, tokens)
 					if move_legal:
 						print("Performing great mosque action")
@@ -542,7 +542,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 								draw_units(frame, font, units, playerlist, board)
 								break
 
-				elif clicked_tile == "black_market": #Perform Black Market action
+				elif clicked_tile.name == "black_market": #Perform Black Market action
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 8, tokens)
 					if move_legal:
 						print("Performing black market action")
@@ -586,7 +586,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-				elif clicked_tile == "small_market": #Perform Small Market action
+				elif clicked_tile.name == "small_market": #Perform Small Market action
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 10, tokens)
 					if move_legal:
 						print("Performing small_market market action")
@@ -628,7 +628,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-				elif clicked_tile == "large_market": #Perform Small Market action
+				elif clicked_tile.name == "large_market": #Perform Small Market action
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 13, tokens)
 					if move_legal:
 						print("Performing large_market market action")
@@ -668,7 +668,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-				elif clicked_tile == "tea_house": #Perform teahouse action
+				elif clicked_tile.name == "tea_house": #Perform teahouse action
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 11, tokens)
 					if move_legal:
 						print("Performing tea house action, type in a number between 3-12 followed by an enter")
@@ -693,7 +693,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 				
-				elif clicked_tile == "wainwright": #Perform wainwright action
+				elif clicked_tile.name == "wainwright": #Perform wainwright action
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 14, tokens)
 					if move_legal:
 						print("Performing wainwright action")
@@ -733,7 +733,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-				elif clicked_tile == "sultans_palace": #Perform Sultans Palace action
+				elif clicked_tile.name == "sultans_palace": #Perform Sultans Palace action
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 12, tokens)
 					if move_legal:
 						print("Performing sultans palace's action")
@@ -798,7 +798,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-				elif clicked_tile == "gemstone_dealer": #Perform gemstone dealer action
+				elif clicked_tile.name == "gemstone_dealer": #Perform gemstone dealer action
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 15, tokens)
 					if move_legal:
 						print("Performing gemstone dealer action")
@@ -824,20 +824,33 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-				elif clicked_tile == "fountain": #Perform gemstone dealer action	
+				elif clicked_tile.name == "fountain": #Perform gemstone dealer action	
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 6, tokens)
 					if move_legal:
 						print("You have arrived at the fountain")
-						print("Current player is Player", board.current_player + 1)
+						print("Click on the assistants you'd like to return to your stack and then click the 'end turn' button.")
 
 						# TODO: while end button not clicked: click on tiles to return assistants to token stack
+						clicked_object = ""
+						while "end_turn_button" not in clicked_object:
+							if mouse_clicked():
+								clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+								for token_name, token in tokens.items():
+									if (playerlist[board.current_player].player + "_assistant" in token_name) and (token.tile_number == clicked_tile.index):
+										#print(f"moving token {token_name}, now at location {token.tile_number}, back to the stack")
+										print(f"\tTaking the assistant back from the {clicked_tile.name}")
+										playerlist[board.current_player].insert_token_stack(token_name)
+										token.switch_visibility()
+										draw_tile(frame, tilelist[clicked_tile.index])
+										draw_units(frame, font, units, playerlist, board)
+										draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 						draw_tile(frame, tilelist[6])
 						board.set_nextplayer()
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-				elif clicked_tile == "police_station": #Perform police station action: TODO!
+				elif clicked_tile.name == "police_station": #Perform police station action: TODO!
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 5, tokens)
 					if move_legal:
 						print("Performing police station action")
@@ -848,7 +861,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_units(frame, font, units, playerlist, board)
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-				elif clicked_tile == "caravansary": #Performing caravansary action: TODO!
+				elif clicked_tile.name == "caravansary": #Performing caravansary action: TODO!
 					move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 9, tokens)
 					if move_legal:
 						print("Performing caravansary action")
@@ -860,7 +873,6 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 						draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 
-	
 			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
 				pygame.quit()
 				sys.exit()
@@ -995,7 +1007,7 @@ def get_clicked_item(tilelist, units):
 	pos_y = pygame.mouse.get_pos()[1]
 	for tile in tilelist:
 		if pos_x > tile.x and pos_x < (tile.x + tilewidth) and pos_y > tile.y and pos_y < (tile.y + tileheight):
-			clicked_tile = tile.name
+			clicked_tile = tile
 			break
 	for key, unit in units.items():
 		if ("p1" not in key and "p2" not in key):
