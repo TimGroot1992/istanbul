@@ -68,9 +68,11 @@ class Tiles:
 		self.token_grid = {
 							"p1_merchant": [self.x + (tilewidth / 4 + tilewidth / 24), self.y + (tileheight / 6)],
 							"p1_assistant": [self.x + (tilewidth / 24) + tilegap, self.y + (tileheight / 6) * 2],
+							"p1_prisoner": [self.x + (tilewidth / 4 + tilewidth / 24), self.y + (tileheight / 6) * 2],
 
 							"p2_merchant": [self.x + (tilewidth / 2 + tilewidth / 24), self.y + (tileheight / 6)],
-							"p2_assistant": [self.x + ((tilewidth / 4) * 3 + tilewidth / 24), self.y + (tileheight / 6) * 2]
+							"p2_assistant": [self.x + ((tilewidth / 4) * 3 + tilewidth / 24), self.y + (tileheight / 6) * 2],
+							"p2_prisoner": [self.x + (tilewidth / 2 + tilewidth / 24), self.y + (tileheight / 6) * 2]
 						  }
 
 		if self.name == "postal_office":

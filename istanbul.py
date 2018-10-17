@@ -8,9 +8,9 @@ from pygame import gfxdraw
 
 from classes import Board, Players, Tiles, Object, Token
 
-windowtype = RESIZABLE
-framewidth = 800				
-frameheight = 600
+windowtype = FULLSCREEN #RESIZABLE
+framewidth = 1920				
+frameheight = 1080
 boardx = 25
 boardy = 25
 tilegap = 5
@@ -174,10 +174,14 @@ def main():
 	p2_assistant_3 = Token("p2_assistant_3", "images/tokens/p2_assistant.png", False, False, 6)
 	p2_assistant_4 = Token("p2_assistant_4", "images/tokens/p2_assistant.png", False, False, 6)
 
+	p1_prisoner = Token("p1_prisoner", "images/tokens/p1_prisoner.png", True, False, 5)
+	p2_prisoner = Token("p1_prisoner", "images/tokens/p2_prisoner.png", True, False, 5)
+
 	tokens = {
 		"p1_merchant": p1_merchant, "p2_merchant": p2_merchant,
 		"p1_assistant_1": p1_assistant_1, "p1_assistant_2": p1_assistant_2, "p1_assistant_3": p1_assistant_3, "p1_assistant_4": p1_assistant_4, 
-		"p2_assistant_1": p2_assistant_1, "p2_assistant_2": p2_assistant_2, "p2_assistant_3": p2_assistant_3, "p2_assistant_4": p2_assistant_4
+		"p2_assistant_1": p2_assistant_1, "p2_assistant_2": p2_assistant_2, "p2_assistant_3": p2_assistant_3, "p2_assistant_4": p2_assistant_4,
+		"p1_prisoner": p1_prisoner, "p2_prisoner": p2_prisoner
 	}
 
 	playerlist = [Players(i, tilelist, tilewidth, tileheight, units, tokens) for i in range(0, board.number_of_players)]
@@ -312,7 +316,7 @@ def draw_tokens(frame, board, playerlist, tilelist, tokens):
 			if "assistant" in token_name:
 				token_name = token_name[0: -2]
 			current_token = pygame.image.load(token.image_path).convert_alpha()
-			current_token = pygame.transform.smoothscale(current_token, (int(tilewidth / 6), int(tilewidth / 6)))
+			current_token = pygame.transform.smoothscale(current_token, (int(tilewidth / 8), int(tilewidth / 8)))
 			frame.blit(current_token, (tilelist[token.tile_number].token_grid[token_name][0], tilelist[token.tile_number].token_grid[token_name][1]))
 
 	pygame.display.update()
