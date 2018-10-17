@@ -836,10 +836,11 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 							if mouse_clicked():
 								clicked_tile, clicked_object = get_clicked_item(tilelist, units)
 								for token_name, token in tokens.items():
-									if (playerlist[board.current_player].player + "_assistant" in token_name) and (token.tile_number == clicked_tile.index):
+									if (playerlist[board.current_player].player + "_assistant" in token_name) and (token.tile_number == clicked_tile.index) and (clicked_tile.name != "fountain"):
 										#print(f"moving token {token_name}, now at location {token.tile_number}, back to the stack")
 										print(f"\tTaking the assistant back from the {clicked_tile.name}")
 										playerlist[board.current_player].insert_token_stack(token_name)
+										token.set_tile_number(6)
 										token.switch_visibility()
 										draw_tile(frame, tilelist[clicked_tile.index])
 										draw_units(frame, font, units, playerlist, board)
@@ -907,6 +908,7 @@ def update_resource_blocks(board, playerlist, units, name, amount):
 def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_index, tokens):
 	legal_move = True
 	current_tile = tilelist[tokens[playerlist[board.current_player].player + "_merchant"].tile_number] # Ingest tilenumber based on current player name in token to find the current tile
+
 	if not board.move_is_legal_distance(current_tile.location, tilelist[tile_index].location):
 		print(f"\tYou are not allowed to move to this tile! Please select another")
 		legal_move = False
@@ -915,13 +917,21 @@ def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_ind
 		legal_move = False
 
 	else: # all requirements met for a legal move
-		tokens[playerlist[board.current_player].player + "_merchant"].set_tile_number(tile_index) # Move/update token position for current player
+
+		# Move/update token position for current player
+		tokens[playerlist[board.current_player].player + "_merchant"].set_tile_number(tile_index) 
+		
+		# Update the position of all tokens still in possession to merchant location
+		for token_name, token in tokens.items():
+			if token_name in playerlist[board.current_player].token_stack:
+				token.set_tile_number(tile_index)
+
 		draw_tile(frame, current_tile) # Draw origin tile to remove token there
 
 		if tile_index != 6: # Only if the destination is not the fountain
 
 			assistant_present = ""
-			for token_name, token in tokens.items(): # Loop thought tokens
+			for token_name, token in tokens.items(): # Loop through tokens
 
 				# Pay possible entry fees to other players
 				if (playerlist[board.current_player].player not in token_name) and (token.tile_number == tile_index) and (token.entry_fee): # If and only if an entry fee applies and it's not the current player
