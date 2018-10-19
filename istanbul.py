@@ -400,7 +400,6 @@ def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_ind
 		for token_name, token in tokens.items():
 			if token_name in playerlist[board.current_player].token_stack:
 				token.set_tile_number(tile_index)
-				#print(f"token {token.name} set to tile number {token.tile_number}")
 
 		draw_tile(frame, current_tile) # Draw origin tile to remove token there
 
@@ -423,14 +422,21 @@ def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_ind
 				if (playerlist[board.current_player].player + "_assistant" in token_name) and (token.tile_number == tile_index) and (token.visible):
 					assistant_present = token
 					#print(f"assistant already present is {assistant_present.name} with type {type(assistant_present)}")
-					break
+					
+				# Check if prisoner already present for another player and you're not going to the police station
+				if ("prisoner" in token_name) and (playerlist[board.current_player].player not in token_name) and (token.tile_number == tile_index) and (tile_index != 5):
+					token.set_tile_number(5)
+					playerlist[board.current_player].update_resources("lira", 3)
+					print(f"Sent prisoner back to the police station and received 3 lira for doing so!")
 
 			if assistant_present != "":
 				#print(f"assistant_present is not empty string")
 				playerlist[board.current_player].insert_token_stack(assistant_present.name)
 				assistant_present.switch_visibility()
 				#print(f"inserted token {assistant_present.name} in merchant stack, the visibility is now {assistant_present.visible}")
-				legal_move = True
+				if tile_index == 5:
+					board.set_nextplayer()
+				legal_move = False
 
 			elif len(playerlist[board.current_player].token_stack) > 0: # Allowed to do tile action
 				assistant_name = playerlist[board.current_player].token_stack[0] # Top of assistant stack
@@ -658,8 +664,6 @@ def action_police_station(board, frame, font, tilelist, units, tokens, playerlis
 				
 				exec('action_' + clicked_tile.name + '(board, frame, font, tilelist, units, tokens, playerlist, True)') # call the action function of the appropriate tile (but without moving the merchant)
 				break
-	# else: 
-	board.set_nextplayer()
 
 def action_fountain(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 6, tokens, prisoner_flag)
