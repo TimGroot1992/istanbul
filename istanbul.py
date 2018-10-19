@@ -321,7 +321,6 @@ def draw_tokens(frame, board, playerlist, tilelist, tokens):
 
 	pygame.display.update()
 
-
 def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 	global tilewidth
 	global tileheight
@@ -335,7 +334,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 
 			if event.type == pygame.MOUSEBUTTONUP:
 				clicked_tile, clicked_object = get_clicked_item(tilelist, units)
-
+				
 				if clicked_object == "end_turn_button":
 					print(f"{playerlist[board.current_player].name}'s turn was ended!")
 					board.set_nextplayer()
@@ -364,7 +363,7 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 				elif clicked_tile.name == "small_market": #Perform Small Market action (tile index 10)
 					action_small_market(board, frame, font, tilelist, units, tokens, playerlist, False)
 				elif clicked_tile.name == "tea_house": #Perform teahouse action (tile index 11)
-					action_tea_house(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_tea_house(board, event, frame, font, tilelist, units, tokens, playerlist, False)
 				elif clicked_tile.name == "sultans_palace": #Perform Sultans Palace action (tile index 12)
 					action_sultans_palace(board, frame, font, tilelist, units, tokens, playerlist, False)
 				elif clicked_tile.name == "large_market": #Perform Small Market action (tile index 13)
@@ -379,11 +378,77 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 				sys.exit()
 		fpsClock.tick(fps)
 
+def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_index, tokens, prisoner_flag):
+	legal_move = True
+	current_tile = tilelist[tokens[playerlist[board.current_player].player + "_merchant"].tile_number] # Ingest tilenumber based on current player name in token to find the current tile
+	
+	if prisoner_flag: # Exit if the action is invoked from the police station
+		return legal_move
+
+	if not board.move_is_legal_distance(current_tile.location, tilelist[tile_index].location):
+		print(f"\tYou are not allowed to move to this tile! Please select another")
+		legal_move = False
+	elif not board.move_is_legal_cost(playerlist, tokens, tilelist[tile_index]):
+		print(f"\tUnable to move to this tile since you cannot pay the entry fee(s) to the other player(s)! Please select another:")
+		legal_move = False
+
+	else: # all requirements met for a legal move
+		# Move/update token position for current player
+		tokens[playerlist[board.current_player].player + "_merchant"].set_tile_number(tile_index)
+		
+		# Update the position of all tokens still in possession to merchant location
+		for token_name, token in tokens.items():
+			if token_name in playerlist[board.current_player].token_stack:
+				token.set_tile_number(tile_index)
+				#print(f"token {token.name} set to tile number {token.tile_number}")
+
+		draw_tile(frame, current_tile) # Draw origin tile to remove token there
+
+		if tile_index != 6: # Only if the destination is not the fountain
+
+			assistant_present = ""
+			for token_name, token in tokens.items(): # Loop through tokens
+
+				# Pay possible entry fees to other players
+				if (playerlist[board.current_player].player not in token_name) and (token.tile_number == tile_index) and (token.entry_fee): # If and only if an entry fee applies and it's not the current player
+					playerlist[board.current_player].update_resources("lira", -2)
+					if "1" in token.image_path:
+						playerlist[0].update_resources("lira", 2)
+						print(f"\t{playerlist[board.current_player].name} paid an entry fee to player 1")
+					elif "2" in token.image_path:
+						playerlist[1].update_resources("lira", 2)
+						print(f"\t{playerlist[board.current_player].name} paid an entry fee to player 2")
+
+				# Check if assistant already present for current player
+				if (playerlist[board.current_player].player + "_assistant" in token_name) and (token.tile_number == tile_index) and (token.visible):
+					assistant_present = token
+					#print(f"assistant already present is {assistant_present.name} with type {type(assistant_present)}")
+					break
+
+			if assistant_present != "":
+				#print(f"assistant_present is not empty string")
+				playerlist[board.current_player].insert_token_stack(assistant_present.name)
+				assistant_present.switch_visibility()
+				#print(f"inserted token {assistant_present.name} in merchant stack, the visibility is now {assistant_present.visible}")
+				legal_move = True
+
+			elif len(playerlist[board.current_player].token_stack) > 0: # Allowed to do tile action
+				assistant_name = playerlist[board.current_player].token_stack[0] # Top of assistant stack
+				playerlist[board.current_player].pop_token_stack() # Pop token from stack
+				tokens[assistant_name].switch_visibility()
+				tokens[assistant_name].set_tile_number(tile_index)
+			else:
+				legal_move = False
+
+			draw_tile(frame, tilelist[tile_index])
+			draw_tile(frame, current_tile)
+			draw_units(frame, font, units, playerlist, board)
+			draw_tokens(frame, board, playerlist, tilelist, tokens)
+	
+	return legal_move
+
 def action_great_mosque(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 0, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 0, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing great mosque action")
 		print("Click on a mosque tile to buy it or end your turn")
@@ -437,10 +502,7 @@ def action_great_mosque(board, frame, font, tilelist, units, tokens, playerlist,
 				break
 
 def action_postal_office(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 1, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 1, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing postal office action")
 		for key, value in tilelist[1].blocks[0].items():
@@ -491,10 +553,7 @@ def action_postal_office(board, frame, font, tilelist, units, tokens, playerlist
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 def action_fabric_warehouse(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 2, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 2, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing fabric warehouse action")
 		playerlist[board.current_player].update_resources("fabric", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fabric")))
@@ -507,10 +566,7 @@ def action_fabric_warehouse(board, frame, font, tilelist, units, tokens, playerl
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 def action_small_mosque(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 3, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 3, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing small mosque action")
 		print("Click on a mosque tile to buy it or end your turn")
@@ -564,10 +620,7 @@ def action_small_mosque(board, frame, font, tilelist, units, tokens, playerlist,
 				break
 
 def action_fruit_warehouse(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 4, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 4, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing fruit warehouse action")
 		playerlist[board.current_player].update_resources("fruit", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fruit")))
@@ -583,20 +636,17 @@ def action_fruit_warehouse(board, frame, font, tilelist, units, tokens, playerli
 		pass
 
 def action_police_station(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 5, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 5, tokens, prisoner_flag)
 	if move_legal:
-		print("Performing police station action")
-
 		# if prisoner available -> wait for click on tile other than fountain or police station -> do tile action
 		for token_name, token in tokens.items():
 			if (playerlist[board.current_player].player + "_prisoner" in token_name) and (token.tile_number == 5):
-
+				#print(f"token with name px_prisoner is on tile number 5")
+				print(f"Performing police station action, select a tile where you'd like to send your prisoner!")
+				#print(f"token {token_name} is on tilenumber {token.tile_number}")
 				clicked_tile = ""
 				clicked_object = ""
-				while "end_turn_button" not in clicked_object:
+				while True:
 					if mouse_clicked():
 						clicked_tile, clicked_object = get_clicked_item(tilelist, units)
 						if (type(clicked_tile) != str) and (clicked_tile.name != "fountain") and (clicked_tile.name != "police_station"):
@@ -605,14 +655,14 @@ def action_police_station(board, frame, font, tilelist, units, tokens, playerlis
 							draw_units(frame, font, units, playerlist, board)
 							draw_tokens(frame, board, playerlist, tilelist, tokens)
 							break
-							
+				
 				exec('action_' + clicked_tile.name + '(board, frame, font, tilelist, units, tokens, playerlist, True)') # call the action function of the appropriate tile (but without moving the merchant)
+				break
+	# else: 
+	board.set_nextplayer()
 
 def action_fountain(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 6, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 6, tokens, prisoner_flag)
 	if move_legal:
 		print("You have arrived at the fountain")
 		print("Click on the assistants you'd like to return to your stack and then click the 'end turn' button.")
@@ -639,10 +689,7 @@ def action_fountain(board, frame, font, tilelist, units, tokens, playerlist, pri
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 def action_spice_warehouse(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 7, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 7, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing spice warehouse action")
 		
@@ -657,10 +704,7 @@ def action_spice_warehouse(board, frame, font, tilelist, units, tokens, playerli
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 def action_black_market(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 8, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 8, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing black market action")
 
@@ -704,10 +748,7 @@ def action_black_market(board, frame, font, tilelist, units, tokens, playerlist,
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 def action_caravansary(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 9, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 9, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing caravansary action")
 
@@ -717,10 +758,7 @@ def action_caravansary(board, frame, font, tilelist, units, tokens, playerlist, 
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 def action_small_market(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 10, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 10, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing small_market market action")
 		
@@ -760,11 +798,8 @@ def action_small_market(board, frame, font, tilelist, units, tokens, playerlist,
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-def action_tea_house(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 11, tokens)
-	else:
-		move_legal = prisoner_flag
+def action_tea_house(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 11, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing tea house action, type in a number between 3-12 followed by an enter")
 		bet = 1
@@ -789,10 +824,7 @@ def action_tea_house(board, frame, font, tilelist, units, tokens, playerlist, pr
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 def action_sultans_palace(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 12, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 12, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing sultans palace's action")
 		
@@ -856,10 +888,7 @@ def action_sultans_palace(board, frame, font, tilelist, units, tokens, playerlis
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 def action_large_market(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 13, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 13, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing large_market market action")
 		
@@ -900,10 +929,7 @@ def action_large_market(board, frame, font, tilelist, units, tokens, playerlist,
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 def action_wainwright(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 14, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 14, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing wainwright action")
 
@@ -942,10 +968,7 @@ def action_wainwright(board, frame, font, tilelist, units, tokens, playerlist, p
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
 def action_gemstone_dealer(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
-	if not prisoner_flag:
-		move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 15, tokens)
-	else:
-		move_legal = prisoner_flag
+	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 15, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing gemstone dealer action")
 		
@@ -996,64 +1019,6 @@ def update_resource_blocks(board, playerlist, units, name, amount):
 		else:
 			units.get("resourceblock_8").set_x(units.get("resource_p2").x + units.get("resource_p2").width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units.get("resource_p2").width*(186/1604)))
 
-def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_index, tokens):
-	legal_move = True
-	current_tile = tilelist[tokens[playerlist[board.current_player].player + "_merchant"].tile_number] # Ingest tilenumber based on current player name in token to find the current tile
-
-	if not board.move_is_legal_distance(current_tile.location, tilelist[tile_index].location):
-		print(f"\tYou are not allowed to move to this tile! Please select another")
-		legal_move = False
-	elif not board.move_is_legal_cost(playerlist, tokens, tilelist[tile_index]):
-		print(f"\tUnable to move to this tile since you cannot pay the entry fee(s) to the other player(s)! Please select another:")
-		legal_move = False
-
-	else: # all requirements met for a legal move
-
-		# Move/update token position for current player
-		tokens[playerlist[board.current_player].player + "_merchant"].set_tile_number(tile_index) 
-		
-		# Update the position of all tokens still in possession to merchant location
-		for token_name, token in tokens.items():
-			if token_name in playerlist[board.current_player].token_stack:
-				token.set_tile_number(tile_index)
-
-		draw_tile(frame, current_tile) # Draw origin tile to remove token there
-
-		if tile_index != 6: # Only if the destination is not the fountain
-
-			assistant_present = ""
-			for token_name, token in tokens.items(): # Loop through tokens
-
-				# Pay possible entry fees to other players
-				if (playerlist[board.current_player].player not in token_name) and (token.tile_number == tile_index) and (token.entry_fee): # If and only if an entry fee applies and it's not the current player
-					playerlist[board.current_player].update_resources("lira", -2)
-					if "1" in token.image_path:
-						playerlist[0].update_resources("lira", 2)
-						print(f"\t{playerlist[board.current_player].name} paid an entry fee to player 1")
-					elif "2" in token.image_path:
-						playerlist[1].update_resources("lira", 2)
-						print(f"\t{playerlist[board.current_player].name} paid an entry fee to player 2")
-
-				# Check if assistant already present for current player
-				if (playerlist[board.current_player].player + "_assistant" in token_name) and (token.tile_number == tile_index) and (token.visible):
-					assistant_present = token
-
-			if assistant_present != "":
-				playerlist[board.current_player].insert_token_stack(assistant_present.name)
-				assistant_present.switch_visibility()
-			elif len(playerlist[board.current_player].token_stack) > 0: # Allowed to do tile action
-				assistant_name = playerlist[board.current_player].token_stack[0] # Top of assistant stack
-				#print(f"assistant name from top of stack is {assistant_name}")
-				playerlist[board.current_player].pop_token_stack() # Pop token from stack
-				tokens[assistant_name].switch_visibility()
-				tokens[assistant_name].set_tile_number(tile_index)
-			else:
-				legal_move = False
-
-		draw_tile(frame, current_tile)
-		draw_units(frame, font, units, playerlist, board)
-		draw_tokens(frame, board, playerlist, tilelist, tokens)
-		return legal_move
 
 def get_keyboardinput(event):
 	enter_pressed = False
