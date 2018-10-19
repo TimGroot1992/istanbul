@@ -8,9 +8,9 @@ from pygame import gfxdraw
 
 from classes import Board, Players, Tiles, Object, Token
 
-windowtype = RESIZABLE #FULLSCREEN 
-framewidth = 800				
-frameheight = 600
+windowtype = FULLSCREEN 
+framewidth = 1920				
+frameheight = 1080
 boardx = 25
 boardy = 25
 tilegap = 5
@@ -341,37 +341,52 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 					draw_units(frame, font, units, playerlist, board)
 
 				elif clicked_tile.name == "great_mosque": #Perform Great Mosque Action (tile index 0)
-					action_great_mosque(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_great_mosque(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "postal_office": #Perform postal office action (tile index 1)
-					action_postal_office(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_postal_office(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "fabric_warehouse": #Perform fabric warehouse action (tile index 2)
-					action_fabric_warehouse(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_fabric_warehouse(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "small_mosque": #Perform Small Mosque Action (tile index 3)
-					action_small_mosque(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_small_mosque(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "fruit_warehouse": #Perform fruit warehouse action (tile index 4)
-					action_fruit_warehouse(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_fruit_warehouse(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "police_station": #Perform police station action (tile index 5)
-					action_police_station(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_police_station(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "fountain": #Perform fountain action (tile index 6)
-					action_fountain(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_fountain(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "spice_warehouse": #Perform spice warehouse action (tile index 7)
-					action_spice_warehouse(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_spice_warehouse(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "black_market": #Perform Black Market action (tile index 8)
-					action_black_market(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_black_market(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "caravansary": #Performing caravansary action: TODO! (tile index 9)
-					action_caravansary(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_caravansary(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "small_market": #Perform Small Market action (tile index 10)
-					action_small_market(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_small_market(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "tea_house": #Perform teahouse action (tile index 11)
 					action_tea_house(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "sultans_palace": #Perform Sultans Palace action (tile index 12)
-					action_sultans_palace(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_sultans_palace(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "large_market": #Perform Small Market action (tile index 13)
-					action_large_market(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_large_market(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "wainwright": #Perform wainwright action (tile index 14)
-					action_wainwright(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_wainwright(board, event, frame, font, tilelist, units, tokens, playerlist, False)
+				
 				elif clicked_tile.name == "gemstone_dealer": #Perform gemstone dealer action (tile index 15)
-					action_gemstone_dealer(board, frame, font, tilelist, units, tokens, playerlist, False)
+					action_gemstone_dealer(board, event, frame, font, tilelist, units, tokens, playerlist, False)
 
 			if event.type == QUIT or (event.type is KEYDOWN and event.key == K_ESCAPE):
 				pygame.quit()
@@ -436,7 +451,7 @@ def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_ind
 				#print(f"inserted token {assistant_present.name} in merchant stack, the visibility is now {assistant_present.visible}")
 				if tile_index == 5:
 					board.set_nextplayer()
-				legal_move = False
+					legal_move = False
 
 			elif len(playerlist[board.current_player].token_stack) > 0: # Allowed to do tile action
 				assistant_name = playerlist[board.current_player].token_stack[0] # Top of assistant stack
@@ -446,14 +461,14 @@ def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_ind
 			else:
 				legal_move = False
 
-			draw_tile(frame, tilelist[tile_index])
-			draw_tile(frame, current_tile)
-			draw_units(frame, font, units, playerlist, board)
-			draw_tokens(frame, board, playerlist, tilelist, tokens)
+		draw_tile(frame, tilelist[tile_index])
+		draw_tile(frame, current_tile)
+		draw_units(frame, font, units, playerlist, board)
+		draw_tokens(frame, board, playerlist, tilelist, tokens)
 	
 	return legal_move
 
-def action_great_mosque(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_great_mosque(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 0, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing great mosque action")
@@ -488,6 +503,16 @@ def action_great_mosque(board, frame, font, tilelist, units, tokens, playerlist,
 					playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
 					units.pop(top_tile)
 
+					# Gem condition for players
+					counted_bonuses = []
+					for bonus_tile in playerlist[board.current_player].resources.get("bonuses"):
+						counted_bonuses.append(bonus_tile[0])
+					if ("great_mosque_diamonds" in counted_bonuses) and ("great_mosque_fruit" in counted_bonuses):	
+						units.get("gem_great_mosque" + str(tilelist[0].gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
+						units.get("gem_great_mosque" + str(tilelist[0].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
+						playerlist[board.current_player].update_gemstone_slots()
+						print(f"\tYou have collected both mosque tiles and received a gem!")
+
 					draw_tile(frame, tilelist[0])
 					draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
 					board.set_nextplayer()
@@ -507,7 +532,7 @@ def action_great_mosque(board, frame, font, tilelist, units, tokens, playerlist,
 				draw_tokens(frame, board, playerlist, tilelist, tokens)
 				break
 
-def action_postal_office(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_postal_office(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 1, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing postal office action")
@@ -558,7 +583,7 @@ def action_postal_office(board, frame, font, tilelist, units, tokens, playerlist
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-def action_fabric_warehouse(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_fabric_warehouse(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 2, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing fabric warehouse action")
@@ -571,14 +596,11 @@ def action_fabric_warehouse(board, frame, font, tilelist, units, tokens, playerl
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-def action_small_mosque(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_small_mosque(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 3, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing small mosque action")
 		print("Click on a mosque tile to buy it or end your turn")
-		# draw_tile(frame, tilelist[3])
-		# draw_units(frame, font, units, playerlist, board)
-		# draw_tokens(frame, board, playerlist, tilelist, tokens)
 		
 		clicked_object = ""
 		while ("end_turn_button" not in clicked_object) and ("small_mosque_fabric" not in clicked_object) and ("small_mosque_spice" not in clicked_object):
@@ -607,6 +629,18 @@ def action_small_mosque(board, frame, font, tilelist, units, tokens, playerlist,
 					playerlist[board.current_player].update_bonuses(tilename, units.get(top_tile))
 					units.pop(top_tile)
 
+					# Gem condition for players
+					print(playerlist[board.current_player].resources.get("bonuses"))
+					counted_bonuses = []
+					for bonus_tile in playerlist[board.current_player].resources.get("bonuses"):
+						counted_bonuses.append(bonus_tile[0])
+					print(f"counted bonuses: {counted_bonuses}")
+					if ("small_mosque_fabric" in counted_bonuses) and ("small_mosque_spice" in counted_bonuses):	
+						units.get("gem_small_mosque" + str(tilelist[3].gemstone_amount)).set_x(playerlist[board.current_player].gemstone_slots[0][0])
+						units.get("gem_small_mosque" + str(tilelist[3].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
+						playerlist[board.current_player].update_gemstone_slots()
+						print(f"\tYou have collected both mosque tiles and received a gem!")
+
 					draw_tile(frame, tilelist[3])
 					draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
 					board.set_nextplayer()
@@ -625,7 +659,7 @@ def action_small_mosque(board, frame, font, tilelist, units, tokens, playerlist,
 				draw_units(frame, font, units, playerlist, board)
 				break
 
-def action_fruit_warehouse(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_fruit_warehouse(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 4, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing fruit warehouse action")
@@ -641,7 +675,7 @@ def action_fruit_warehouse(board, frame, font, tilelist, units, tokens, playerli
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 		pass
 
-def action_police_station(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_police_station(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 5, tokens, prisoner_flag)
 	if move_legal:
 		# if prisoner available -> wait for click on tile other than fountain or police station -> do tile action
@@ -662,10 +696,10 @@ def action_police_station(board, frame, font, tilelist, units, tokens, playerlis
 							draw_tokens(frame, board, playerlist, tilelist, tokens)
 							break
 				
-				exec('action_' + clicked_tile.name + '(board, frame, font, tilelist, units, tokens, playerlist, True)') # call the action function of the appropriate tile (but without moving the merchant)
+				exec('action_' + clicked_tile.name + '(board, event, frame, font, tilelist, units, tokens, playerlist, True)') # call the action function of the appropriate tile (but without moving the merchant)
 				break
 
-def action_fountain(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_fountain(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 6, tokens, prisoner_flag)
 	if move_legal:
 		print("You have arrived at the fountain")
@@ -692,7 +726,7 @@ def action_fountain(board, frame, font, tilelist, units, tokens, playerlist, pri
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-def action_spice_warehouse(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_spice_warehouse(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 7, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing spice warehouse action")
@@ -707,7 +741,7 @@ def action_spice_warehouse(board, frame, font, tilelist, units, tokens, playerli
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-def action_black_market(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_black_market(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 8, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing black market action")
@@ -751,7 +785,7 @@ def action_black_market(board, frame, font, tilelist, units, tokens, playerlist,
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-def action_caravansary(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_caravansary(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 9, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing caravansary action")
@@ -761,7 +795,7 @@ def action_caravansary(board, frame, font, tilelist, units, tokens, playerlist, 
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-def action_small_market(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_small_market(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 10, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing small_market market action")
@@ -891,7 +925,7 @@ def action_sultans_palace(board, frame, font, tilelist, units, tokens, playerlis
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-def action_large_market(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_large_market(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 13, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing large_market market action")
@@ -932,7 +966,7 @@ def action_large_market(board, frame, font, tilelist, units, tokens, playerlist,
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-def action_wainwright(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_wainwright(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 14, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing wainwright action")
@@ -971,7 +1005,7 @@ def action_wainwright(board, frame, font, tilelist, units, tokens, playerlist, p
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
 
-def action_gemstone_dealer(board, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
+def action_gemstone_dealer(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 15, tokens, prisoner_flag)
 	if move_legal:
 		print("Performing gemstone dealer action")
@@ -1022,7 +1056,6 @@ def update_resource_blocks(board, playerlist, units, name, amount):
 			units.get("resourceblock_4").set_x(units.get("resource_p1").x + units.get("resource_p1").width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units.get("resource_p1").width*(186/1604)))
 		else:
 			units.get("resourceblock_8").set_x(units.get("resource_p2").x + units.get("resource_p2").width*(375/1604) + (playerlist[board.current_player].resources.get("fruit") * units.get("resource_p2").width*(186/1604)))
-
 
 def get_keyboardinput(event):
 	enter_pressed = False
