@@ -305,7 +305,7 @@ def draw_units(frame, font, units, playerlist, board):
 				#currentunit.set_colorkey((255, 255, 255))
 				frame.blit(currentunit, (unit.x, unit.y))
 			#print(f"I just drew unit {name}")
-		pygame.display.update()
+		#pygame.display.update()
 
 	if type(units) is list:
 		for item in units:
@@ -532,8 +532,8 @@ def action_great_mosque(board, event, frame, font, tilelist, units, tokens, play
 
 			elif "end_turn_button" in clicked_object: # End turn button clicked
 				board.set_nextplayer()
-				draw_units(frame, font, units, playerlist, board)
-				draw_tokens(frame, board, playerlist, tilelist, tokens)
+				#draw_units(frame, font, units, playerlist, board)
+				#draw_tokens(frame, board, playerlist, tilelist, tokens)
 				break
 
 def action_postal_office(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
@@ -542,20 +542,12 @@ def action_postal_office(board, event, frame, font, tilelist, units, tokens, pla
 		print("Performing postal office action")
 		for key, value in tilelist[1].blocks[0].items():
 			if value == 1:
-				#print("You receive", key)
 				if "lira" in key:
 					playerlist[board.current_player].update_resources("lira", int(key.split("_")[1]))
 				update_resource_blocks(board, playerlist, units, key, 1)
 
-		print(playerlist[board.current_player].name, "now has", 
-				playerlist[board.current_player].resources.get("lira"), "lira,", 
-				playerlist[board.current_player].resources.get("fabric"), "fabric,", 
-				playerlist[board.current_player].resources.get("spice"), "spice,", 
-				playerlist[board.current_player].resources.get("diamonds"), "diamonds and", 
-				playerlist[board.current_player].resources.get("fruit"), "fruit.")
 		tilelist[1].move_postalblocks(tilelist[1].blocks)
 
-		#for unit in units:
 		for name, unit in units.items(): 
 			if "postalblock" in name:
 
@@ -593,7 +585,6 @@ def action_fabric_warehouse(board, event, frame, font, tilelist, units, tokens, 
 		print("Performing fabric warehouse action")
 		playerlist[board.current_player].update_resources("fabric", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fabric")))
 		update_resource_blocks(board, playerlist, units, "fabric", 0)
-		print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The carrying capacity for this player is", playerlist[board.current_player].resources.get("max_res"))
 		
 		board.set_nextplayer()
 		draw_tile(frame, tilelist[2])
@@ -634,7 +625,6 @@ def action_small_mosque(board, event, frame, font, tilelist, units, tokens, play
 					units.pop(top_tile)
 
 					# Gem condition for players
-					print(playerlist[board.current_player].resources.get("bonuses"))
 					counted_bonuses = []
 					for bonus_tile in playerlist[board.current_player].resources.get("bonuses"):
 						counted_bonuses.append(bonus_tile[0])
@@ -660,7 +650,7 @@ def action_small_mosque(board, event, frame, font, tilelist, units, tokens, play
 
 			elif "end_turn_button" in clicked_object: # End turn button clicked
 				board.set_nextplayer()
-				draw_units(frame, font, units, playerlist, board)
+				#draw_units(frame, font, units, playerlist, board)
 				break
 
 def action_fruit_warehouse(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
@@ -668,10 +658,7 @@ def action_fruit_warehouse(board, event, frame, font, tilelist, units, tokens, p
 	if move_legal:
 		print("Performing fruit warehouse action")
 		playerlist[board.current_player].update_resources("fruit", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fruit")))
-		
 		update_resource_blocks(board, playerlist, units, "fruit", 0)
-		#draw_units(frame, font, units, playerlist, board)
-		print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The carrying capacity for this player is", playerlist[board.current_player].resources.get("max_res"))
 		
 		board.set_nextplayer()
 		draw_tile(frame, tilelist[4])
@@ -853,10 +840,8 @@ def action_tea_house(board, event, frame, font, tilelist, units, tokens, playerl
 		dice_roll = roll_dice(board, frame, font, playerlist, tilelist, units)
 		if (dice_roll >= bet):
 			playerlist[board.current_player].update_resources("lira", bet)
-			#print("Congrats, you receive", bet, "lira!", "player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
 			print(f"Congrats, your receive {bet} lira! {playerlist[board.current_player].name} now has {playerlist[board.current_player].resources.get('lira')} lira")
 		else:
-			#print("Too bad, you receive only 2 lira", "player", playerlist[board.current_player].name, " now has ", playerlist[board.current_player].resources.get('lira'), " lira")
 			print(f"Too bad, you receive only 2 lira. {playerlist[board.current_player].name} now has {playerlist[board.current_player].resources.get('lira')} lira")
 			playerlist[board.current_player].update_resources("lira", 2)
 		
@@ -1002,7 +987,6 @@ def action_wainwright(board, event, frame, font, tilelist, units, tokens, player
 		else:
 			print("\tYou do not have sufficient lira to buy a cart extension, you have", playerlist[board.current_player].resources.get("lira"), "lira.")
 			#board.set_nextplayer()
-		print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The carrying capacity for this player is", playerlist[board.current_player].resources.get("max_res"))
 
 		board.set_nextplayer()
 		draw_tile(frame, tilelist[14])

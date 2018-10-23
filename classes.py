@@ -233,6 +233,8 @@ class Board:
 		self.next_player_button = "images/buttonblue.png"
 		
 	def set_nextplayer(self):
+		#print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The carrying capacity for this player is", playerlist[board.current_player].resources.get("max_res"))
+
 		if not (self.current_player + 1) > self.number_of_players - 1:
 			self.current_player = self.current_player + 1
 			self.next_player_button = "images/buttonred.png"
@@ -240,6 +242,7 @@ class Board:
 			self.current_player = 0
 			self.next_player_button = "images/buttonblue.png"
 		print(f"Next player's turn, go ahead Player{self.current_player + 1}!")
+
 
 	def move_is_legal_distance(self, origin, destination): #Tile1, Tile2
 		#print("move from is", move_from)
