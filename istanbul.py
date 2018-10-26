@@ -54,24 +54,24 @@ def main():
 	'''
 
 	tiles = {
-		"great_mosque": {"index": 0, "location": [1, 1]}, 
-		"postal_office": {"index": 1, "location": [1, 2]}, 
-		"fabric_warehouse": {"index": 2, "location": [1, 3]}, 
-		"small_mosque": {"index": 3, "location": [1, 4]},
-		"fruit_warehouse": {"index": 4, "location": [2, 1]},
-		"police_station": {"index": 5, "location": [2, 2]},
-		"fountain": {"index": 6, "location": [2, 3]}, 
-		"spice_warehouse": {"index": 7, "location": [2, 4]},  
-		"black_market": {"index": 8, "location": [3, 1]}, 
-		"caravansary": {"index": 9, "location": [3, 2]}, 
-		"small_market": {"index": 10, "location": [3, 3]}, 
-		"tea_house": {"index": 11, "location": [3, 4]}, 
-		"sultans_palace": {"index": 12, "location": [4, 1]}, 
-		"large_market": {"index": 13, "location": [4, 2]}, 
-		"wainwright": {"index": 14, "location": [4, 3]}, 
-		"gemstone_dealer": {"index": 15, "location": [4, 4]} 
+		"great_mosque": 	{"index": 0, 	"dice_index": 15, 	"location": [1, 1]}, 
+		"postal_office": 	{"index": 1, 	"dice_index": 5, 	"location": [1, 2]}, 
+		"fabric_warehouse": {"index": 2, 	"dice_index": 2, 	"location": [1, 3]}, 
+		"small_mosque": 	{"index": 3, 	"dice_index": 14, 	"location": [1, 4]},
+		"fruit_warehouse": 	{"index": 4, 	"dice_index": 4, 	"location": [2, 1]},
+		"police_station": 	{"index": 5, 	"dice_index": 12, 	"location": [2, 2]},
+		"fountain": 		{"index": 6, 	"dice_index": 7, 	"location": [2, 3]}, 
+		"spice_warehouse": 	{"index": 7, 	"dice_index": 3, 	"location": [2, 4]},  
+		"black_market": 	{"index": 8, 	"dice_index": 8, 	"location": [3, 1]}, 
+		"caravansary": 		{"index": 9, 	"dice_index": 6, 	"location": [3, 2]}, 
+		"small_market": 	{"index": 10, 	"dice_index": 11, 	"location": [3, 3]}, 
+		"tea_house": 		{"index": 11, 	"dice_index": 9, 	"location": [3, 4]}, 
+		"sultans_palace": 	{"index": 12, 	"dice_index": 13, 	"location": [4, 1]}, 
+		"large_market": 	{"index": 13, 	"dice_index": 10, 	"location": [4, 2]}, 
+		"wainwright": 		{"index": 14, 	"dice_index": 1, 	"location": [4, 3]}, 
+		"gemstone_dealer": 	{"index": 15, 	"dice_index": 16, 	"location": [4, 4]} 
 	}
-	tilelist = [Tiles(tile, tiles[tile]["index"], tiles[tile]["location"], boardx, boardy, tilewidth, tileheight, tilegap) for tile in tiles]
+	tilelist = [Tiles(tile, tiles[tile]["index"], tiles[tile]["dice_index"], tiles[tile]["location"], boardx, boardy, tilewidth, tileheight, tilegap) for tile in tiles]
 
 	## UNITS ##
 	# Object template: Object(x, y, width, height, image_path)
@@ -177,8 +177,13 @@ def main():
 	p1_prisoner = Token("p1_prisoner", "images/tokens/p1_prisoner.png", True, False, 5)
 	p2_prisoner = Token("p1_prisoner", "images/tokens/p2_prisoner.png", True, False, 5)
 
-	governor = Token("governor", "images/tokens/governor.png", True, False, randint(0, 15)) # Initialize location randomly on the board
-	smuggler = Token("smuggler", "images/tokens/smuggler.png", True, False, randint(0, 15)) # Initialize location randomly on the board
+	init_governor = randint(1,6) + randint(1,6)
+	init_smuggler = randint(1,6) + randint(1,6)
+	
+	governor = Token("governor", "images/tokens/governor.png", True, False, next((tile.index for tile in tilelist if tile.dice_index == init_governor), None)) # Initialize location randomly on the board
+	smuggler = Token("smuggler", "images/tokens/smuggler.png", True, False, next((tile.index for tile in tilelist if tile.dice_index == init_smuggler), None)) # Initialize location randomly on the board
+	# governor = Token("governor", "images/tokens/governor.png", True, False, 1) # Initialize location randomly on the board
+	# smuggler = Token("smuggler", "images/tokens/smuggler.png", True, False, 1) # Initialize location randomly on the board
 
 	tokens = {
 		"p1_merchant": p1_merchant, "p2_merchant": p2_merchant,
@@ -292,7 +297,6 @@ def draw_units(frame, font, units, playerlist, board):
 				textsurface = font.render("End Turn", False, white)
 				frame.blit(textsurface, (unit.x + unit.width / 3, unit.y + unit.height / 3))
 			else: #Shape loaded by image
-				# print(f"unit image path is {unit.image_path} and board next player button is {board.next_player_button}")
 				try:
 					if name != "end_turn_button":
 						currentunit = pygame.image.load(unit.image_path).convert_alpha()
@@ -305,11 +309,9 @@ def draw_units(frame, font, units, playerlist, board):
 				#currentunit.set_colorkey((255, 255, 255))
 				frame.blit(currentunit, (unit.x, unit.y))
 			#print(f"I just drew unit {name}")
-		#pygame.display.update()
 
 	if type(units) is list:
 		for item in units:
-			#print(item)
 			currentunit = pygame.image.load(item[1].image_path).convert_alpha()
 			currentunit = pygame.transform.smoothscale(currentunit, (int(item[1].width), int(item[1].height)))
 			frame.blit(currentunit, (item[1].x, item[1].y))
@@ -334,10 +336,9 @@ def mainloop_GUI(board, frame, font, tilelist, units, tokens, playerlist):
 
 	while True: # main game loop
 		for event in pygame.event.get():
-			#print(event)
 
 			if event.type == pygame.MOUSEBUTTONUP:
-				clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+				clicked_tile, clicked_object, clicked_token = get_clicked_item(tilelist, units, tokens)
 				
 				if clicked_object == "end_turn_button":
 					print(f"{playerlist[board.current_player].name}'s turn was ended!")
@@ -448,7 +449,7 @@ def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_ind
 					playerlist[board.current_player].update_resources("lira", 3)
 					print(f"Sent prisoner back to the police station and received 3 lira for doing so!")
 
-			if assistant_present != "":
+			if assistant_present != "": # Put assistant back into stack
 				#print(f"assistant_present is not empty string")
 				playerlist[board.current_player].insert_token_stack(assistant_present.name)
 				assistant_present.switch_visibility()
@@ -457,7 +458,7 @@ def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_ind
 					board.set_nextplayer()
 					legal_move = False
 
-			elif len(playerlist[board.current_player].token_stack) > 0: # Allowed to do tile action
+			elif len(playerlist[board.current_player].token_stack) > 0: # Leave one assistant behind to do the tile action
 				assistant_name = playerlist[board.current_player].token_stack[0] # Top of assistant stack
 				playerlist[board.current_player].pop_token_stack() # Pop token from stack
 				tokens[assistant_name].switch_visibility()
@@ -472,6 +473,36 @@ def move_legal_handler(board, frame, font, units, playerlist, tilelist, tile_ind
 	
 	return legal_move
 
+def move_end_turn_handler(board, frame, font, units, playerlist, tilelist, tile_index, tokens):
+	tokens_present = []
+	for token_name, token  in tokens.items():
+		if (("governor" in token.name) and (token.tile_number == tile_index)) or (("smuggler" in token.name) and (token.tile_number == tile_index)):
+			if "governor" in token.name:
+				tokens_present.append("governor")
+			if "smuggler" in token.name:
+				tokens_present.append("smuggler")
+
+	if len(tokens_present) > 0:
+		print(f"\tOptional: Use the governor and/or smuggler by clicking on them!")
+	
+	clicked_object, clicked_tile, clicked_token = "", "", ""
+	while (len(tokens_present) > 0) and ("end_turn_button" not in clicked_object):
+		if mouse_clicked():
+			clicked_tile, clicked_object, clicked_token = get_clicked_item(tilelist, units, tokens)
+			#print(f"clicked token {clicked_token}")
+			if ("governor" in clicked_token) and ("governor" in tokens_present):
+				tokens_present.remove("governor")
+				print(f"\t\tDoing governor action")
+			elif ("smuggler" in clicked_token) and ("smuggler" in tokens_present):
+				tokens_present.remove("smuggler")
+				print(f"\t\tDoing smuggler action")
+
+	board.set_nextplayer()
+	draw_tile(frame, tilelist[tile_index])
+	draw_units(frame, font, units, playerlist, board)
+	draw_tokens(frame, board, playerlist, tilelist, tokens)
+
+	
 def action_great_mosque(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 0, tokens, prisoner_flag)
 	if move_legal:
@@ -481,7 +512,7 @@ def action_great_mosque(board, event, frame, font, tilelist, units, tokens, play
 		clicked_object = ""
 		while ("end_turn_button" not in clicked_object) and ("great_mosque_diamonds" not in clicked_object) and ("great_mosque_fruit" not in clicked_object):
 			if mouse_clicked():
-				clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+				clicked_tile, clicked_object, clicked_token = get_clicked_item(tilelist, units, tokens)
 
 			if "diamonds" in clicked_object or "fruit" in clicked_object: # Object clicked was not the end button
 				tilename = clicked_object[:-2] # Take root of the tilename without number
@@ -516,12 +547,14 @@ def action_great_mosque(board, event, frame, font, tilelist, units, tokens, play
 						units.get("gem_great_mosque" + str(tilelist[0].gemstone_amount)).set_y(playerlist[board.current_player].gemstone_slots[0][1])
 						playerlist[board.current_player].update_gemstone_slots()
 						print(f"\tYou have collected both mosque tiles and received a gem!")
-
+					
 					draw_tile(frame, tilelist[0])
 					draw_units(frame, font, playerlist[board.current_player].resources.get("bonuses"), playerlist, board)
-					board.set_nextplayer()
 					draw_units(frame, font, units, playerlist, board)
 					draw_tokens(frame, board, playerlist, tilelist, tokens)
+					
+					move_end_turn_handler(board, frame, font, units, playerlist, tilelist, 0, tokens)
+
 					break
 				elif not tile_not_owned: # Already have a mosque tile with this colour
 					print(f"\tYou already have a mosque tile of that resource in your possession!")
@@ -573,11 +606,13 @@ def action_postal_office(board, event, frame, font, tilelist, units, tokens, pla
 						unit.set_y(tilelist[1].y + tileheight/1.7 + tileheight/6)
 					else:
 						unit.set_y(tilelist[1].y + tileheight/1.7)
-
-		board.set_nextplayer()
+		
 		draw_tile(frame, tilelist[1])
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
+		
+		move_end_turn_handler(board, frame, font, units, playerlist, tilelist, 1, tokens)
+
 
 def action_fabric_warehouse(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 2, tokens, prisoner_flag)
@@ -586,10 +621,11 @@ def action_fabric_warehouse(board, event, frame, font, tilelist, units, tokens, 
 		playerlist[board.current_player].update_resources("fabric", int(playerlist[board.current_player].resources.get("max_res") - playerlist[board.current_player].resources.get("fabric")))
 		update_resource_blocks(board, playerlist, units, "fabric", 0)
 		
-		board.set_nextplayer()
 		draw_tile(frame, tilelist[2])
 		draw_units(frame, font, units, playerlist, board)
 		draw_tokens(frame, board, playerlist, tilelist, tokens)
+		
+		move_end_turn_handler(board, frame, font, units, playerlist, tilelist, 2, tokens)
 
 def action_small_mosque(board, event, frame, font, tilelist, units, tokens, playerlist, prisoner_flag):
 	move_legal = move_legal_handler(board, frame, font, units, playerlist, tilelist, 3, tokens, prisoner_flag)
@@ -600,7 +636,7 @@ def action_small_mosque(board, event, frame, font, tilelist, units, tokens, play
 		clicked_object = ""
 		while ("end_turn_button" not in clicked_object) and ("small_mosque_fabric" not in clicked_object) and ("small_mosque_spice" not in clicked_object):
 			if mouse_clicked():
-				clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+				clicked_tile, clicked_object, clicked_token = get_clicked_item(tilelist, units, tokens)
 				
 			if "fabric" in clicked_object or "spice" in clicked_object: # Object clicked was not the end button
 				tilename = clicked_object[:-2] # Take root of the tilename without number
@@ -679,7 +715,7 @@ def action_police_station(board, event, frame, font, tilelist, units, tokens, pl
 				clicked_object = ""
 				while True:
 					if mouse_clicked():
-						clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+						clicked_tile, clicked_object, clicked_token = get_clicked_item(tilelist, units, tokens)
 						if (type(clicked_tile) != str) and (clicked_tile.name != "fountain") and (clicked_tile.name != "police_station"):
 							token.set_tile_number(clicked_tile.index)
 							draw_tile(frame, tilelist[5])
@@ -700,7 +736,7 @@ def action_fountain(board, event, frame, font, tilelist, units, tokens, playerli
 		clicked_object = ""
 		while "end_turn_button" not in clicked_object:
 			if mouse_clicked():
-				clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+				clicked_tile, clicked_object, clicked_token = get_clicked_item(tilelist, units, tokens)
 				for token_name, token in tokens.items():
 					if (playerlist[board.current_player].player + "_assistant" in token_name) and (token.tile_number == clicked_tile.index) and (clicked_tile.name != "fountain"):
 						#print(f"moving token {token_name}, now at location {token.tile_number}, back to the stack")
@@ -741,7 +777,7 @@ def action_black_market(board, event, frame, font, tilelist, units, tokens, play
 		clicked_object = ""
 		while clicked_object != "resourceblock_2" or clicked_object != "resourceblock_3" or clicked_object != "resourceblock_4" or clicked_object != "resourceblock_6" or clicked_object != "resourceblock_7" or clicked_object != "resourceblock_8":
 			if mouse_clicked():
-				clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+				clicked_tile, clicked_object, clicked_token = get_clicked_item(tilelist, units, tokens)
 				if (("resourceblock_2" in clicked_object) or ("resourceblock_6" in clicked_object)):
 					update_resource_blocks(board, playerlist, units, "fabric", 1)
 					break
@@ -797,7 +833,7 @@ def action_small_market(board, event, frame, font, tilelist, units, tokens, play
 		clicked_object = ""
 		while clicked_object != "end_turn_button":
 			if mouse_clicked():
-				clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+				clicked_tile, clicked_object, clicked_token = get_clicked_item(tilelist, units, tokens)
 				
 				if "resourceblock" in clicked_object:
 					current_resource = resource_mapping.get(clicked_object[-1])
@@ -868,7 +904,7 @@ def action_sultans_palace(board, frame, font, tilelist, units, tokens, playerlis
 					clicked_object = "None"
 					while "resourceblock" not in clicked_object:
 						if mouse_clicked():
-							clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+							clicked_tile, clicked_object, clicked_token = get_clicked_item(tilelist, units, tokens)
 							#print(f"Clicked object is {clicked_object}")
 							if (("1" in clicked_object) or ("5" in clicked_object)) and playerlist[board.current_player].resources['diamonds'] > 0:
 								update_resource_blocks(board, playerlist, units, "diamonds", -1)
@@ -925,7 +961,7 @@ def action_large_market(board, event, frame, font, tilelist, units, tokens, play
 		clicked_object = ""
 		while clicked_object != "end_turn_button":
 			if mouse_clicked():
-				clicked_tile, clicked_object = get_clicked_item(tilelist, units)
+				clicked_tile, clicked_object, clicked_token = get_clicked_item(tilelist, units, tokens)
 				
 				if "resourceblock" in clicked_object:
 					current_resource = resource_mapping.get(clicked_object[-1])
@@ -1091,9 +1127,8 @@ def get_keyboardinput(event):
 			#print("option from get get_keyboardinput", option)
 	return option
 
-def get_clicked_item(tilelist, units):
-	clicked_tile = "None"
-	clicked_object = "None"
+def get_clicked_item(tilelist, units, tokens):
+	clicked_tile, clicked_object, clicked_token = "None", "None", "None"
 	pos_x = pygame.mouse.get_pos()[0]
 	pos_y = pygame.mouse.get_pos()[1]
 	for tile in tilelist:
@@ -1105,7 +1140,14 @@ def get_clicked_item(tilelist, units):
 			if pos_x > unit.x and pos_x < (unit.x + unit.width) and pos_y > unit.y and pos_y < (unit.y + unit.height):
 				clicked_object = key
 				break
-	return clicked_tile, clicked_object
+	for key, token in tokens.items():
+		token_grid = tilelist[token.tile_number].token_grid # transform token index to token grid of tile
+		for name, location in token_grid.items():
+			if pos_x > location[0] and pos_x < (location[0] + (tilewidth / 8)) and pos_y > location[1] and pos_y < (location[1] + (tilewidth / 8)): 
+				#print(f"{pos_x} > {location[0]} and {pos_x} < {location[0] + (tilewidth / 8)}, {pos_y} > {location[1]} and {pos_y} < {location[1] + (tilewidth/8)}")
+				clicked_token = name
+				
+	return clicked_tile, clicked_object, clicked_token
 
 def mouse_clicked():
 	#pygame.event.wait()
@@ -1165,7 +1207,6 @@ def roll_dice(board, frame, font, playerlist, tilelist, units):
 		# x_distance = x_distance + pause
 
 	print("\tYou have thrown", (randomnumber + randomnumber2))
-	#pygame.display.update()
 	return randomnumber + randomnumber2
 
 def dice_offset(dice1_x, dice1_y, dice2_x, dice2_y):

@@ -58,9 +58,10 @@ class Players:
 		self.token_stack.pop(0)
 	
 class Tiles:
-	def __init__(self, name, index, location, boardx, boardy, tilewidth, tileheight, tilegap):
+	def __init__(self, name, index, dice_index, location, boardx, boardy, tilewidth, tileheight, tilegap):
 		self.name = name
 		self.index = index
+		self.dice_index = dice_index
 		self.location = location
 		self.x = boardy + ((self.location[1] - 1) * (tilewidth + tilegap))
 		self.y = boardx + ((self.location[0] - 1) * (tileheight + tilegap))
@@ -218,9 +219,7 @@ class Token:
 		self.tile_number = tile_number
 
 	def switch_visibility(self):
-		#print(f"visibility before: {self.visible} for token {self.name}")
 		self.visible = not self.visible
-		#print(f"visibility after: {self.visible} for token {self.name}")
 
 	def set_tile_number(self, tile_number):
 		self.tile_number = tile_number
@@ -234,7 +233,6 @@ class Board:
 		
 	def set_nextplayer(self):
 		#print(playerlist[board.current_player].name, "now has", playerlist[board.current_player].resources.get("lira"), "lira,", playerlist[board.current_player].resources.get("fabric"), "fabric,", playerlist[board.current_player].resources.get("spice"), "spice,", playerlist[board.current_player].resources.get("diamonds"), "diamonds and", playerlist[board.current_player].resources.get("fruit"), "fruit. The carrying capacity for this player is", playerlist[board.current_player].resources.get("max_res"))
-
 		if not (self.current_player + 1) > self.number_of_players - 1:
 			self.current_player = self.current_player + 1
 			self.next_player_button = "images/buttonred.png"
@@ -245,9 +243,6 @@ class Board:
 
 
 	def move_is_legal_distance(self, origin, destination): #Tile1, Tile2
-		#print("move from is", move_from)
-		#print("move to is", move_to)
-
 		#x1, y1 = origin[0], origin[1]
 		#x2, y2 = destination[0], destination[1]
 		#xdist = abs(destination[0] - origin[0])
